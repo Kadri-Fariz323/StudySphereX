@@ -25,7 +25,7 @@ mongoose.connect(MONGO_URI)
 
 // routes config
 
-app.use('/login', authRoute);
+app.use('/auth', authRoute);
 
 app.use((err, req, res, next) => {
     console.log(err.stack);
