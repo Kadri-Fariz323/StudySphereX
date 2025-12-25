@@ -2,18 +2,17 @@ import { NavLink } from "react-router-dom";
 import {
   MdDashboard,
   MdPeople,
-  MdArticle,
-  MdFitnessCenter,
   MdEmail,
   MdClose,
 } from "react-icons/md";
+import { FaPhotoVideo } from "react-icons/fa";
 import logo from "../../assets/logo.png";
 
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
     { name: "Dashboard", icon: MdDashboard, path: "/admin" },
-    { name: "Add Course", icon: MdDashboard, path: "/admin/addcourse" },
-    { name: "Add Post", icon: MdArticle, path: "/admin/addPost" },
+    { name: "Add Course", icon: FaPhotoVideo, path: "/admin/addcourse" },
+    { name: "Manage Users", icon: MdPeople, path: "/admin/addPost" },
     { name: "Mails", icon: MdEmail, path: "/admin/requests" },
   ];
 
@@ -58,8 +57,12 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                   }
                 `}
               >
-                <link.icon className={`mr-3 ${({isActive}) => isActive ? "text-indigo-600" : ""}`} size={20} />
-                {link.name}
+                {({ isActive }) => (
+                  <>
+                    <link.icon className={`mr-3 ${isActive ? "text-indigo-600" : ""}`} size={20} />
+                    {link.name}
+                  </>
+                )}
               </NavLink>
             </li>
           ))}

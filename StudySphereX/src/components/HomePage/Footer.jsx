@@ -97,7 +97,7 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
           <div className="mb-4 md:mb-0">
             © {new Date().getFullYear()}{" "}
-            <span className="font-medium text-gray-900">EduFlow LMS</span>.
+            <span className="font-medium text-gray-900">StudySphereX</span>.
             Designed for the future of education.
           </div>
 
