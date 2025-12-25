@@ -20,6 +20,10 @@ export const Login = () => {
   const [type, setType] = useState("password");
   const [loading, setLoading] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [auth, setAuth] = useState({
+    authenticate: false,
+    user: null
+  });
 
   const handleEyeIcon = () => {
     setEyeIcon((prev) => !prev);

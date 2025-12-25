@@ -61,6 +61,7 @@ const loginUser = async (req, res) => {
     token,
     user: { name: user.name, email: user.email, role: user.role },
   });
-};
+}; 
 
-module.exports = { registerUser, loginUser };
+
+module.exports = { registerUser, loginUser }; 
