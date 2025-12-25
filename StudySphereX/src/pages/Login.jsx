@@ -22,7 +22,7 @@ export const Login = () => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [auth, setAuth] = useState({
     authenticate: false,
-    user: null
+    user: null,
   });
 
   const handleEyeIcon = () => {
@@ -33,6 +33,9 @@ export const Login = () => {
   const toggleState = () => {
     setState((prev) => (prev === "Login" ? "Sign Up" : "Login"));
     setLoading(false);
+    setAuth({ authenticate: false, user: null });
+    setEyeIcon(false);
+    setType("password");
     setButtonDisabled(false);
   };
 
@@ -190,7 +193,7 @@ export const Login = () => {
                 buttonDisabled ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
-               {loading
+              {loading
                 ? state === "Sign Up"
                   ? "Creating Account..."
                   : "Logging in..."
