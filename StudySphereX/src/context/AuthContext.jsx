@@ -5,7 +5,7 @@ export const AuthContext = createContext(null);
 import { initialSignInFormData, initialSignUpFormData } from "../config/index";
 import { registerService } from "../services/registerService";
 import { loginService } from "../services/loginService";
-import { checkAuthService } from "../services/checkAuthService";
+import { checkAuthService } from "../services/loginService"
 
 export default function AuthProvider({ children }) {
   const [signInFormData, setSignInFormData] = useState(initialSignInFormData);
@@ -26,11 +26,11 @@ export default function AuthProvider({ children }) {
 
       sessionStorage.setItem(
         "accessToken",
-        JSON.stringify(data.data.accessToken)
+        JSON.stringify(data.token)
       );
       setAuth({
         authenticate: true,
-        user: data.data.user,
+        user: data.user,
       });
     } else {
       setAuth({
