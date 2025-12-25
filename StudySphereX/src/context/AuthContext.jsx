@@ -91,6 +91,7 @@ export default function AuthProvider({ children }) {
         handleRegisterUser,
         loginUser,
         auth,
+        resetCredentials
       }}
     >
       {children}
