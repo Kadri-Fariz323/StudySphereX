@@ -8,6 +8,7 @@ import { Contact } from "./pages/Contact";
 import { Courses } from "./pages/Courses";
 
 import { AdminDashboard } from "./pages/admin/adminDashboard";
+import { AddCourse } from "./pages/admin/AddCourse";
 
 export const App = () => {
   return (
@@ -23,7 +24,8 @@ export const App = () => {
 
         {/* Admin */}
         <Route path="/admin" element={<AdminPanelLayout />}>
-          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route index element={<AdminDashboard />} />
+          <Route path="addcourse" element={<AddCourse />} />
         </Route>
       </Routes>
     </>

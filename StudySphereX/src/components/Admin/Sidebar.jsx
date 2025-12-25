@@ -12,10 +12,8 @@ import logo from "../../assets/logo.png";
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
     { name: "Dashboard", icon: MdDashboard, path: "/admin" },
+    { name: "Add Course", icon: MdDashboard, path: "/admin/addcourse" },
     { name: "Add Post", icon: MdArticle, path: "/admin/addPost" },
-    { name: "Users", icon: MdPeople, path: "/admin/users" },
-    { name: "Posts List", icon: MdArticle, path: "/admin/posts" },
-    { name: "Guides", icon: MdFitnessCenter, path: "/admin/workouts" },
     { name: "Mails", icon: MdEmail, path: "/admin/requests" },
   ];
 

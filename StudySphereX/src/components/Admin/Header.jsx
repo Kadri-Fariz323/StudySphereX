@@ -1,10 +1,14 @@
 import { FaBars } from "react-icons/fa";
 import admin from "../../assets/Admin.jpg";
+import { useContext } from "react";
+import { AuthContext }from '../../context/AuthContext'
 
 export const Header = ({ setIsSidebarOpen }) => {
-  // Optional: You might want to handle logout logic here
+
+  const {resetCredentials} = useContext(AuthContext) 
   const handleLogout = () => {
-    console.log("Logout clicked");
+     resetCredentials()
+      sessionStorage.clear()
   };
 
   return (
