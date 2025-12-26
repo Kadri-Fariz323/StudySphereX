@@ -1,35 +1,42 @@
-
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { MdEdit, MdDeleteForever } from "react-icons/md";
 
 export const CourseTable = () => {
   return (
-    <div>
-      <Table>
-  <TableHeader>
-    <TableRow>
-      <TableHead className="w-[100px]">Invoice</TableHead>
-      <TableHead>Status</TableHead>
-      <TableHead>Method</TableHead>
-      <TableHead className="text-right">Amount</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-    <TableRow>
-      <TableCell className="font-medium">INV001</TableCell>
-      <TableCell>Paid</TableCell>
-      <TableCell>Credit Card</TableCell>
-      <TableCell className="text-right">$250.00</TableCell>
-    </TableRow>
-  </TableBody>
-</Table>
+    
+    <div className="w-[380px] sm:w-full overflow-x-auto shadow-md sm:rounded-lg bg-white">
+      
+    
+      <table className="w-full min-w-[600px] text-sm text-left text-gray-500">
+        
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+          <tr>
+            <th className="px-4 py-3 font-medium whitespace-nowrap">Course</th>
+            <th className="px-4 py-3 font-medium whitespace-nowrap">Students</th>
+            <th className="px-4 py-3 font-medium whitespace-nowrap">Revenue</th>
+            <th className="px-4 py-3 font-medium text-center whitespace-nowrap">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody className="divide-y divide-gray-200">
+          <tr className="hover:bg-gray-50">
+            <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
+              React js Full Course
+            </td>
+            <td className="px-4 py-3 whitespace-nowrap">23</td>
+            <td className="px-4 py-3 whitespace-nowrap">$45</td>
+            <td className="px-4 py-3 whitespace-nowrap">
+              <div className="flex items-center justify-center gap-2">
+                <button className="p-1 hover:bg-red-100 rounded-full transition-colors">
+                  <MdDeleteForever className="text-xl text-red-500" />
+                </button>
+                <button className="p-1 hover:bg-green-100 rounded-full transition-colors">
+                  <MdEdit className="text-xl text-green-500" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  )
-}
+  );
+};

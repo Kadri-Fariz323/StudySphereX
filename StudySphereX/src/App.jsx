@@ -9,6 +9,7 @@ import { Courses } from "./pages/Courses";
 
 import { AdminDashboard } from "./pages/admin/adminDashboard";
 import { AddCourse } from "./pages/admin/AddCourse";
+import { CreateCourse } from "./pages/admin/CreateCourse";
 
 export const App = () => {
   return (
@@ -25,7 +26,8 @@ export const App = () => {
         {/* Admin */}
         <Route path="/admin" element={<AdminPanelLayout />}>
           <Route index element={<AdminDashboard />} />
-          <Route path="addcourse" element={<AddCourse />} />
+          <Route path="add-course" element={<AddCourse />} />
+          <Route path="create-course" element={<CreateCourse />} />
         </Route>
       </Routes>
     </>
