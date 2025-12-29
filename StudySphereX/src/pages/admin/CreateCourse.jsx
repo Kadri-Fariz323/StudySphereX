@@ -11,15 +11,17 @@ export const CreateCourse = () => {
         <h1 className="text-xl sm:text-3xl font-extrabold">
           Create a new Course
         </h1>
+
         <button className="px-8 py-2 rounded-full relative bg-slate-900 text-white text-sm hover:shadow-2xl hover:shadow-white/[0.4] transition duration-200 border border-slate-800">
           <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl  bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
           <span className="relative z-20">Submit</span>
         </button>
+        
       </div>
       <div className="mt-5 w-fit">
         <CardContent>
           <div className=" ">
-            <Tabs defaultValue="Course-Landing-Page"  >
+            <Tabs defaultValue="Curriculum"  >
               <TabsList>
                 <TabsTrigger value="Curriculum">Curriculum</TabsTrigger>
                 <TabsTrigger value="Course-Landing-Page">Course Landing Page</TabsTrigger>

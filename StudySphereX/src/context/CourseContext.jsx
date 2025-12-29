@@ -1,5 +1,6 @@
 import {
   courseLandingInitialFormData,
+  courseCurriculumInitialFormData,
 } from "@/config";
 import { createContext, useState } from "react";
 
@@ -10,11 +11,17 @@ export default function CourseProvider({ children }) {
     courseLandingInitialFormData
   );
 
+    const [courseCurriculumFormData, setCourseCurriculumFormData] = useState(
+    courseCurriculumInitialFormData
+  );
+
    return (
     <CourseContext.Provider
       value={{
         courseLandingFormData,
         setCourseLandingFormData,
+       courseCurriculumFormData,
+        setCourseCurriculumFormData,
       }}
     >
       {children}
