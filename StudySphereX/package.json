@@ -16,6 +16,7 @@
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "emailjs": "^5.0.0",
+    "framer-motion": "^12.23.26",
     "motion": "^12.23.26",
     "react": "^19.2.0",
     "react-axios": "^2.0.6",

@@ -28,6 +28,8 @@ export default function CourseProvider({ children }) {
         setCourseCurriculumFormData,
         mediaUploadProgress,
         setMediaUploadProgress,
+        mediaUploadProgressPercentage, 
+        setMediaUploadProgressPercentage
       }}
     >
       {children}

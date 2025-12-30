@@ -3,6 +3,7 @@ import { CourseContext } from "../../../context/CourseContext";
 import { useContext } from "react";
 
 import { mediaUploadService } from "@/services";
+import { ProgressLoading } from "@/components/UI/ProgressLoading";
 
 import { FiUploadCloud, FiImage, FiTrash2 } from 'react-icons/fi';
 
@@ -10,7 +11,10 @@ import { FiUploadCloud, FiImage, FiTrash2 } from 'react-icons/fi';
 
 export const CourseSettings = () => {
   
-  const { courseLandingFormData, setCourseLandingFormData } =
+  const { courseLandingFormData, setCourseLandingFormData, mediaUploadProgressPercentage,
+    setMediaUploadProgressPercentage,
+    mediaUploadProgress,
+    setMediaUploadProgress, } =
     useContext(CourseContext);
 
   async function handleImageUploadChange(event) {
@@ -21,13 +25,14 @@ export const CourseSettings = () => {
       imageFormData.append("file", selectedImage);
 
       try {
-        const res = await mediaUploadService(imageFormData);
+        setMediaUploadProgress(true)
+        const res = await mediaUploadService(imageFormData, setMediaUploadProgressPercentage);
         if (res.success) {
           setCourseLandingFormData({
             ...courseLandingFormData,
             image: res.data.url,
           });
-
+            setMediaUploadProgress(false)
         }
       } catch (error) {
         console.log(error);
@@ -46,6 +51,13 @@ export const CourseSettings = () => {
           Upload the thumbnail that will be displayed on your course card.
         </p>
       </CardHeader>
+
+         {mediaUploadProgress ? (
+                <ProgressLoading
+                  isMediaUploading={mediaUploadProgress}
+                  progress={mediaUploadProgressPercentage}
+                />
+              ) : null}
       
       <CardContent className="p-6">
         {courseLandingFormData?.image ? (
@@ -67,7 +79,6 @@ export const CourseSettings = () => {
                   <FiImage className="w-4 h-4" /> Change
                 </label>
                 <button
-                  onClick={handleRemoveImage}
                   className="flex items-center gap-2 bg-white text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors shadow-lg font-medium text-sm"
                 >
                   <FiTrash2 className="w-4 h-4" /> Remove
