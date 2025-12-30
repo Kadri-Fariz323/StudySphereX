@@ -13,6 +13,7 @@ export const CourseLandingPageForm = () => {
       [name]: value,
     });
   };
+  
 
   return (
     <div className="bg-white w-[380px] sm:w-[450px] md:w-[900px] p-6 sm:p-8 rounded-xl shadow-lg  border border-gray-100">

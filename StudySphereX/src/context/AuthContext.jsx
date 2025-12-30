@@ -22,7 +22,6 @@ export default function AuthProvider({ children }) {
   async function loginUser(formData) {
     const data = await loginService(formData);
     if (data.success) {
-      console.log(data);
 
       sessionStorage.setItem(
         "accessToken",
@@ -79,7 +78,6 @@ export default function AuthProvider({ children }) {
     checkAuthUser();
   }, []);
 
-  console.log(auth, "gf");
 
   return (
     <AuthContext.Provider

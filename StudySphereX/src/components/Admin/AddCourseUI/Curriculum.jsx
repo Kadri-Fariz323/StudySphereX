@@ -74,7 +74,7 @@ export const Curriculum = () => {
         <CardTitle className="mb-5 text-xl">Create Course Curriculum</CardTitle>
 
         <button
-          className="px-8 py-2 rounded-full relative bg-slate-900 text-white text-sm hover:shadow-2xl hover:shadow-white/[0.4] transition duration-200 border border-slate-800"
+          className="px-8 py-2 rounded-full relative bg-slate-900 text-white text-sm hover:shadow-2xl hover:shadow-white/[0.4] transition cursor-pointer duration-200 border border-slate-800"
           onClick={handleNewLecture}
         >
           <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl  bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
@@ -106,7 +106,7 @@ export const Curriculum = () => {
                       handleFreePreviewChange(value, index)
                     }
                     checked={courseCurriculumFormData[index]?.freePreview}
-                    id={`freePreview-${index + 1}`}
+                    id={`freePreview-${index + 1}`} className='cursor-pointer'
                   />
                   <label htmlFor={`freePreview-${index + 1}`}>
                     Free Preview
