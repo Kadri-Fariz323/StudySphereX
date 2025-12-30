@@ -7,7 +7,9 @@ export async function mediaUploadService(formData, onProgressCallback) {
       const percentCompleted = Math.round(
         (progressEvent.loaded * 100) / progressEvent.total
       );
-      onProgressCallback(percentCompleted);
+      if (onProgressCallback && typeof onProgressCallback === 'function') {
+        onProgressCallback(percentCompleted);
+      }
     },
   });
 

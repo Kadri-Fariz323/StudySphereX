@@ -15,6 +15,8 @@ export default function CourseProvider({ children }) {
     courseCurriculumInitialFormData
   );
 
+  const [mediaUploadProgress, setMediaUploadProgress] = useState(false);
+
    return (
     <CourseContext.Provider
       value={{
@@ -22,6 +24,8 @@ export default function CourseProvider({ children }) {
         setCourseLandingFormData,
        courseCurriculumFormData,
         setCourseCurriculumFormData,
+        mediaUploadProgress,
+         setMediaUploadProgress
       }}
     >
       {children}
