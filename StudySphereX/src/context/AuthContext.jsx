@@ -36,7 +36,6 @@ async function loginUser(formData) {
     });
   }
   setLoading(false);
-  console.log(formData);
 }
 
 
@@ -77,6 +76,7 @@ async function checkAuthUser() {
     checkAuthUser();
   }, []);
 
+console.log(auth);
 
   return (
     <AuthContext.Provider

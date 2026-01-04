@@ -1,34 +1,32 @@
 import { Route, Routes } from "react-router-dom";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { AdminPanelLayout } from "./layouts/AdminPanelLayout";
-import { Login } from "./pages/Login";
 import { Home } from "./pages/Home";
 import { Contact } from "./pages/Contact";
 import { Courses } from "./pages/Courses";
-import { AdminDashboard } from "./pages/admin/adminDashboard";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AddCourse } from "./pages/admin/AddCourse";
 import { CreateCourse } from "./pages/admin/CreateCourse";
 import { RouteGuard } from "./components/HomePage/RouteGuard";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { UserLayout } from "./layouts/UserLayout";
+import { Dashboard } from "./pages/user/Dashboard";
+import { AuthPage } from "./pages/AuthPage";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
   return (
     <>
-      
       <Routes>
-        
         {/* Public Home page Routes */}
         <Route element={<PublicLayout />}>
-          
           <Route path="/" element={<Home />} />
           <Route
-            path="/login"
+            path="/auth"
             element={
               <RouteGuard
-                element={<Login />}
+                element={<AuthPage />}
                 authenticated={auth.authenticate}
                 user={auth?.user}
               />
@@ -37,9 +35,11 @@ export const App = () => {
           <Route path="/courses" element={<Courses />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
-        {/* User */}
+
+        {/* Users */}
+
         <Route
-          path="/UserDashboard"
+          path="/user"
           element={
             <RouteGuard
               element={<UserLayout />}
@@ -48,42 +48,23 @@ export const App = () => {
             />
           }
         >
-          
-          <Route path="" element={<UserLayout />} />
+          <Route index element={<Dashboard />} />
         </Route>
+
         {/* Admin */}
-        <Route path="/admin" element={<AdminPanelLayout />}>
-          
-          <Route
-            index
-            element={
-              <RouteGuard
-                element={<AdminDashboard />}
-                authenticated={auth.authenticate}
-                user={auth?.user}
-              />
-            }
-          />
-          <Route
-            path="add-course"
-            element={
-              <RouteGuard
-                element={<AddCourse />}
-                authenticated={auth.authenticate}
-                user={auth?.user}
-              />
-            }
-          />
-          <Route
-            path="create-course"
-            element={
-              <RouteGuard
-                element={<CreateCourse />}
-                authenticated={auth.authenticate}
-                user={auth?.user}
-              />
-            }
-          />
+        <Route
+          path="/admin"
+          element={
+            <RouteGuard
+              element={<AdminPanelLayout />}
+              authenticated={auth.authenticate}
+              user={auth?.user}
+            />
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="add-course" element={<AddCourse />} />
+          <Route path="create-course" element={<CreateCourse />} />
         </Route>
       </Routes>
     </>
