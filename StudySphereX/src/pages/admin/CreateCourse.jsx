@@ -21,7 +21,7 @@ export const CreateCourse = () => {
       <div className="mt-5 w-fit">
         <CardContent>
           <div className=" ">
-            <Tabs defaultValue="Course-Settings"  >
+            <Tabs defaultValue="Curriculum"  >
               <TabsList>
                 <TabsTrigger value="Curriculum">Curriculum</TabsTrigger>
                 <TabsTrigger value="Course-Landing-Page">Course Landing Page</TabsTrigger>

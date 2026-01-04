@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/UI/Card";
 import { ProgressLoading } from "@/components/UI/ProgressLoading";
 import { Switch } from "@/components/UI/switch";
+import { VideoPlayer } from "@/components/UI/videoPlayer";
 import { courseCurriculumInitialFormData } from "@/config";
 
 import { CourseContext } from "@/context/CourseContext";
@@ -26,6 +27,10 @@ export const Curriculum = () => {
         ...courseCurriculumInitialFormData[0],
       },
     ]);
+  }
+
+  function handleRemoveLecture(){
+    
   }
 
   function handleCourseTitleChange(event, currIndex) {
@@ -103,7 +108,7 @@ export const Curriculum = () => {
               key={index}
               className="group relative border border-indigo-100 bg-white rounded-xl p-5 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300"
             >
-              {/* --- Grid Layout for Responsiveness --- */}
+              {/* --- Lectures  --- */}
               <div className="flex flex-col md:flex-row md:items-start gap-5">
                 {/* 1. Lecture Number Badge (Left Side) */}
                 <div className="flex-shrink-0 mt-2">
@@ -119,7 +124,9 @@ export const Curriculum = () => {
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
                       Lecture Title
                     </label>
-                    <input
+
+                    <div className="flex gap-4">
+                      <input
                       type="text"
                       name={`title-${index + 1}`}
                       placeholder="e.g. Introduction to React Hooks"
@@ -129,6 +136,25 @@ export const Curriculum = () => {
                       }
                       value={courseCurriculumFormData[index]?.title || ""}
                     />
+
+                    {/* Free Preview Switch */}
+                    <div className="flex items-center gap-3 sm:border-l sm:border-gray-200 sm:pl-4 pt-2 sm:pt-0">
+                      <Switch
+                        id={`freePreview-${index + 1}`}
+                        checked={courseCurriculumFormData[index]?.freePreview}
+                        onCheckedChange={(value) =>
+                          handleFreePreviewChange(value, index)
+                        }
+                      />
+                      <label
+                        htmlFor={`freePreview-${index + 1}`}
+                        className="text-sm text-nowrap font-medium text-gray-600 cursor-pointer select-none flex items-center gap-2"
+                      >
+                        Free Preview
+                      </label>
+                    </div>
+                    </div>
+                    
                   </div>
 
                   {/* Video Upload & Switch Row */}
@@ -162,26 +188,39 @@ export const Curriculum = () => {
                       </label>
                     </div>
 
-                    {/* Free Preview Switch */}
-                    <div className="flex items-center gap-3 sm:border-l sm:border-gray-200 sm:pl-4 pt-2 sm:pt-0">
-                      <Switch
-                        id={`freePreview-${index + 1}`}
-                        checked={courseCurriculumFormData[index]?.freePreview}
-                        onCheckedChange={(value) =>
-                          handleFreePreviewChange(value, index)
-                        }
-                      />
-                      <label
-                        htmlFor={`freePreview-${index + 1}`}
-                        className="text-sm font-medium text-gray-600 cursor-pointer select-none flex items-center gap-2"
-                      >
-                        <FiPlayCircle className="text-gray-400" />
-                        Free Preview
-                      </label>
-                    </div>
+                    {/* delete btn */}
+                    {courseCurriculumFormData[index]?.videoUrl ? (
+                      <button className="inline-flex items-center px-4 py-2 bg-red-600 transition ease-in-out delay-75 hover:bg-red-700 text-white text-sm font-medium rounded-md hover:-translate-y-1 hover:scale-110">
+                        <svg
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="h-5 w-5 mr-2"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            strokeWidth="2"
+                            strokeLinejoin="round"
+                            strokeLinecap="round"
+                          ></path>
+                        </svg>
+                        Delete
+                      </button>
+                    ) : null}
+   
                   </div>
+                  {courseCurriculumFormData[index]?.videoUrl ? (
+                  <VideoPlayer src={courseCurriculumFormData[index]?.videoUrl} />
+                   
+                  ) : null}
                 </div>
               </div>
+
+              {/* --- Quiz  --- */}
+
+              
+
             </div>
           ))}
         </div>
