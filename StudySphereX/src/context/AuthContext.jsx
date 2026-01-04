@@ -11,7 +11,7 @@ export default function AuthProvider({ children }) {
   const [signInFormData, setSignInFormData] = useState(initialSignInFormData);
   const [signUpFormData, setSignUpFormData] = useState(initialSignUpFormData);
   const [auth, setAuth] = useState({ authenticate: false, user: null });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   async function handleRegisterUser(formData) {
     const data = await registerService(formData);
@@ -19,17 +19,36 @@ export default function AuthProvider({ children }) {
     return data;
   }
 
-  async function loginUser(formData) {
-    const data = await loginService(formData);
-    if (data.success) {
+async function loginUser(formData) {
+  setLoading(true);
+  const data = await loginService(formData);
 
-      sessionStorage.setItem(
-        "accessToken",
-        JSON.stringify(data.token)
-      );
+  if (data.success) {
+    sessionStorage.setItem("accessToken", JSON.stringify(data.token));
+    setAuth({
+      authenticate: true,
+      user: data.user,
+    });
+  } else {
+    setAuth({
+      authenticate: false,
+      user: null,
+    });
+  }
+  setLoading(false);
+  console.log(formData);
+}
+
+
+async function checkAuthUser() {
+  setLoading(true);
+  try {
+    const data = await checkAuthService();
+
+    if (data.success) {
       setAuth({
         authenticate: true,
-        user: data.user,
+        user: data.data.user,
       });
     } else {
       setAuth({
@@ -37,35 +56,15 @@ export default function AuthProvider({ children }) {
         user: null,
       });
     }
+  } catch (error) {
+    setAuth({
+      authenticate: false,
+      user: null,
+    });
+  } finally {
+    setLoading(false);
   }
-
-  async function checkAuthUser() {
-    try {
-      const data = await checkAuthService();
-      if (data.success) {
-        setAuth({
-          authenticate: true,
-          user: data.data.user,
-        });
-        setLoading(false);
-      } else {
-        setAuth({
-          authenticate: false,
-          user: null,
-        });
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      if (!error?.response?.data?.success) {
-        setAuth({
-          authenticate: false,
-          user: null,
-        });
-        setLoading(false);
-      }
-    }
-  }
+}
 
   function resetCredentials() {
     setAuth({
@@ -89,6 +88,7 @@ export default function AuthProvider({ children }) {
         handleRegisterUser,
         loginUser,
         auth,
+        loading,
         resetCredentials
       }}
     >

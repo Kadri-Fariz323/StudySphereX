@@ -5,6 +5,9 @@ import { FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { AuthContext } from "../context/AuthContext";
 
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
 export const Login = () => {
   const {
     signInFormData,
@@ -13,6 +16,8 @@ export const Login = () => {
     setSignUpFormData,
     handleRegisterUser: contextHandleRegisterUser,
     loginUser,
+     authenticated,
+  user,
   } = useContext(AuthContext);
 
   const [state, setState] = useState("Login");
@@ -24,6 +29,19 @@ export const Login = () => {
     authenticate: false,
     user: null,
   });
+
+
+  const navigate = useNavigate();
+
+useEffect(() => {
+  if (authenticated && user) {
+    navigate(
+      user.role === "admin" ? "/admin" : "/UserDashboard",
+      { replace: true }
+    );
+  }
+}, [authenticated, user, navigate]);
+
 
   const handleEyeIcon = () => {
     setEyeIcon((prev) => !prev);
@@ -90,6 +108,13 @@ export const Login = () => {
       setButtonDisabled(false);
     }
   };
+
+
+console.log(signInFormData);
+console.log(signUpFormData);
+
+
+
 
   return (
     <div className="bg-gray-50 bg-linear-to-b from-indigo-400 to-white rounded-3xl">
