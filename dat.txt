@@ -1,0 +1,33 @@
+Project: skilsync-LMS 
+
+Libraries:- email.js cloudinary,axious, Stripe payment , mongodb atlas
+
+
+User:- Features
+
+Login/Register 
+View dashboard 
+monitor progress 
+view enorolled courses
+View course 
+explore course 
+enroll in course
+buy course
+Earn certificate 
+give quiz 
+download certificate 
+download notes/content/materials 
+Get Updates
+contact
+
+Admin/Instructor:- Features
+
+View dashboard
+monitor 
+Manage users 
+manage contact mails 
+manage users 
+manage courses 
+add courses 
+add quiz 
+add material 

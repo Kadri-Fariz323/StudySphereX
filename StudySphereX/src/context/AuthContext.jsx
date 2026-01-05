@@ -1,5 +1,4 @@
 
-
 import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext(null);
 import { initialSignInFormData, initialSignUpFormData } from "../config/index";
