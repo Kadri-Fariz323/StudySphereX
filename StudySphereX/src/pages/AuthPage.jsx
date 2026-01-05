@@ -30,6 +30,24 @@ export const AuthPage = () => {
     setActiveTab(value);
   }
 
+  function checkIfSignInFormIsValid(){
+     return (
+      signInFormData &&
+      signInFormData.userEmail !== "" &&
+      signInFormData.password !== ""
+    );
+  }
+
+    function checkIfSignUpFormIsValid(){
+      return (
+      signUpFormData &&
+      signUpFormData.userName !== "" &&
+      signUpFormData.userEmail !== "" &&
+      signUpFormData.password !== ""
+    );
+  }
+console.log(signInFormData);
+
   return (
     <div>
         <div className="flex items-center justify-center min-h-screen bg-background">
@@ -58,6 +76,7 @@ export const AuthPage = () => {
                   formData={signInFormData}
                   setFormData={setSignInFormData}
                   handleSubmit={handleLoginUser}
+                  isButtonDisabled={!checkIfSignInFormIsValid()}
                 />
               </CardContent>
             </Card>
@@ -77,6 +96,8 @@ export const AuthPage = () => {
                   formData={signUpFormData}
                   setFormData={setSignUpFormData}
                   handleSubmit={handleRegisterUser}
+                  isButtonDisabled={!checkIfSignUpFormIsValid()}
+
                 />
               </CardContent>
             </Card>
