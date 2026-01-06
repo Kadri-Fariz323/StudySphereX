@@ -53,13 +53,15 @@ const loginUser = async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'default_secret_key', { expiresIn: '1h' });
+  const token = jwt.sign({ id: user._id, role: user.role, email: user.email }, process.env.JWT_SECRET || 'JWT_SECRET', { expiresIn: '120m' });
 
   res.status(200).json({
     success: true,
     message: "Login successful",
-    token,
-    user: { name: user.name, email: user.email, role: user.role },
+    data: {
+      token,
+      user: { name: user.name, email: user.email, role: user.role },
+    },
   });
 }; 
 

@@ -23,7 +23,7 @@ export const AuthPage = () => {
     signUpFormData,
     setSignUpFormData,
     handleRegisterUser,
-    handleLoginUser,
+    loginUser,
   } = useContext(AuthContext);
 
    function handleTabChange(value) {
@@ -33,7 +33,7 @@ export const AuthPage = () => {
   function checkIfSignInFormIsValid(){
      return (
       signInFormData &&
-      signInFormData.userEmail !== "" &&
+      signInFormData.email !== "" &&
       signInFormData.password !== ""
     );
   }
@@ -41,12 +41,12 @@ export const AuthPage = () => {
     function checkIfSignUpFormIsValid(){
       return (
       signUpFormData &&
-      signUpFormData.userName !== "" &&
-      signUpFormData.userEmail !== "" &&
+      signUpFormData.name !== "" &&
+      signUpFormData.email !== "" &&
       signUpFormData.password !== ""
     );
   }
-console.log(signInFormData);
+
 
   return (
     <div>
@@ -75,7 +75,7 @@ console.log(signInFormData);
                   buttonText={"Sign In"}
                   formData={signInFormData}
                   setFormData={setSignInFormData}
-                  handleSubmit={handleLoginUser}
+                  handleSubmit={loginUser}
                   isButtonDisabled={!checkIfSignInFormIsValid()}
                 />
               </CardContent>

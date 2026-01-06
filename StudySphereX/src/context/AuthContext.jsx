@@ -12,21 +12,23 @@ export default function AuthProvider({ children }) {
   const [auth, setAuth] = useState({ authenticate: false, user: null });
   const [loading, setLoading] = useState(true);
 
-  async function handleRegisterUser(formData) {
-    const data = await registerService(formData);
+  async function handleRegisterUser(event) {
+    event.preventDefault();
+    const data = await registerService(signUpFormData);
     console.log(data);
     return data;
   }
 
-async function loginUser(formData) {
-  setLoading(true);
-  const data = await loginService(formData);
+async function loginUser(event) {
+    event.preventDefault();
+
+  const data = await loginService(signInFormData);
 
   if (data.success) {
-    sessionStorage.setItem("accessToken", JSON.stringify(data.token));
+    sessionStorage.setItem("accessToken", data.data.token);
     setAuth({
       authenticate: true,
-      user: data.user,
+      user: data.data.user,
     });
   } else {
     setAuth({
@@ -34,12 +36,19 @@ async function loginUser(formData) {
       user: null,
     });
   }
-  setLoading(false);
 }
 
 
 async function checkAuthUser() {
   setLoading(true);
+
+  const token = sessionStorage.getItem("accessToken");
+  if (!token) {
+    setAuth({ authenticate: false, user: null });
+    setLoading(false);
+    return;
+  }
+
   try {
     const data = await checkAuthService();
 
@@ -54,7 +63,7 @@ async function checkAuthUser() {
         user: null,
       });
     }
-  } catch (error) {
+  } catch {
     setAuth({
       authenticate: false,
       user: null,
