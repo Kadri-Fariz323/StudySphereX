@@ -172,8 +172,23 @@ export const courseCurriculumInitialFormData = [
     // New fields for PDF
     pdfUrl: "",
     pdfPublicId: "",
+     quiz: null,
   },
 ];
+
+
+export const quizTemplate = {
+  title: "", 
+  questions: [
+    {
+      question: "",
+      options: ["", "", "", ""], 
+      correctAnswerIndex: 0,
+    },
+  ],
+};
+
+
 export const sortOptions = [
   { id: "price-lowtohigh", label: "Price: Low to High" },
   { id: "price-hightolow", label: "Price: High to Low" },
