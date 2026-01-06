@@ -5,11 +5,15 @@ import { initialSignInFormData, initialSignUpFormData } from "../config/index";
 import { registerService } from "../services/registerService";
 import { loginService } from "../services/loginService";
 import { checkAuthService } from "../services/loginService"
+import { Skeleton } from "@/components/UI/skeleton";
 
 export default function AuthProvider({ children }) {
   const [signInFormData, setSignInFormData] = useState(initialSignInFormData);
   const [signUpFormData, setSignUpFormData] = useState(initialSignUpFormData);
-  const [auth, setAuth] = useState({ authenticate: false, user: null });
+ const [auth, setAuth] = useState({
+    authenticate: false,
+    user: null,
+  });
   const [loading, setLoading] = useState(true);
 
   async function handleRegisterUser(event) {
@@ -20,21 +24,18 @@ export default function AuthProvider({ children }) {
   }
 
 async function loginUser(event) {
-    event.preventDefault();
+  event.preventDefault();
+  try {
+    const data = await loginService(signInFormData);
 
-  const data = await loginService(signInFormData);
-
-  if (data.success) {
-    sessionStorage.setItem("accessToken", data.data.token);
-    setAuth({
-      authenticate: true,
-      user: data.data.user,
-    });
-  } else {
-    setAuth({
-      authenticate: false,
-      user: null,
-    });
+    if (data.success) {
+      localStorage.setItem("accessToken", data.data.token);
+      setAuth({ authenticate: true, user: data.data.user });
+    } else {
+      setAuth({ authenticate: false, user: null });
+    }
+  } catch (err) {
+    setAuth({ authenticate: false, user: null });
   }
 }
 
@@ -42,17 +43,17 @@ async function loginUser(event) {
 async function checkAuthUser() {
   setLoading(true);
 
-  const token = sessionStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken");
   if (!token) {
     setAuth({ authenticate: false, user: null });
     setLoading(false);
     return;
   }
-
   try {
     const data = await checkAuthService();
 
-    if (data.success) {
+    try {
+      if (data.success) {
       setAuth({
         authenticate: true,
         user: data.data.user,
@@ -63,6 +64,10 @@ async function checkAuthUser() {
         user: null,
       });
     }
+    } catch (error) {
+      console.log(error);
+    }
+    
   } catch {
     setAuth({
       authenticate: false,
@@ -72,19 +77,20 @@ async function checkAuthUser() {
     setLoading(false);
   }
 }
+function resetCredentials() {
+  localStorage.removeItem("accessToken");
+  setAuth({
+    authenticate: false,
+    user: null,
+  });
+}
 
-  function resetCredentials() {
-    setAuth({
-      authenticate: false,
-      user: null,
-    });
-  }
 
   useEffect(() => {
     checkAuthUser();
   }, []);
 
-console.log(auth);
+
 
   return (
     <AuthContext.Provider
@@ -100,7 +106,7 @@ console.log(auth);
         resetCredentials
       }}
     >
-      {children}
+       {loading ? <Skeleton /> : children}
     </AuthContext.Provider>
   );
 }

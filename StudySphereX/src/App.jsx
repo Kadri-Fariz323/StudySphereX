@@ -13,6 +13,7 @@ import { AuthContext } from "./context/AuthContext";
 import { UserLayout } from "./layouts/UserLayout";
 import { Dashboard } from "./pages/user/Dashboard";
 import { AuthPage } from "./pages/AuthPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -66,7 +67,11 @@ export const App = () => {
           <Route path="add-course" element={<AddCourse />} />
           <Route path="create-course" element={<CreateCourse />} />
         </Route>
+
+      <Route path="*" element={<NotFoundPage />} />
+
       </Routes>
+
     </>
   );
 };
