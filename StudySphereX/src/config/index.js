@@ -169,9 +169,11 @@ export const courseCurriculumInitialFormData = [
     videoUrl: "",
     freePreview: false,
     public_id: "",
+    // New fields for PDF
+    pdfUrl: "",
+    pdfPublicId: "",
   },
 ];
-
 export const sortOptions = [
   { id: "price-lowtohigh", label: "Price: Low to High" },
   { id: "price-hightolow", label: "Price: High to Low" },

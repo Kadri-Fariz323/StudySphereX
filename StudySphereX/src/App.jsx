@@ -14,6 +14,9 @@ import { UserLayout } from "./layouts/UserLayout";
 import { Dashboard } from "./pages/user/Dashboard";
 import { AuthPage } from "./pages/AuthPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { ManageUsers } from "./pages/admin/ManageUsers";
+import { Mails } from "./pages/admin/Mails";
+import { AddQuiz } from "./pages/admin/AddQuiz";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -66,6 +69,12 @@ export const App = () => {
           <Route index element={<AdminDashboard />} />
           <Route path="add-course" element={<AddCourse />} />
           <Route path="create-course" element={<CreateCourse />} />
+          <Route path="manage-users" element={<ManageUsers />} />
+          <Route path="mails" element={<Mails />} />
+          <Route path="add-quiz" element={<AddQuiz />} />
+
+
+
         </Route>
 
       <Route path="*" element={<NotFoundPage />} />

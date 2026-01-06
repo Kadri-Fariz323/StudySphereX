@@ -6,14 +6,17 @@ import {
   MdClose,
 } from "react-icons/md";
 import { FaPhotoVideo } from "react-icons/fa";
+import { MdQuiz } from "react-icons/md";
 import logo from "../../assets/logo.png";
 
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
     { name: "Dashboard", icon: MdDashboard, path: "/admin" },
     { name: "Add Course", icon: FaPhotoVideo, path: "/admin/add-course" },
-    { name: "Manage Users", icon: MdPeople, path: "/admin/addPost" },
-    { name: "Mails", icon: MdEmail, path: "/admin/requests" },
+    { name: "Add Quiz", icon: MdQuiz, path: "/admin/add-quiz" },
+    { name: "Manage Users", icon: MdPeople, path: "/admin/manage-users" },
+    { name: "Mails", icon: MdEmail, path: "/admin/mails" },
+
   ];
 
   return (

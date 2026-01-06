@@ -1,14 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/UI/Card";
+import { Card, CardTitle } from "@/components/UI/Card";
 import { ProgressLoading } from "@/components/UI/ProgressLoading";
 import { Switch } from "@/components/UI/switch";
 import { VideoPlayer } from "@/components/UI/videoPlayer";
 import { courseCurriculumInitialFormData } from "@/config";
-
 import { CourseContext } from "@/context/CourseContext";
 import { mediaUploadService } from "@/services";
 import { useContext } from "react";
-
-import { FiVideo, FiPlayCircle, FiUpload } from "react-icons/fi";
+// Added FiCopy for duplicate, FiFileText for PDF
+import { FiVideo, FiFileText, FiUpload, FiCopy, FiTrash2 } from "react-icons/fi"; 
 
 export const Curriculum = () => {
   const {
@@ -29,8 +28,25 @@ export const Curriculum = () => {
     ]);
   }
 
-  function handleRemoveLecture(){
+  // 1. DUPLICATE LECTURE FUNCTION
+  function handleCopyLecture(currentIndex) {
+    const copyFormData = [...courseCurriculumFormData];
+    const itemToCopy = { ...copyFormData[currentIndex] };
     
+    // Optional: Add "(Copy)" to the title to distinguish it
+    itemToCopy.title = itemToCopy.title ? `${itemToCopy.title} (Copy)` : "";
+    
+    // Insert the copy right after the current index
+    copyFormData.splice(currentIndex + 1, 0, itemToCopy);
+    
+    setCourseCurriculumFormData(copyFormData);
+  }
+
+  // 2. DELETE LECTURE FUNCTION
+  function handleRemoveLecture(currentIndex) {
+    const copyFormData = [...courseCurriculumFormData];
+    copyFormData.splice(currentIndex, 1);
+    setCourseCurriculumFormData(copyFormData);
   }
 
   function handleCourseTitleChange(event, currIndex) {
@@ -39,7 +55,6 @@ export const Curriculum = () => {
       ...CopyCourseCurriculumFormData[currIndex],
       title: event.target.value,
     };
-
     setCourseCurriculumFormData(CopyCourseCurriculumFormData);
   }
 
@@ -49,7 +64,6 @@ export const Curriculum = () => {
       ...CopyCourseCurriculumFormData[currIndex],
       freePreview: currValue,
     };
-
     setCourseCurriculumFormData(CopyCourseCurriculumFormData);
   }
 
@@ -74,7 +88,38 @@ export const Curriculum = () => {
         };
         setCourseCurriculumFormData(CopyCourseCurriculumFormData);
         setMediaUploadProgress(false);
-        console.log(CopyCourseCurriculumFormData);
+      }
+    } catch (error) {
+      console.log(error);
+      setMediaUploadProgress(false);
+    }
+  }
+
+  // 3. PDF UPLOAD FUNCTION
+  async function handlePdfUpload(event, currIndex) {
+    const selectedFile = event.target.files[0];
+    const pdfFormData = new FormData();
+    if (selectedFile) {
+      pdfFormData.append("file", selectedFile);
+    }
+
+    setMediaUploadProgress(true);
+    try {
+      // Assuming mediaUploadService handles generic files (video/images/pdf)
+      const res = await mediaUploadService(
+        pdfFormData,
+        setMediaUploadProgressPercentage
+      );
+
+      if (res.success) {
+        let CopyCourseCurriculumFormData = [...courseCurriculumFormData];
+        CopyCourseCurriculumFormData[currIndex] = {
+          ...CopyCourseCurriculumFormData[currIndex],
+          pdfUrl: res?.data?.url, // Store PDF URL
+          pdfPublicId: res?.data.public_id,
+        };
+        setCourseCurriculumFormData(CopyCourseCurriculumFormData);
+        setMediaUploadProgress(false);
       }
     } catch (error) {
       console.log(error);
@@ -84,14 +129,14 @@ export const Curriculum = () => {
 
   return (
     <div>
-      <Card className="p-5 w-[400px] lg:w-[650px] xl:w-[900px] ">
+      <Card className="p-5 w-[400px] lg:w-[650px] xl:w-[900px]">
         <CardTitle className="mb-5 text-xl">Create Course Curriculum</CardTitle>
 
         <button
           className="px-8 py-2 rounded-full relative bg-slate-900 text-white text-sm hover:shadow-2xl hover:shadow-white/[0.4] transition cursor-pointer duration-200 border border-slate-800"
           onClick={handleNewLecture}
         >
-          <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl  bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
+          <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
           <span className="relative z-20">Add Lecture</span>
         </button>
 
@@ -108,64 +153,59 @@ export const Curriculum = () => {
               key={index}
               className="group relative border border-indigo-100 bg-white rounded-xl p-5 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300"
             >
-              {/* --- Lectures  --- */}
               <div className="flex flex-col md:flex-row md:items-start gap-5">
-                {/* 1. Lecture Number Badge (Left Side) */}
+                {/* 1. Badge */}
                 <div className="flex-shrink-0 mt-2">
                   <span className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 font-bold text-sm border border-indigo-100">
                     {index + 1}
                   </span>
                 </div>
 
-                {/* 2. Main Input Area */}
+                {/* 2. Main Content */}
                 <div className="flex-grow space-y-4 w-full">
-                  {/* Title Input */}
+                  {/* Title & Preview Toggle */}
                   <div className="w-full">
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
                       Lecture Title
                     </label>
-
                     <div className="flex gap-4">
                       <input
-                      type="text"
-                      name={`title-${index + 1}`}
-                      placeholder="e.g. Introduction to React Hooks"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-700 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
-                      onChange={(event) =>
-                        handleCourseTitleChange(event, index)
-                      }
-                      value={courseCurriculumFormData[index]?.title || ""}
-                    />
-
-                    {/* Free Preview Switch */}
-                    <div className="flex items-center gap-3 sm:border-l sm:border-gray-200 sm:pl-4 pt-2 sm:pt-0">
-                      <Switch
-                        id={`freePreview-${index + 1}`}
-                        checked={courseCurriculumFormData[index]?.freePreview}
-                        onCheckedChange={(value) =>
-                          handleFreePreviewChange(value, index)
-                        }
+                        type="text"
+                        placeholder="e.g. Introduction to React Hooks"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-700 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
+                        onChange={(event) => handleCourseTitleChange(event, index)}
+                        value={courseCurriculumFormData[index]?.title || ""}
                       />
-                      <label
-                        htmlFor={`freePreview-${index + 1}`}
-                        className="text-sm text-nowrap font-medium text-gray-600 cursor-pointer select-none flex items-center gap-2"
-                      >
-                        Free Preview
-                      </label>
+                      <div className="flex items-center gap-3 sm:border-l sm:border-gray-200 sm:pl-4 pt-2 sm:pt-0">
+                        <Switch
+                          id={`freePreview-${index + 1}`}
+                          checked={courseCurriculumFormData[index]?.freePreview}
+                          onCheckedChange={(value) =>
+                            handleFreePreviewChange(value, index)
+                          }
+                        />
+                        <label
+                          htmlFor={`freePreview-${index + 1}`}
+                          className="text-sm text-nowrap font-medium text-gray-600 cursor-pointer select-none"
+                        >
+                          Free Preview
+                        </label>
+                      </div>
                     </div>
-                    </div>
-                    
                   </div>
 
-                  {/* Video Upload & Switch Row */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    {/* Custom Video File Input */}
-                    <div className="flex-grow">
+                  {/* Upload Controls Row */}
+                  <div className="flex flex-col gap-4">
+                    
+                    {/* VIDEO UPLOAD */}
+                    <div className="w-full">
+                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
+                        Lecture Video
+                      </label>
                       <label
                         htmlFor={`video-upload-${index}`}
                         className="flex items-center justify-center sm:justify-start gap-3 w-full px-4 py-3 border border-dashed border-indigo-300 rounded-lg bg-indigo-50/30 text-indigo-700 cursor-pointer hover:bg-indigo-50 hover:border-indigo-500 transition-colors"
                       >
-                        {/* Icon changes based on if a video might be there (optional visual cue) */}
                         <div className="bg-white p-1.5 rounded-md shadow-sm">
                           <FiVideo className="w-4 h-4 text-indigo-600" />
                         </div>
@@ -174,53 +214,81 @@ export const Curriculum = () => {
                             ? "Replace Video Content"
                             : "Upload Video Content"}
                         </span>
-
-                        {/* Hidden Actual Input */}
                         <input
                           id={`video-upload-${index}`}
                           type="file"
                           accept="video/*"
-                          onChange={(event) =>
-                            handleSingleLectureUpload(event, index)
-                          }
+                          onChange={(event) => handleSingleLectureUpload(event, index)}
                           className="hidden"
                         />
                       </label>
                     </div>
 
-                    {/* delete btn */}
-                    {courseCurriculumFormData[index]?.videoUrl ? (
-                      <button className="inline-flex items-center px-4 py-2 bg-red-600 transition ease-in-out delay-75 hover:bg-red-700 text-white text-sm font-medium rounded-md hover:-translate-y-1 hover:scale-110">
-                        <svg
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          className="h-5 w-5 mr-2"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                            strokeLinecap="round"
-                          ></path>
-                        </svg>
-                        Delete
-                      </button>
-                    ) : null}
-   
+                    {/* PDF UPLOAD (New Feature) */}
+                    <div className="w-full">
+                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
+                        Lecture Notes / PDF
+                      </label>
+                      <label
+                        htmlFor={`pdf-upload-${index}`}
+                        className="flex items-center justify-center sm:justify-start gap-3 w-full px-4 py-3 border border-dashed border-teal-300 rounded-lg bg-teal-50/30 text-teal-700 cursor-pointer hover:bg-teal-50 hover:border-teal-500 transition-colors"
+                      >
+                        <div className="bg-white p-1.5 rounded-md shadow-sm">
+                          <FiFileText className="w-4 h-4 text-teal-600" />
+                        </div>
+                        <span className="text-sm font-medium">
+                          {courseCurriculumFormData[index]?.pdfUrl
+                            ? "Replace PDF Notes"
+                            : "Upload PDF Notes"}
+                        </span>
+                        <input
+                          id={`pdf-upload-${index}`}
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(event) => handlePdfUpload(event, index)}
+                          className="hidden"
+                        />
+                      </label>
+                      {/* Show confirmation if PDF exists */}
+                      {courseCurriculumFormData[index]?.pdfUrl && (
+                        <div className="mt-1 ml-1 text-xs text-teal-600 font-medium flex items-center gap-1">
+                           ✓ PDF Uploaded successfully
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Actions Row (Duplicate & Delete) */}
+                  <div className="flex items-center justify-end gap-3 mt-2">
+                    {/* DUPLICATE BTN */}
+                    <button
+                      onClick={() => handleCopyLecture(index)}
+                      className="inline-flex items-center px-3 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-200 transition-colors"
+                      title="Duplicate Lecture"
+                    >
+                      <FiCopy className="w-4 h-4 mr-2" />
+                      Duplicate
+                    </button>
+
+                    {/* DELETE BTN */}
+                    <button
+                      onClick={() => handleRemoveLecture(index)}
+                      className="inline-flex items-center px-3 py-2 bg-red-100 text-red-700 text-sm font-medium rounded-md hover:bg-red-200 transition-colors"
+                    >
+                      <FiTrash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </button>
+                  </div>
+
+                  {/* Preview Player */}
                   {courseCurriculumFormData[index]?.videoUrl ? (
-                  <VideoPlayer src={courseCurriculumFormData[index]?.videoUrl} />
-                   
+                    <div className="mt-4 rounded-lg overflow-hidden border border-indigo-100">
+                       <VideoPlayer src={courseCurriculumFormData[index]?.videoUrl} />
+                    </div>
                   ) : null}
+
                 </div>
               </div>
-
-              {/* --- Quiz  --- */}
-
-              
-
             </div>
           ))}
         </div>
