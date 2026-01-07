@@ -21,3 +21,4 @@ export async function mediaDeleteService(id) {
 
   return data;
 }
+
