@@ -169,7 +169,7 @@ export const courseCurriculumInitialFormData = [
     videoUrl: "",
     freePreview: false,
     public_id: "",
-    // New fields for PDF
+    
     pdfUrl: "",
     pdfPublicId: "",
      quiz: null,

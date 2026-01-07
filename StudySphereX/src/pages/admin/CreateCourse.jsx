@@ -4,8 +4,48 @@ import { Curriculum } from "@/components/Admin/AddCourseUI/Curriculum";
 import { Card, CardContent } from "@/components/UI/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { CourseContext } from "@/context/CourseContext";
+import { useContext } from "react";
 
 export const CreateCourse = () => {
+
+   const {courseLandingFormData, courseCurriculumFormData} = useContext(CourseContext)
+  
+      function isEmpty(value){
+          if (Array.isArray(value)) {
+        return value.length === 0;
+      }
+  
+      return value === "" || value === null || value === undefined;
+    }
+      
+  
+    function ValidateFormData(){
+        for (const key in courseLandingFormData) {
+        if (isEmpty(courseLandingFormData[key])) {
+          return false;
+        }
+      }
+  
+      let hasFreePreview = false;
+  
+      for (const item of courseCurriculumFormData) {
+        if (
+          isEmpty(item.title) ||
+          isEmpty(item.videoUrl) ||
+          isEmpty(item.public_id)
+        ) {
+          return false;
+        }
+  
+        if (item.freePreview) {
+          hasFreePreview = true; //found at least one free preview
+        }
+      }
+  
+      return hasFreePreview;
+    }
+  
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between">
@@ -13,7 +53,7 @@ export const CreateCourse = () => {
           Create a new Course
         </h1>
 
-        <button className="px-8 py-2 rounded-full relative bg-slate-900 text-white text-sm hover:shadow-2xl hover:shadow-white/[0.4] transition cursor-pointer duration-200 border border-slate-800">
+        <button className="px-8 py-2 rounded-full relative bg-slate-900 text-white text-sm hover:shadow-2xl hover:shadow-white/[0.4] disabled:bg-slate-500 transition cursor-pointer duration-200 border border-slate-800" disabled={!ValidateFormData()}> 
           <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl  bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
           <span className="relative z-20">Submit </span>
         </button>
