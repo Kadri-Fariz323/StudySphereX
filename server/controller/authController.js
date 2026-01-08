@@ -35,6 +35,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  // Ensure we select the password for validation
   const user = await User.findOne({ email }).select('+password');
 
   if (!user) {
@@ -53,18 +54,35 @@ const loginUser = async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ id: user._id, role: user.role, email: user.email }, process.env.JWT_SECRET || 'JWT_SECRET', { expiresIn: '120m' });
+ 
+  const payload = {
+    id: user._id,       
+    _id: user._id,      
+    name: user.name,    
+    email: user.email,
+    role: user.role
+  };
+
+  const token = jwt.sign(
+    payload, 
+    process.env.JWT_SECRET || 'JWT_SECRET', 
+    { expiresIn: '120m' }
+  );
+
 
   res.status(200).json({
     success: true,
     message: "Login successful",
     data: {
       token,
-      user: { name: user.name, email: user.email, role: user.role },
+      user: { 
+        _id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role 
+      },
     },
   });
-}; 
+};
 
-
-
-module.exports = { registerUser, loginUser }; 
+module.exports = { registerUser, loginUser };

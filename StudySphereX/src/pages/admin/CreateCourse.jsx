@@ -59,7 +59,8 @@ export const CreateCourse = () => {
     return hasFreePreview;
   }
 
-  async function handleCreateCourse() {
+
+async function handleCreateCourse() {
     const courseFinalFormData = {
       instructorId: auth?.user?._id,
       instructorName: auth?.user?.name,
@@ -69,24 +70,22 @@ export const CreateCourse = () => {
       curriculum: courseCurriculumFormData,
       isPublished: true,
     };
-console.log("AUTH IN CREATE COURSE:", auth.user);
+console.log(courseFinalFormData);
 
     try {
-    const response = await addNewCourseService(courseFinalFormData);
+      const response = await addNewCourseService(courseFinalFormData);
 
-    if (response?.success) {
-      setCourseLandingFormData(courseLandingInitialFormData);
-      setCourseCurriculumFormData(courseCurriculumInitialFormData);
+      if (response?.success) {
+        setCourseLandingFormData(courseLandingInitialFormData || {}); 
+        setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
+        
+        // navigate('/instructor/courses'); 
+        console.log("Course created successfully");
+      }
+    } catch (error) {
+      console.error("Create course failed", error);
     }
-  } catch (error) {
-    console.error("Create course failed", error);
-  }
-
-
-    console.log(courseFinalFormData, "courseFinalFormData");
-console.log(auth?.user, "AUTH USER OBJECT");
-
-  }
+ }
 
   return (
     <div className="container mx-auto p-4">
