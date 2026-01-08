@@ -154,12 +154,12 @@ const saveFinalQuiz = async (req, res) => {
   }
 };
 
-module.exports = { saveFinalQuiz };
+
 
 module.exports = {
   addNewCourse,
   getAllCourses,
   updateCourseByID,
   getCourseDetailsByID,
-  addQuizToCurriculum,
+  saveFinalQuiz,
 };

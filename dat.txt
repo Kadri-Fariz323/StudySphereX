@@ -31,3 +31,9 @@ manage courses
 add courses 
 add quiz 
 add material 
+
+
+Replace clicked
+CreateCourse.jsx:72 AUTH IN CREATE COURSE: {id: '694c19bcd54806c513dbec4d', role: 'admin', email: 'farizkadri33@gmail.com', iat: 1767868671, exp: 1767875871}email: "farizkadri33@gmail.com"exp: 1767875871iat: 1767868671id: "694c19bcd54806c513dbec4d"role: "admin"[[Prototype]]: Object
+CreateCourse.jsx:86 {instructorId: undefined, instructorName: undefined, date: Wed Jan 07 2026 23:31:43 GMT-1200 (GMT-12:00), title: 'React 2', category: 'web-development', …}category: "web-development"curriculum: [{…}]date: Wed Jan 07 2026 23:31:43 GMT-1200 (GMT-12:00) {}description: "test"image: "http://res.cloudinary.com/dzlwaf5fk/image/upload/v1767871901/k65xrte9r2hojgrdqg2k.jpg"instructorId: undefinedinstructorName: undefinedisPublished: truelevel: "beginner"objectives: "test"pricing: "45"primaryLanguage: "english"students: []subtitle: "test"title: "React 2"welcomeMessage: "test"[[Prototype]]: Object 'courseFinalFormData'
+CreateCourse.jsx:87 

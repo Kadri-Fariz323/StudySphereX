@@ -31,12 +31,15 @@ async function loginUser(event) {
     if (data.success) {
       localStorage.setItem("accessToken", data.data.token);
       setAuth({ authenticate: true, user: data.data.user });
+  console.log("AUTH USER FROM API:", data.data.user);
+
     } else {
       setAuth({ authenticate: false, user: null });
     }
   } catch (err) {
     setAuth({ authenticate: false, user: null });
   }
+
 }
 
 

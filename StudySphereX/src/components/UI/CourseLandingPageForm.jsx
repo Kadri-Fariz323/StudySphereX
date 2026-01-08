@@ -13,6 +13,7 @@ export const CourseLandingPageForm = () => {
       [name]: value,
     });
   };
+  console.log(courseLandingFormData);
   
 
   return (
@@ -25,7 +26,7 @@ export const CourseLandingPageForm = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {courseLandingPageFormControls.map((control) => {
+        {courseLandingPageFormControls && courseLandingPageFormControls.map((control) => {
           const isFullWidth =
             control.componentType === "textarea" ||
             control.name === "title" ||

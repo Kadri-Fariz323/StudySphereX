@@ -27,11 +27,9 @@ export const Curriculum = () => {
   } = useContext(CourseContext);
 
   function handleNewLecture() {
-    setCourseCurriculumFormData([
-      ...courseCurriculumFormData,
-      {
-        ...courseCurriculumInitialFormData[0],
-      },
+    setCourseCurriculumFormData((prev = []) => [
+      ...prev,
+      { ...courseCurriculumInitialFormData[0] },
     ]);
   }
 
@@ -74,125 +72,120 @@ export const Curriculum = () => {
     setCourseCurriculumFormData(CopyCourseCurriculumFormData);
   }
 
-async function handleSingleLectureUpload(event, currIndex) {
+  async function handleSingleLectureUpload(event, currIndex) {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) return;
 
-  const selectedFile = event.target.files[0];
-  if (!selectedFile) return;
+    const videoFormData = new FormData();
+    videoFormData.append("file", selectedFile);
 
-  const videoFormData = new FormData();
-  videoFormData.append("file", selectedFile);
+    const oldPublicId = courseCurriculumFormData[currIndex]?.public_id || null;
 
-  const oldPublicId =
-    courseCurriculumFormData[currIndex]?.public_id || null;
-    
+    setMediaUploadProgress(true);
 
-  setMediaUploadProgress(true);
+    try {
+      // 1️⃣ Upload NEW video first
+      const res = await mediaUploadService(
+        videoFormData,
+        setMediaUploadProgressPercentage
+      );
 
-  try {
-    // 1️⃣ Upload NEW video first
-    const res = await mediaUploadService(
-      videoFormData,
-      setMediaUploadProgressPercentage
-    );
+      if (!res.success) return;
 
-    if (!res.success) return;
+      // 2️⃣ Delete OLD video (only after success)
+      if (oldPublicId) {
+        await mediaDeleteService(oldPublicId);
+      }
 
-    // 2️⃣ Delete OLD video (only after success)
-    if (oldPublicId) {
-      await mediaDeleteService(oldPublicId);
+      // 3️⃣ Replace state
+      const copy = [...courseCurriculumFormData];
+      copy[currIndex] = {
+        ...copy[currIndex],
+        videoUrl: res.data.url,
+        public_id: res.data.public_id,
+      };
+
+      setCourseCurriculumFormData(copy);
+
+      console.log("Replace clicked");
+    } catch (error) {
+      console.error("Video replace failed", error);
+    } finally {
+      setMediaUploadProgress(false);
     }
-
-    // 3️⃣ Replace state
-    const copy = [...courseCurriculumFormData];
-    copy[currIndex] = {
-      ...copy[currIndex],
-      videoUrl: res.data.url,
-      public_id: res.data.public_id,
-    };
-
-    setCourseCurriculumFormData(copy);
-
-    console.log("Replace clicked");
-
-
-
-  } catch (error) {
-    console.error("Video replace failed", error);
-  } finally {
-    setMediaUploadProgress(false);
   }
- 
-  
-}
 
   // 3. PDF UPLOAD FUNCTION
-async function handlePdfUpload(event, currIndex) {
-  const selectedFile = event.target.files[0];
-  if (!selectedFile) return;
+  async function handlePdfUpload(event, currIndex) {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) return;
 
-  const pdfFormData = new FormData();
-  pdfFormData.append("file", selectedFile);
+    const pdfFormData = new FormData();
+    pdfFormData.append("file", selectedFile);
 
-  const oldPdfPublicId =
-    courseCurriculumFormData[currIndex]?.pdfPublicId || null;
+    const oldPdfPublicId =
+      courseCurriculumFormData[currIndex]?.pdfPublicId || null;
 
-  console.log("PDF replace clicked");
-  console.log("Old PDF public_id:", oldPdfPublicId);
+    console.log("PDF replace clicked");
+    console.log("Old PDF public_id:", oldPdfPublicId);
 
-  setMediaUploadProgress(true);
+    setMediaUploadProgress(true);
 
-  try {
-    // 1️⃣ Upload NEW PDF
-    const res = await mediaUploadService(
-      pdfFormData,
-      setMediaUploadProgressPercentage
-    );
+    try {
+      // 1️⃣ Upload NEW PDF
+      const res = await mediaUploadService(
+        pdfFormData,
+        setMediaUploadProgressPercentage
+      );
 
-    if (!res.success) return;
+      if (!res.success) return;
 
-    console.log("New PDF uploaded:", res.data.public_id);
+      console.log("New PDF uploaded:", res.data.public_id);
 
-    // 2️⃣ Delete OLD PDF (after success)
-    if (oldPdfPublicId) {
-      console.log("Deleting old PDF...");
-      await mediaDeleteService(oldPdfPublicId);
+      // 2️⃣ Delete OLD PDF (after success)
+      if (oldPdfPublicId) {
+        console.log("Deleting old PDF...");
+        await mediaDeleteService(oldPdfPublicId);
+      }
+
+      // 3️⃣ Replace in state
+      const copy = [...courseCurriculumFormData];
+      copy[currIndex] = {
+        ...copy[currIndex],
+        pdfUrl: res.data.url,
+        pdfPublicId: res.data.public_id,
+      };
+
+      setCourseCurriculumFormData(copy);
+      console.log("PDF replaced successfully");
+    } catch (err) {
+      console.error("PDF replace failed", err);
+    } finally {
+      setMediaUploadProgress(false);
     }
-
-    // 3️⃣ Replace in state
-    const copy = [...courseCurriculumFormData];
-    copy[currIndex] = {
-      ...copy[currIndex],
-      pdfUrl: res.data.url,
-      pdfPublicId: res.data.public_id,
-    };
-
-    setCourseCurriculumFormData(copy);
-    console.log("PDF replaced successfully");
-  } catch (err) {
-    console.error("PDF replace failed", err);
-  } finally {
-    setMediaUploadProgress(false);
   }
-}
-
 
   function isCourseCurriculumFormDataValid() {
+    if (!Array.isArray(courseCurriculumFormData)) return false;
+
     return courseCurriculumFormData.every((item) => {
       return (
         item &&
         typeof item === "object" &&
-        item.title.trim() !== "" &&
-        item.videoUrl.trim() !== ""
+        item.title?.trim() !== "" &&
+        item.videoUrl?.trim() !== ""
       );
     });
   }
 
   const bottomRef = useRef(null);
   useEffect(() => {
+    if (!Array.isArray(courseCurriculumFormData)) return;
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [courseCurriculumFormData.length]);
-
-  
+  }, [courseCurriculumFormData]);
+  if (!Array.isArray(courseCurriculumFormData)) {
+    return null;
+  }
   return (
     <div>
       <Card className="p-5 w-[400px] lg:w-[650px] xl:w-[900px]">
@@ -307,13 +300,12 @@ async function handlePdfUpload(event, currIndex) {
                           <FiFileText className="w-4 h-4 text-teal-600" />
                         </div>
 
-                        
                         <span className="text-sm font-medium">
                           {courseCurriculumFormData[index]?.pdfUrl
                             ? "Replace PDF Notes"
                             : "Upload PDF Notes"}
                         </span>
-                        
+
                         <input
                           id={`pdf-upload-${index}`}
                           type="file"
@@ -321,16 +313,9 @@ async function handlePdfUpload(event, currIndex) {
                           onChange={(event) => handlePdfUpload(event, index)}
                           className="hidden"
                         />
-
                       </label>
-                      
-                     
-                      
                     </div>
-
                   </div>
-
-                  
 
                   {/* Actions Row (Duplicate & Delete) */}
                   <div className="flex items-center justify-end gap-3 mt-2">

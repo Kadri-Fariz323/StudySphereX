@@ -7,7 +7,7 @@ const {
   getCourseDetailsByID,
   updateCourseByID,
   saveFinalQuiz 
-} = require("../controllers/courseController"); 
+} = require("../controller/courseController"); 
 
 router.post("/add", addNewCourse);
 router.get("/get", getAllCourses);
