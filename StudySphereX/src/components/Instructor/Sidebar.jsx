@@ -11,10 +11,9 @@ import logo from "../../assets/logo.png";
 
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
-    { name: "Dashboard", icon: MdDashboard, path: "/admin" },
-    { name: "Add Course", icon: FaPhotoVideo, path: "/admin/add-course" },
-    { name: "Add Quiz", icon: MdQuiz, path: "/admin/add-quiz" },
-    { name: "Users", icon: MdPeople, path: "/admin/manage-users" },
+    { name: "Dashboard", icon: MdDashboard, path: "/instructor" },
+    { name: "Add Course", icon: FaPhotoVideo, path: "/instructor/add-course" },
+    { name: "Users", icon: MdPeople, path: "/instructor/manage-users" },
 
   ];
 

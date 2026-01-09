@@ -11,8 +11,8 @@ console.log(authenticated, user);
 
   if (
     authenticated &&
-    user?.role !== "admin" &&
-    (location.pathname.includes("admin") ||
+    user?.role !== "instructor" &&
+    (location.pathname.includes("instructor") ||
       location.pathname.includes("/auth"))
   ) {
     return <Navigate to="/user" />;
@@ -20,10 +20,10 @@ console.log(authenticated, user);
  
   if (
     authenticated &&
-    user?.role === "admin" &&
-    !location.pathname.includes("admin")
+    user?.role === "instructor" &&
+    !location.pathname.includes("instructor")
   ) {
-    return <Navigate to="/admin" />;
+    return <Navigate to="/instructor" />;
   }
   return <Fragment>{element}</Fragment>;
 };

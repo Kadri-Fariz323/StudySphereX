@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import { Sidebar } from "../components/Admin/Sidebar";
-import { Header } from "../components/Admin/Header";
+import { Sidebar } from "../components/Instructor/Sidebar";
+import { Header } from "../components/Instructor/Header";
 import { useState } from "react";
 
 export const AdminPanelLayout = () => {
@@ -9,7 +9,10 @@ export const AdminPanelLayout = () => {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      <Sidebar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -22,5 +25,5 @@ export const AdminPanelLayout = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};

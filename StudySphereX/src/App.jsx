@@ -4,9 +4,9 @@ import { AdminPanelLayout } from "./layouts/AdminPanelLayout";
 import { Home } from "./pages/Home";
 import { Contact } from "./pages/Contact";
 import { Courses } from "./pages/Courses";
-import { AdminDashboard } from "./pages/admin/AdminDashboard";
-import { AddCourse } from "./pages/admin/AddCourse";
-import { CreateCourse } from "./pages/admin/CreateCourse";
+import { AdminDashboard } from "./pages/instructor/AdminDashboard";
+import { AddCourse } from "./pages/instructor/AddCourse";
+import { CreateCourse } from "./pages/instructor/CreateCourse";
 import { RouteGuard } from "./components/HomePage/RouteGuard";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
@@ -14,9 +14,8 @@ import { UserLayout } from "./layouts/UserLayout";
 import { Dashboard } from "./pages/user/Dashboard";
 import { AuthPage } from "./pages/AuthPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { ManageUsers } from "./pages/admin/ManageUsers";
-import { Mails } from "./pages/admin/Mails";
-import { AddQuiz } from "./pages/admin/AddQuiz";
+import { ManageUsers } from "./pages/instructor/ManageUsers";
+
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -57,7 +56,7 @@ export const App = () => {
 
         {/* Admin */}
         <Route
-          path="/admin"
+          path="/instructor"
           element={
             <RouteGuard
               element={<AdminPanelLayout />}
@@ -70,17 +69,11 @@ export const App = () => {
           <Route path="add-course" element={<AddCourse />} />
           <Route path="create-course" element={<CreateCourse />} />
           <Route path="manage-users" element={<ManageUsers />} />
-          <Route path="mails" element={<Mails />} />
-          <Route path="add-quiz" element={<AddQuiz />} />
-
-
-
+      
         </Route>
 
-      <Route path="*" element={<NotFoundPage />} />
-
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
-
     </>
   );
 };

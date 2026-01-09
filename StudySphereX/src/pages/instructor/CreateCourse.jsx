@@ -1,6 +1,6 @@
-import { CourseLandingPage } from "@/components/Admin/AddCourseUI/CourseLandingPage";
-import { CourseSettings } from "@/components/Admin/AddCourseUI/CourseSettings";
-import { Curriculum } from "@/components/Admin/AddCourseUI/Curriculum";
+import { CourseLandingPage } from "@/components/Instructor/AddCourseUI/CourseLandingPage";
+import { CourseSettings } from "@/components/Instructor/AddCourseUI/CourseSettings";
+import { Curriculum } from "@/components/Instructor/AddCourseUI/Curriculum";
 import { Card, CardContent } from "@/components/UI/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuthContext } from "@/context/AuthContext";
@@ -21,13 +21,13 @@ export const CreateCourse = () => {
     courseCurriculumInitialFormData,
   } = useContext(CourseContext);
 
-   function isEmpty(value) {
+  function isEmpty(value) {
     if (Array.isArray(value)) {
       return value.length === 0;
     }
 
     return value === "" || value === null || value === undefined;
-  };
+  }
 
   function ValidateFormData() {
     for (const key in courseLandingFormData) {
@@ -59,8 +59,7 @@ export const CreateCourse = () => {
     return hasFreePreview;
   }
 
-
-async function handleCreateCourse() {
+  async function handleCreateCourse() {
     const courseFinalFormData = {
       instructorId: auth?.user?._id,
       instructorName: auth?.user?.name,
@@ -70,22 +69,22 @@ async function handleCreateCourse() {
       curriculum: courseCurriculumFormData,
       isPublished: true,
     };
-console.log(courseFinalFormData);
+    console.log(courseFinalFormData);
 
-    try {
-      const response = await addNewCourseService(courseFinalFormData);
+    // try {
+    //   const response = await addNewCourseService(courseFinalFormData);
 
-      if (response?.success) {
-        setCourseLandingFormData(courseLandingInitialFormData || {}); 
-        setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
-        
-        // navigate('/instructor/courses'); 
-        console.log("Course created successfully");
-      }
-    } catch (error) {
-      console.error("Create course failed", error);
-    }
- }
+    //   if (response?.success) {
+    //     setCourseLandingFormData(courseLandingInitialFormData || {});
+    //     setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
+
+    //     // navigate('/instructor/courses');
+    //     console.log("Course created successfully");
+    //   }
+    // } catch (error) {
+    //   console.error("Create course failed", error);
+    // }
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -111,6 +110,9 @@ console.log(courseFinalFormData);
                 <TabsTrigger value="Curriculum">Curriculum</TabsTrigger>
                 <TabsTrigger value="Course-Landing-Page">
                   Course Landing Page
+                </TabsTrigger>
+                <TabsTrigger value="Course-Settings">
+                  Course Thumbnail
                 </TabsTrigger>
                 <TabsTrigger value="Course-Settings">
                   Course Thumbnail

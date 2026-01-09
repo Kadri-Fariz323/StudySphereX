@@ -51,3 +51,12 @@ export async function updateCourseByIdService(id, formData) {
   return data;
 }
 
+export async function AddQuizInDB(id, formData) {
+  const { data } = await axiosInstance.put(
+    `/instructor/course/${id}/final-quiz`,
+    formData
+  );
+
+  return data;
+}
+
