@@ -13,7 +13,8 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
     { name: "Dashboard", icon: MdDashboard, path: "/instructor" },
     { name: "Add Course", icon: FaPhotoVideo, path: "/instructor/add-course" },
-    { name: "Users", icon: MdPeople, path: "/instructor/manage-users" },
+    { name: "My Courses", icon: FaPhotoVideo, path: "/instructor/my-courses" },
+    { name: "Enrolled Users", icon: MdPeople, path: "/instructor/manage-users" },
 
   ];
 

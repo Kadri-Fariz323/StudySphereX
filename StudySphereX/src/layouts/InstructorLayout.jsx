@@ -3,7 +3,7 @@ import { Sidebar } from "../components/Instructor/Sidebar";
 import { Header } from "../components/Instructor/Header";
 import { useState } from "react";
 
-export const AdminPanelLayout = () => {
+export const InstructorLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (

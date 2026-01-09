@@ -1,11 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import { PublicLayout } from "./layouts/PublicLayout";
-import { AdminPanelLayout } from "./layouts/AdminPanelLayout";
+import {  InstructorLayout } from "./layouts/InstructorLayout";
 import { Home } from "./pages/Home";
 import { Contact } from "./pages/Contact";
 import { Courses } from "./pages/Courses";
-import { AdminDashboard } from "./pages/instructor/AdminDashboard";
-import { AddCourse } from "./pages/instructor/AddCourse";
 import { CreateCourse } from "./pages/instructor/CreateCourse";
 import { RouteGuard } from "./components/HomePage/RouteGuard";
 import { useContext } from "react";
@@ -15,6 +13,8 @@ import { Dashboard } from "./pages/user/Dashboard";
 import { AuthPage } from "./pages/AuthPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ManageUsers } from "./pages/instructor/ManageUsers";
+import { MyCourses } from "./pages/instructor/MyCourses";
+import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 
 
 export const App = () => {
@@ -59,14 +59,15 @@ export const App = () => {
           path="/instructor"
           element={
             <RouteGuard
-              element={<AdminPanelLayout />}
+              element={<InstructorLayout />}
               authenticated={auth.authenticate}
               user={auth?.user}
             />
           }
         >
-          <Route index element={<AdminDashboard />} />
-          <Route path="add-course" element={<AddCourse />} />
+          <Route index element={<InstructorDashboard />} />
+          <Route path="add-course" element={<CreateCourse />} />
+          <Route path="my-courses" element={<MyCourses />} />
           <Route path="create-course" element={<CreateCourse />} />
           <Route path="manage-users" element={<ManageUsers />} />
       

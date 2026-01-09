@@ -327,7 +327,7 @@ export const Curriculum = () => {
         </Card>
 
         {/* Quiz */}
-
+            
       </div>
     </>
   );
