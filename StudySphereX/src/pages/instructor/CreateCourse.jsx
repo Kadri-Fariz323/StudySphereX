@@ -71,19 +71,19 @@ export const CreateCourse = () => {
     };
     console.log(courseFinalFormData);
 
-    // try {
-    //   const response = await addNewCourseService(courseFinalFormData);
+    try {
+      const response = await addNewCourseService(courseFinalFormData);
 
-    //   if (response?.success) {
-    //     setCourseLandingFormData(courseLandingInitialFormData || {});
-    //     setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
+      if (response?.success) {
+        setCourseLandingFormData(courseLandingInitialFormData || {});
+        setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
 
-    //     // navigate('/instructor/courses');
-    //     console.log("Course created successfully");
-    //   }
-    // } catch (error) {
-    //   console.error("Create course failed", error);
-    // }
+        // navigate('/instructor/courses');
+        console.log("Course created successfully");
+      }
+    } catch (error) {
+      console.error("Create course failed", error);
+    }
   }
 
   return (
@@ -114,9 +114,7 @@ export const CreateCourse = () => {
                 <TabsTrigger value="Course-Settings">
                   Course Thumbnail
                 </TabsTrigger>
-                <TabsTrigger value="Course-Settings">
-                  Course Thumbnail
-                </TabsTrigger>
+               
               </TabsList>
               <TabsContent value="Curriculum">
                 <Curriculum />

@@ -5,8 +5,8 @@ import { VideoPlayer } from "@/components/UI/videoPlayer";
 import { courseCurriculumInitialFormData } from "@/config";
 import { CourseContext } from "@/context/CourseContext";
 import { mediaUploadService, mediaDeleteService } from "@/services";
-import { useContext, useRef, useEffect } from "react";
-
+import { useContext, useRef, useEffect, useState } from "react";
+import { AddQuiz } from "../AddQuiz";
 import {
   FiVideo,
   FiFileText,
@@ -18,6 +18,8 @@ import {
 } from "react-icons/fi";
 
 export const Curriculum = () => {
+  const [activeQuizIndex, setActiveQuizIndex] = useState(null);
+
   const {
     courseCurriculumFormData,
     setCourseCurriculumFormData,
@@ -164,10 +166,32 @@ export const Curriculum = () => {
     return null;
   }
 
+  const handleOpenQuizBuilder = (index) => {
+    setActiveQuizIndex(index);
+  };
+
+  const handleSaveQuizToLecture = (quizData) => {
+    const updated = [...courseCurriculumFormData];
+    updated[activeQuizIndex] = {
+      ...updated[activeQuizIndex],
+      quiz: quizData,
+    };
+    setCourseCurriculumFormData(updated);
+    setActiveQuizIndex(null);
+  };
+
+  const handleRemoveQuiz = (index) => {
+    const updated = [...courseCurriculumFormData];
+    updated[index] = {
+      ...updated[index],
+      quiz: null,
+    };
+    setCourseCurriculumFormData(updated);
+  };
+
   return (
     <>
       <div>
-        {/* Lectures and resources */}
         <Card className="p-5 w-[400px] lg:w-[650px] xl:w-[900px]">
           <CardTitle className="mb-5 text-xl">
             Create Course Curriculum
@@ -236,7 +260,7 @@ export const Curriculum = () => {
                         </div>
                       </div>
                     </div>
-
+                    {/* Lecture Video */}
                     <div className="flex flex-col gap-4">
                       <div className="w-full">
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
@@ -265,7 +289,7 @@ export const Curriculum = () => {
                           />
                         </label>
                       </div>
-
+                      {/* Lecture Notes / PDF */}
                       <div className="w-full">
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
                           Lecture Notes / PDF
@@ -293,6 +317,7 @@ export const Curriculum = () => {
                       </div>
                     </div>
 
+                    {/* Buttons             */}
                     <div className="flex items-center justify-end gap-3 mt-2">
                       <button
                         onClick={() => handleCopyLecture(index)}
@@ -318,17 +343,71 @@ export const Curriculum = () => {
                         />
                       </div>
                     ) : null}
+
+                    {/* Quiz Section  */}
+                    <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-bold text-gray-700">
+                          Lecture Quiz
+                        </h4>
+
+                        <button
+                          onClick={() => handleOpenQuizBuilder(index)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            CurriculumItem.quiz
+                              ? "bg-green-100 text-green-700 hover:bg-green-200 border border-green-200"
+                              : "bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200"
+                          }`}
+                        >
+                          {CurriculumItem.quiz ? (
+                            <FiEdit size={16} />
+                          ) : (
+                            <FiPlusCircle size={16} />
+                          )}
+                          {CurriculumItem.quiz
+                            ? "Edit Attached Quiz"
+                            : "Add Quiz"}
+                        </button>
+                      </div>
+
+                      {CurriculumItem.quiz && (
+                        <div className="mt-2 bg-gray-50 p-3 rounded text-sm text-gray-600 border border-gray-200 flex justify-between items-center">
+                          <span className="flex items-center gap-2">
+                            <FiFileText />
+                            <strong>{CurriculumItem.quiz.title}</strong>
+                            <span className="text-gray-400">
+                              ({CurriculumItem.quiz.questions.length} Questions)
+                            </span>
+                          </span>
+                          <button
+                            onClick={() => handleRemoveQuiz(index)}
+                            className="text-red-500 p-1 hover:bg-red-50 rounded"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div ref={bottomRef} />
+           
               </div>
             ))}
           </div>
         </Card>
-
-        {/* Quiz */}
-            
       </div>
+      {activeQuizIndex !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          {/* Added p-6 to this div to create space between borders and content */}
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl p-6">
+            <AddQuiz
+              existingQuizData={courseCurriculumFormData[activeQuizIndex]?.quiz}
+              onSave={handleSaveQuizToLecture}
+              onCancel={() => setActiveQuizIndex(null)}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };
