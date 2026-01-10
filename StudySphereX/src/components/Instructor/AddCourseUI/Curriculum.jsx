@@ -158,9 +158,11 @@ export const Curriculum = () => {
 
   const bottomRef = useRef(null);
   useEffect(() => {
-    if (!Array.isArray(courseCurriculumFormData)) return;
+  if (courseCurriculumFormData.length > 1) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [courseCurriculumFormData]);
+  }
+}, [courseCurriculumFormData.length]);
+
 
   if (!Array.isArray(courseCurriculumFormData)) {
     return null;
@@ -188,7 +190,11 @@ export const Curriculum = () => {
     };
     setCourseCurriculumFormData(updated);
   };
+console.log("Current Curriculum Data:", courseCurriculumFormData);
 
+if (!Array.isArray(courseCurriculumFormData)) {
+    return <div className="p-5 text-red-500">Error: Data is not an array</div>;
+}
   return (
     <>
       <div>
@@ -216,7 +222,7 @@ export const Curriculum = () => {
           <div className="mt-6 space-y-6">
             {courseCurriculumFormData.map((CurriculumItem, index) => (
               <div
-                key={index}
+              key={CurriculumItem._id || CurriculumItem.public_id || index}
                 className="group relative border border-indigo-100 bg-white rounded-xl p-5 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300"
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-5">

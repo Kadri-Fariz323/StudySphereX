@@ -1,6 +1,12 @@
+import { CourseContext } from "@/context/CourseContext";
+
 import { MdEdit, MdDeleteForever } from "react-icons/md";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 export const CourseTable = ({ listOfCourses }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-[380px] sm:w-full overflow-x-auto shadow-md sm:rounded-lg bg-white">
       <table className="w-full min-w-[600px] text-sm text-left text-gray-500">
@@ -36,7 +42,7 @@ export const CourseTable = ({ listOfCourses }) => {
                     <MdDeleteForever className="text-xl text-red-500" />
                   </button>
 
-                  <button className="p-1 hover:bg-green-100 rounded-full transition-colors">
+                  <button className="p-1 hover:bg-green-100 rounded-full transition-colors" onClick={() => {navigate(`/instructor/edit-course/${course?._id}`)}}>
                     <MdEdit className="text-xl text-green-500" />
                   </button>
                 </div>

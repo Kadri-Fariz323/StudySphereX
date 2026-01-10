@@ -69,6 +69,7 @@ export const App = () => {
           <Route index element={<InstructorDashboard />} />
           <Route path="profile" element={InstructorProfile} />
           <Route path="add-course" element={<CreateCourse />} />
+          <Route path="edit-course/:courseId" element={<CreateCourse />} />
           <Route path="my-courses" element={<MyCourses />} />
           <Route path="create-course" element={<CreateCourse />} />
           <Route path="manage-users" element={<ManageUsers />} />

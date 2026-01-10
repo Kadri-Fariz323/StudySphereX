@@ -8,11 +8,9 @@ import { useContext } from "react";
 import { useEffect } from "react";
 
 
-
 export const MyCourses = () => {
 
-    const { instructorCoursesList, setInstructorCoursesList } =
-    useContext(CourseContext);
+const { instructorCoursesList, setInstructorCoursesList } = useContext(CourseContext)
 
   async function fetchAllCourses() {
     const response = await fetchInstructorCourseListService();
@@ -25,6 +23,8 @@ export const MyCourses = () => {
   }, []); 
 
   const navigate = useNavigate();
+
+  
 
   return (
     <div><Card>

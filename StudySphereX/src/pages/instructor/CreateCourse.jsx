@@ -5,15 +5,21 @@ import { Card, CardContent } from "@/components/UI/Card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AuthContext } from "@/context/AuthContext";
 
-import { addNewCourseService } from "@/services";
+import {
+  addNewCourseService,
+  fetchInstructorCourseDetailsService,
+} from "@/services";
 import { CourseContext } from "@/context/CourseContext";
 import { useContext } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export const CreateCourse = () => {
   const { auth } = useContext(AuthContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const params = useParams();
+  console.log(params);
 
   const {
     courseLandingFormData,
@@ -22,8 +28,9 @@ export const CreateCourse = () => {
     setCourseCurriculumFormData,
     courseLandingInitialFormData,
     courseCurriculumInitialFormData,
+    currentEditedCourseId,
+    setCurrentEditedCourseId,
   } = useContext(CourseContext);
-
 
   function isEmpty(value) {
     if (Array.isArray(value)) {
@@ -82,7 +89,7 @@ export const CreateCourse = () => {
         setCourseLandingFormData(courseLandingInitialFormData || {});
         setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
 
-        navigate('/instructor/my-courses');
+        navigate("/instructor/my-courses");
         console.log("Course created successfully");
       }
     } catch (error) {
@@ -90,11 +97,42 @@ export const CreateCourse = () => {
     }
   }
 
+  async function fetchCurrentCourseDetails() {
+    try {
+      const response = await fetchInstructorCourseDetailsService(
+        currentEditedCourseId
+      );
+
+      if (response?.success) {
+        console.log("Full Course Data:", response.data);
+
+        setCourseLandingFormData({
+          ...courseLandingInitialFormData,
+          ...response.data,
+        });
+
+        if (response?.data?.curriculum) {
+          console.log("Setting Curriculum Data to:", response.data.curriculum);
+          setCourseCurriculumFormData(response.data.curriculum);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch course", err);
+    }
+  }
+  useEffect(() => {
+    if (currentEditedCourseId !== null) fetchCurrentCourseDetails();
+  }, [currentEditedCourseId]);
+
+  useEffect(() => {
+    if (params?.courseId) setCurrentEditedCourseId(params.courseId);
+  }, [params]);
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between">
         <h1 className="text-xl sm:text-3xl font-extrabold">
-          Create a new Course
+          {currentEditedCourseId ? "Edit Course" : "Create a New Course"}
         </h1>
 
         <button
@@ -118,14 +156,21 @@ export const CreateCourse = () => {
                 <TabsTrigger value="Course-Settings">
                   Course Thumbnail
                 </TabsTrigger>
-               
               </TabsList>
               <TabsContent value="Curriculum">
-                <Curriculum />
+                <Curriculum
+                  key={
+                    courseCurriculumFormData?.length > 0
+                      ? "data-loaded"
+                      : "loading"
+                  }
+                />
               </TabsContent>
 
               <TabsContent value="Course-Landing-Page">
-                <CourseLandingPage />
+                <CourseLandingPage
+                  key={currentEditedCourseId ? "loaded" : "new"}
+                />
               </TabsContent>
 
               <TabsContent value="Course-Settings">
