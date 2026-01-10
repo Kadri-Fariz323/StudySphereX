@@ -15,6 +15,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { ManageUsers } from "./pages/instructor/ManageUsers";
 import { MyCourses } from "./pages/instructor/MyCourses";
 import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
+import { InstructorProfile } from "./pages/instructor/InstructorProfile";
 
 
 export const App = () => {
@@ -66,6 +67,7 @@ export const App = () => {
           }
         >
           <Route index element={<InstructorDashboard />} />
+          <Route path="profile" element={InstructorProfile} />
           <Route path="add-course" element={<CreateCourse />} />
           <Route path="my-courses" element={<MyCourses />} />
           <Route path="create-course" element={<CreateCourse />} />

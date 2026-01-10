@@ -1,10 +1,29 @@
+import { fetchInstructorCourseListService } from "@/services";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/UI/Card";
 import { CourseTable } from "../../components/UI/CourseTable";
 
 import { Navigate, useNavigate } from "react-router-dom";
+import { CourseContext } from "@/context/CourseContext";
+import { useContext } from "react";
+import { useEffect } from "react";
+
 
 
 export const MyCourses = () => {
+
+    const { instructorCoursesList, setInstructorCoursesList } =
+    useContext(CourseContext);
+
+  async function fetchAllCourses() {
+    const response = await fetchInstructorCourseListService();
+    if (response?.success) setInstructorCoursesList(response?.data);
+    
+  }
+
+  useEffect(() => {
+    fetchAllCourses();
+  }, []); 
+
   const navigate = useNavigate();
 
   return (
@@ -20,7 +39,7 @@ export const MyCourses = () => {
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto ">
-              <CourseTable />
+              <CourseTable listOfCourses={instructorCoursesList} />
             </div>
           </CardContent>
         </Card></div>

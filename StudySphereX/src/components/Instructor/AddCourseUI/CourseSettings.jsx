@@ -17,6 +17,18 @@ export const CourseSettings = () => {
     setMediaUploadProgress, } =
     useContext(CourseContext);
 
+function handleRemoveImage() {
+  setCourseLandingFormData({
+    ...courseLandingFormData,
+    image: null,
+  });
+
+  // optional: reset progress
+  setMediaUploadProgress(false);
+  setMediaUploadProgressPercentage(0);
+}
+
+
   async function handleImageUploadChange(event) {
     const selectedImage = event.target.files[0];
 
@@ -52,6 +64,7 @@ export const CourseSettings = () => {
         </p>
       </CardHeader>
 
+    
          {mediaUploadProgress ? (
                 <ProgressLoading
                   isMediaUploading={mediaUploadProgress}
@@ -79,8 +92,8 @@ export const CourseSettings = () => {
                   <FiImage className="w-4 h-4" /> Change
                 </label>
                 <button
-                  className="flex items-center gap-2 bg-white text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors shadow-lg font-medium text-sm"
-                >
+                  className="flex items-center gap-2 bg-white text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors shadow-lg font-medium text-sm cursor-pointer"
+               onClick={handleRemoveImage}>
                   <FiTrash2 className="w-4 h-4" /> Remove
                 </button>
               </div>

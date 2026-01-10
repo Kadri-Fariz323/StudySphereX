@@ -8,9 +8,12 @@ import { AuthContext } from "@/context/AuthContext";
 import { addNewCourseService } from "@/services";
 import { CourseContext } from "@/context/CourseContext";
 import { useContext } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 export const CreateCourse = () => {
   const { auth } = useContext(AuthContext);
+  const navigate = useNavigate()
 
   const {
     courseLandingFormData,
@@ -20,6 +23,7 @@ export const CreateCourse = () => {
     courseLandingInitialFormData,
     courseCurriculumInitialFormData,
   } = useContext(CourseContext);
+
 
   function isEmpty(value) {
     if (Array.isArray(value)) {
@@ -78,7 +82,7 @@ export const CreateCourse = () => {
         setCourseLandingFormData(courseLandingInitialFormData || {});
         setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
 
-        // navigate('/instructor/courses');
+        navigate('/instructor/my-courses');
         console.log("Course created successfully");
       }
     } catch (error) {

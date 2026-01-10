@@ -3,6 +3,8 @@ import admin from "../../assets/Admin.jpg";
 import { useContext } from "react";
 import { AuthContext }from '../../context/AuthContext'
 
+import { Navigate, useNavigate } from "react-router-dom";
+
 export const Header = ({ setIsSidebarOpen }) => {
 
   const {resetCredentials} = useContext(AuthContext) 
@@ -10,6 +12,10 @@ export const Header = ({ setIsSidebarOpen }) => {
      resetCredentials()
       sessionStorage.clear()
   };
+
+  const { auth } = useContext(AuthContext)
+  const navigate = useNavigate();
+
 
   return (
     <header className="w-full bg-white border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between sticky top-0 z-50">
@@ -25,7 +31,7 @@ export const Header = ({ setIsSidebarOpen }) => {
           aria-label="Toggle Sidebar"
         />
         <h1 className="text-lg sm:text-2xl font-bold text-gray-900 whitespace-nowrap">
-          Admin Panel
+          
         </h1>
       </div>
 
@@ -33,13 +39,14 @@ export const Header = ({ setIsSidebarOpen }) => {
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Hide 'Welcome' on mobile to save space for the button */}
         <span className="hidden md:block text-sm text-gray-500 font-medium">
-          Welcome, Fariz
+          Welcome, {auth?.user?.name}
         </span>
         
         <img
+        onClick={() => navigate('/instructor/profile')}
           src={admin}
-          alt="Admin Profile"
-          className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 flex-shrink-0"
+          alt="Instructor Profile"
+          className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 flex-shrink-0 cursor-pointer"
         />
 
         <button
