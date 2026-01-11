@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 const {
@@ -6,14 +6,15 @@ const {
   getAllCourses,
   getCourseDetailsByID,
   updateCourseByID,
-  saveFinalQuiz 
-} = require("../controller/courseController"); 
+  saveFinalQuiz,
+  deleteCourse,
+} = require("../controller/CourseController");
 
 router.post("/add", addNewCourse);
 router.get("/get", getAllCourses);
 router.get("/get/details/:id", getCourseDetailsByID);
 router.put("/update/:id", updateCourseByID);
-
-router.put('/:id/final-quiz', saveFinalQuiz);
+router.put("/:id/final-quiz", saveFinalQuiz);
+router.delete("/delete/:courseId", deleteCourse);
 
 module.exports = router;

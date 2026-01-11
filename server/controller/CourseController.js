@@ -30,6 +30,50 @@ const addNewCourse = async (req, res) => {
   }
 };
 
+/* ===================== Delete COURSE ===================== */
+
+
+// DELETE COURSE
+ const deleteCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    // 1. Check if course exists
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // 2. Optional: Authorization check (recommended)
+    // Only instructor who created it OR admin
+    // if (course.instructorId !== req.user.id && req.user.role !== "moderator") {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "Not authorized to delete this course",
+    //   });
+    // }
+
+    // 3. Delete course
+    await Course.findByIdAndDelete(courseId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Course deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete Course Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while deleting course",
+    });
+  }
+};
+
+
 /* ===================== GET ALL COURSES ===================== */
 const getAllCourses = async (req, res) => {
   try {
@@ -171,4 +215,5 @@ module.exports = {
   updateCourseByID,
   getCourseDetailsByID,
   saveFinalQuiz,
+  deleteCourse
 };
