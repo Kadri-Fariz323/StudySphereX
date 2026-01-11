@@ -172,7 +172,6 @@ export const courseCurriculumInitialFormData = [
     
     pdfUrl: "",
     pdfPublicId: "",
-     quiz: null,
   },
 ];
 

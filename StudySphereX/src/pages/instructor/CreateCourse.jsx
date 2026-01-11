@@ -8,6 +8,7 @@ import { AuthContext } from "@/context/AuthContext";
 import {
   addNewCourseService,
   fetchInstructorCourseDetailsService,
+  updateCourseByIdService,
 } from "@/services";
 import { CourseContext } from "@/context/CourseContext";
 import { useContext } from "react";
@@ -30,6 +31,8 @@ export const CreateCourse = () => {
     courseCurriculumInitialFormData,
     currentEditedCourseId,
     setCurrentEditedCourseId,
+    setCourseFinalQuiz,
+    courseFinalQuiz,
   } = useContext(CourseContext);
 
   function isEmpty(value) {
@@ -41,13 +44,35 @@ export const CreateCourse = () => {
   }
 
   function ValidateFormData() {
+    // 1. Validate Landing Page Data
     for (const key in courseLandingFormData) {
+      // FIX: Skip system fields or arrays that shouldn't block submission
+      if (
+        [
+          "students",
+          "curriculum",
+          "instructorId",
+          "instructorName",
+          "_id",
+          "date",
+          "__v",
+          "isPublished",
+        ].includes(key) ||
+        typeof courseLandingFormData[key] === "object"
+      ) {
+        continue;
+      }
+
       if (isEmpty(courseLandingFormData[key])) {
         return false;
       }
     }
 
-    if (!Array.isArray(courseCurriculumFormData)) {
+    // 2. Validate Curriculum
+    if (
+      !Array.isArray(courseCurriculumFormData) ||
+      courseCurriculumFormData.length === 0
+    ) {
       return false;
     }
 
@@ -63,7 +88,7 @@ export const CreateCourse = () => {
       }
 
       if (item.freePreview) {
-        hasFreePreview = true; //found at least one free preview
+        hasFreePreview = true;
       }
     }
 
@@ -79,22 +104,31 @@ export const CreateCourse = () => {
       students: [],
       curriculum: courseCurriculumFormData,
       isPublished: true,
+      finalQuiz: courseFinalQuiz,
     };
-    console.log(courseFinalFormData);
 
     try {
-      const response = await addNewCourseService(courseFinalFormData);
+      const response =
+        currentEditedCourseId !== null
+          ? await updateCourseByIdService(
+              currentEditedCourseId,
+              courseFinalFormData
+            )
+          : addNewCourseService(courseFinalFormData);
 
       if (response?.success) {
         setCourseLandingFormData(courseLandingInitialFormData || {});
         setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
-
+        setCourseFinalQuiz(courseFinalQuiz);
+        setCourseFinalQuiz(null);
         navigate("/instructor/my-courses");
+        setCurrentEditedCourseId(null);
         console.log("Course created successfully");
       }
     } catch (error) {
       console.error("Create course failed", error);
     }
+    console.log(courseFinalFormData);
   }
 
   async function fetchCurrentCourseDetails() {
@@ -106,27 +140,34 @@ export const CreateCourse = () => {
       if (response?.success) {
         console.log("Full Course Data:", response.data);
 
+        // 1. Set Landing Page Data
         setCourseLandingFormData({
           ...courseLandingInitialFormData,
           ...response.data,
         });
 
+        // 2. Set Curriculum Data
         if (response?.data?.curriculum) {
           console.log("Setting Curriculum Data to:", response.data.curriculum);
           setCourseCurriculumFormData(response.data.curriculum);
         }
+
+        // 3. 🚨 THE MISSING PART: Set Final Quiz Data 🚨
+        // This ensures the green "Edit Quiz" button appears
+        setCourseFinalQuiz(response?.data?.finalQuiz || null);
       }
     } catch (err) {
       console.error("Failed to fetch course", err);
     }
   }
+
   useEffect(() => {
     if (currentEditedCourseId !== null) fetchCurrentCourseDetails();
   }, [currentEditedCourseId]);
 
   useEffect(() => {
-    if (params?.courseId) setCurrentEditedCourseId(params.courseId);
-  }, [params]);
+    if (params?.courseId) setCurrentEditedCourseId(params?.courseId);
+  }, [params?.courseId]);
 
   return (
     <div className="container mx-auto p-4">
@@ -141,7 +182,10 @@ export const CreateCourse = () => {
           onClick={handleCreateCourse}
         >
           <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl  bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
-          <span className="relative z-20">Submit </span>
+          <span className="relative z-20">
+            {" "}
+            {currentEditedCourseId ? "Update" : "Create"}{" "}
+          </span>
         </button>
       </div>
       <div className="mt-5 w-fit">
@@ -158,13 +202,7 @@ export const CreateCourse = () => {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="Curriculum">
-                <Curriculum
-                  key={
-                    courseCurriculumFormData?.length > 0
-                      ? "data-loaded"
-                      : "loading"
-                  }
-                />
+                <Curriculum key={currentEditedCourseId ? "loaded" : "new"} />
               </TabsContent>
 
               <TabsContent value="Course-Landing-Page">

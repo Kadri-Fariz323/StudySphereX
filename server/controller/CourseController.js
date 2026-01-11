@@ -2,7 +2,6 @@ const Course = require("../model/Course");
 const mongoose = require("mongoose");
 
 /* ===================== ADD COURSE ===================== */
-
 const addNewCourse = async (req, res) => {
   try {
     const courseData = req.body;
@@ -121,30 +120,42 @@ const updateCourseByID = async (req, res) => {
   }
 };
 
-/* ===================== ADD QUIZ ===================== */
+/* ===================== SAVE FINAL QUIZ (Standalone) ===================== */
 
 const saveFinalQuiz = async (req, res) => {
   try {
-    const { courseId } = req.params;
-    const { quizData } = req.body; 
-    // quizData should include: { title, questions, passingMarks }
 
-    const course = await Course.findById(courseId);
+    const { id } = req.params; 
+    
+
+    const finalQuiz = req.body.finalQuiz || req.body.quizData;
+
+    if (!finalQuiz) {
+       return res.status(400).json({ message: "Quiz data is missing in request body" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid Course ID" });
+    }
+
+    const course = await Course.findById(id);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
 
-    // Update the finalQuiz field directly
-    course.finalQuiz = quizData;
+
+    course.finalQuiz = finalQuiz;
     
-    // Explicitly set certificate lock to true whenever quiz is updated
-    course.isCertificateLocked = true;
+  
+    if (course.schema.path('isCertificateLocked')) {
+        course.isCertificateLocked = true; 
+    }
 
     await course.save();
 
     res.status(200).json({
       success: true,
-      message: "Final quiz updated successfully. It will effectively appear after the last lecture.",
+      message: "Final quiz updated successfully.",
       data: course
     });
 
@@ -153,8 +164,6 @@ const saveFinalQuiz = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
-
 
 module.exports = {
   addNewCourse,

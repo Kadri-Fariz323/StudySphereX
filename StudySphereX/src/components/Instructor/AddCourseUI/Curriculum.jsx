@@ -10,24 +10,30 @@ import { AddQuiz } from "../AddQuiz";
 import {
   FiVideo,
   FiFileText,
-  FiUpload,
   FiCopy,
   FiTrash2,
   FiEdit,
   FiPlusCircle,
+  FiAward, // Added icon for Final Quiz
 } from "react-icons/fi";
 
 export const Curriculum = () => {
-  const [activeQuizIndex, setActiveQuizIndex] = useState(null);
+  // State to manage if the Final Quiz Modal is open
+  const [isFinalQuizOpen, setIsFinalQuizOpen] = useState(false);
 
   const {
     courseCurriculumFormData,
     setCourseCurriculumFormData,
+    // NEW: Get Final Quiz State from Context
+    courseFinalQuiz, 
+    setCourseFinalQuiz,
     mediaUploadProgressPercentage,
     setMediaUploadProgressPercentage,
     mediaUploadProgress,
     setMediaUploadProgress,
   } = useContext(CourseContext);
+
+  // --- Lecture Management Functions ---
 
   function handleNewLecture() {
     setCourseCurriculumFormData((prev = []) => [
@@ -44,9 +50,20 @@ export const Curriculum = () => {
     setCourseCurriculumFormData(copyFormData);
   }
 
-  function handleRemoveLecture(currentIndex) {
-    const copyFormData = [...courseCurriculumFormData];
-    copyFormData.splice(currentIndex, 1);
+  async function handleRemoveLecture(currentIndex) {
+    let copyFormData = [...courseCurriculumFormData];
+    const getCurrentSelectedVideoId = copyFormData[currentIndex].public_id;
+    
+    // Optimistic UI update could happen here, but safety first:
+    if (getCurrentSelectedVideoId) {
+      const response = await mediaDeleteService(getCurrentSelectedVideoId);
+      if (!response?.success) {
+         console.error("Failed to delete video from cloud");
+         // Optional: return or alert user
+      }
+    }
+    
+    copyFormData = copyFormData.filter((_, index) => index !== currentIndex);
     setCourseCurriculumFormData(copyFormData);
   }
 
@@ -67,6 +84,8 @@ export const Curriculum = () => {
     };
     setCourseCurriculumFormData(CopyCourseCurriculumFormData);
   }
+
+  // --- Media Upload Functions ---
 
   async function handleSingleLectureUpload(event, currIndex) {
     const selectedFile = event.target.files[0];
@@ -112,8 +131,7 @@ export const Curriculum = () => {
     const pdfFormData = new FormData();
     pdfFormData.append("file", selectedFile);
 
-    const oldPdfPublicId =
-      courseCurriculumFormData[currIndex]?.pdfPublicId || null;
+    const oldPdfPublicId = courseCurriculumFormData[currIndex]?.pdfPublicId || null;
 
     setMediaUploadProgress(true);
 
@@ -144,6 +162,8 @@ export const Curriculum = () => {
     }
   }
 
+  // --- Validation & Scrolling ---
+
   function isCourseCurriculumFormDataValid() {
     if (!Array.isArray(courseCurriculumFormData)) return false;
     return courseCurriculumFormData.every((item) => {
@@ -157,44 +177,31 @@ export const Curriculum = () => {
   }
 
   const bottomRef = useRef(null);
+  
   useEffect(() => {
-  if (courseCurriculumFormData.length > 1) {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
-}, [courseCurriculumFormData.length]);
-
+    if (courseCurriculumFormData.length > 1) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [courseCurriculumFormData.length]);
 
   if (!Array.isArray(courseCurriculumFormData)) {
-    return null;
+    return <div className="p-5 text-red-500">Error: Data is not an array</div>;
   }
 
-  const handleOpenQuizBuilder = (index) => {
-    setActiveQuizIndex(index);
+  // --- FINAL QUIZ LOGIC (The Fix) ---
+
+  const handleSaveFinalQuiz = (quizData) => {
+    // Save to the standalone state, not the array
+    setCourseFinalQuiz(quizData);
+    setIsFinalQuizOpen(false);
   };
 
-  const handleSaveQuizToLecture = (quizData) => {
-    const updated = [...courseCurriculumFormData];
-    updated[activeQuizIndex] = {
-      ...updated[activeQuizIndex],
-      quiz: quizData,
-    };
-    setCourseCurriculumFormData(updated);
-    setActiveQuizIndex(null);
+  const handleRemoveFinalQuiz = () => {
+    if(window.confirm("Are you sure you want to remove the Final Quiz?")) {
+        setCourseFinalQuiz(null);
+    }
   };
 
-  const handleRemoveQuiz = (index) => {
-    const updated = [...courseCurriculumFormData];
-    updated[index] = {
-      ...updated[index],
-      quiz: null,
-    };
-    setCourseCurriculumFormData(updated);
-  };
-console.log("Current Curriculum Data:", courseCurriculumFormData);
-
-if (!Array.isArray(courseCurriculumFormData)) {
-    return <div className="p-5 text-red-500">Error: Data is not an array</div>;
-}
   return (
     <>
       <div>
@@ -219,10 +226,11 @@ if (!Array.isArray(courseCurriculumFormData)) {
             />
           ) : null}
 
+          {/* --- Lecture List --- */}
           <div className="mt-6 space-y-6">
             {courseCurriculumFormData.map((CurriculumItem, index) => (
               <div
-              key={CurriculumItem._id || CurriculumItem.public_id || index}
+                key={CurriculumItem._id || CurriculumItem.public_id || index}
                 className="group relative border border-indigo-100 bg-white rounded-xl p-5 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300"
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-5">
@@ -250,9 +258,7 @@ if (!Array.isArray(courseCurriculumFormData)) {
                         <div className="flex items-center gap-3 sm:border-l sm:border-gray-200 sm:pl-4 pt-2 sm:pt-0">
                           <Switch
                             id={`freePreview-${index + 1}`}
-                            checked={
-                              courseCurriculumFormData[index]?.freePreview
-                            }
+                            checked={courseCurriculumFormData[index]?.freePreview}
                             onCheckedChange={(value) =>
                               handleFreePreviewChange(value, index)
                             }
@@ -266,8 +272,10 @@ if (!Array.isArray(courseCurriculumFormData)) {
                         </div>
                       </div>
                     </div>
-                    {/* Lecture Video */}
+
+                    {/* Media Uploads */}
                     <div className="flex flex-col gap-4">
+                      {/* Video */}
                       <div className="w-full">
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
                           Lecture Video
@@ -295,7 +303,8 @@ if (!Array.isArray(courseCurriculumFormData)) {
                           />
                         </label>
                       </div>
-                      {/* Lecture Notes / PDF */}
+
+                      {/* PDF */}
                       <div className="w-full">
                         <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
                           Lecture Notes / PDF
@@ -323,7 +332,7 @@ if (!Array.isArray(courseCurriculumFormData)) {
                       </div>
                     </div>
 
-                    {/* Buttons             */}
+                    {/* Lecture Buttons */}
                     <div className="flex items-center justify-end gap-3 mt-2">
                       <button
                         onClick={() => handleCopyLecture(index)}
@@ -349,67 +358,80 @@ if (!Array.isArray(courseCurriculumFormData)) {
                         />
                       </div>
                     ) : null}
-
-                    {/* Quiz Section  */}
-                    <div className="mt-4 pt-4 border-t border-dashed border-gray-200">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-bold text-gray-700">
-                          Lecture Quiz
-                        </h4>
-
-                        <button
-                          onClick={() => handleOpenQuizBuilder(index)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            CurriculumItem.quiz
-                              ? "bg-green-100 text-green-700 hover:bg-green-200 border border-green-200"
-                              : "bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200"
-                          }`}
-                        >
-                          {CurriculumItem.quiz ? (
-                            <FiEdit size={16} />
-                          ) : (
-                            <FiPlusCircle size={16} />
-                          )}
-                          {CurriculumItem.quiz
-                            ? "Edit Attached Quiz"
-                            : "Add Quiz"}
-                        </button>
-                      </div>
-
-                      {CurriculumItem.quiz && (
-                        <div className="mt-2 bg-gray-50 p-3 rounded text-sm text-gray-600 border border-gray-200 flex justify-between items-center">
-                          <span className="flex items-center gap-2">
-                            <FiFileText />
-                            <strong>{CurriculumItem.quiz.title}</strong>
-                            <span className="text-gray-400">
-                              ({CurriculumItem.quiz.questions.length} Questions)
-                            </span>
-                          </span>
-                          <button
-                            onClick={() => handleRemoveQuiz(index)}
-                            className="text-red-500 p-1 hover:bg-red-50 rounded"
-                          >
-                            <FiTrash2 size={16} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
                   </div>
                 </div>
-           
               </div>
             ))}
           </div>
+
+          <div ref={bottomRef} />
+
+          {/* --- FINAL QUIZ SECTION (Placed after all lectures) --- */}
+          <div className="mt-10 pt-10 border-t-2 border-dashed border-gray-200">
+             <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-indigo-100 rounded-lg text-indigo-700">
+                        <FiAward size={24} />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-800">Final Course Assessment</h3>
+                        <p className="text-sm text-gray-500">
+                            This quiz will appear after the last lecture. Students must pass this to complete the course.
+                        </p>
+                    </div>
+                </div>
+
+                <button
+                  onClick={() => setIsFinalQuizOpen(true)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-bold transition-all shadow-sm ${
+                    courseFinalQuiz
+                      ? "bg-green-100 text-green-700 hover:bg-green-200 border border-green-200"
+                      : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200"
+                  }`}
+                >
+                  {courseFinalQuiz ? <FiEdit size={16} /> : <FiPlusCircle size={16} />}
+                  {courseFinalQuiz ? "Edit Final Quiz" : "Create Final Quiz"}
+                </button>
+             </div>
+
+             {/* Visual Confirmation of Attached Quiz */}
+             {courseFinalQuiz && (
+                <div className="bg-gradient-to-r from-indigo-50 to-white p-5 rounded-xl border border-indigo-100 flex justify-between items-center animate-in fade-in slide-in-from-bottom-2">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <span className="font-bold text-indigo-900 text-lg">{courseFinalQuiz.title}</span>
+                            <span className="text-xs font-semibold bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full">
+                                {courseFinalQuiz.questions.length} Questions
+                            </span>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            Passing Score: <span className="font-bold text-gray-800">{courseFinalQuiz.passingMarks}%</span>
+                        </p>
+                    </div>
+                    
+                    <button 
+                        onClick={handleRemoveFinalQuiz}
+                        className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                        title="Remove Final Quiz"
+                    >
+                        <FiTrash2 size={20} />
+                    </button>
+                </div>
+             )}
+          </div>
+
         </Card>
       </div>
-      {activeQuizIndex !== null && (
+
+      {/* --- MODAL FOR FINAL QUIZ --- */}
+      {isFinalQuizOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          {/* Added p-6 to this div to create space between borders and content */}
           <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl p-6">
             <AddQuiz
-              existingQuizData={courseCurriculumFormData[activeQuizIndex]?.quiz}
-              onSave={handleSaveQuizToLecture}
-              onCancel={() => setActiveQuizIndex(null)}
+              // Load the Final Quiz data from Context if it exists
+              existingQuizData={courseFinalQuiz}
+              onSave={handleSaveFinalQuiz}
+              onCancel={() => setIsFinalQuizOpen(false)}
             />
           </div>
         </div>

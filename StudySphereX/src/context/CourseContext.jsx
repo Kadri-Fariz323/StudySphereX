@@ -21,6 +21,7 @@ export default function CourseProvider({ children }) {
 
   const [instructorCoursesList, setInstructorCoursesList] = useState([]);
     const [currentEditedCourseId, setCurrentEditedCourseId] = useState(null);
+    const [courseFinalQuiz, setCourseFinalQuiz] = useState(null);
 
   return (
     <CourseContext.Provider
@@ -36,7 +37,8 @@ export default function CourseProvider({ children }) {
         instructorCoursesList,
          setInstructorCoursesList,
          currentEditedCourseId,
-          setCurrentEditedCourseId
+          setCurrentEditedCourseId,
+          courseFinalQuiz, setCourseFinalQuiz
       }}
     >
       {children}
