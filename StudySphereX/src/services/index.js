@@ -34,6 +34,15 @@ export async function addNewCourseService(formData) {
   return data;
 }
 
+export async function deleteCourseById(courseId) {
+  const { data } = await axiosInstance.delete(
+    `/instructor/course/delete/${courseId}`
+  );
+
+  return data;
+}
+
+
 export async function fetchInstructorCourseDetailsService(id) {
   const { data } = await axiosInstance.get(
     `/instructor/course/get/details/${id}`

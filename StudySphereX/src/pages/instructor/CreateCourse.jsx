@@ -114,7 +114,7 @@ export const CreateCourse = () => {
               currentEditedCourseId,
               courseFinalFormData
             )
-          : addNewCourseService(courseFinalFormData);
+          : await addNewCourseService(courseFinalFormData);
 
       if (response?.success) {
         setCourseLandingFormData(courseLandingInitialFormData || {});

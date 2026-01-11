@@ -5,10 +5,11 @@ import { CourseTable } from "../../components/UI/CourseTable";
 import { Navigate, useNavigate } from "react-router-dom";
 import { CourseContext } from "@/context/CourseContext";
 import { useContext } from "react";
-import { useEffect } from "react";
+import { useEffect, useState} from "react";
 
 
 export const MyCourses = () => {
+const [courses, setCourses] = useState([]);
 
 const {
   instructorCoursesList,
@@ -20,7 +21,7 @@ const {
   async function fetchAllCourses() {
     const response = await fetchInstructorCourseListService();
     if (response?.success) setInstructorCoursesList(response?.data);
-    
+    setCourses(response);
   }
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const {
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto ">
-              <CourseTable listOfCourses={instructorCoursesList} />
+              <CourseTable listOfCourses={instructorCoursesList} onRefresh={fetchAllCourses} />
             </div>
           </CardContent>
         </Card></div>
