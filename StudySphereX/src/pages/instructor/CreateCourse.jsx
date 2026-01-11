@@ -14,6 +14,7 @@ import { CourseContext } from "@/context/CourseContext";
 import { useContext } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 export const CreateCourse = () => {
   const { auth } = useContext(AuthContext);
@@ -95,41 +96,61 @@ export const CreateCourse = () => {
     return hasFreePreview;
   }
 
-  async function handleCreateCourse() {
-    const courseFinalFormData = {
-      instructorId: auth?.user?._id,
-      instructorName: auth?.user?.name,
-      date: new Date(),
-      ...courseLandingFormData,
-      students: [],
-      curriculum: courseCurriculumFormData,
-      isPublished: true,
-      finalQuiz: courseFinalQuiz,
-    };
+ async function handleCreateCourse() {
+  const isEditMode = currentEditedCourseId !== null;
 
-    try {
-      const response =
-        currentEditedCourseId !== null
-          ? await updateCourseByIdService(
-              currentEditedCourseId,
-              courseFinalFormData
-            )
-          : await addNewCourseService(courseFinalFormData);
+  const courseFinalFormData = {
+    instructorId: auth?.user?._id,
+    instructorName: auth?.user?.name,
+    date: new Date(),
+    ...courseLandingFormData,
+    students: [],
+    curriculum: courseCurriculumFormData,
+    isPublished: true,
+    finalQuiz: courseFinalQuiz,
+  };
 
-      if (response?.success) {
-        setCourseLandingFormData(courseLandingInitialFormData || {});
-        setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
-        setCourseFinalQuiz(courseFinalQuiz);
-        setCourseFinalQuiz(null);
-        navigate("/instructor/my-courses");
-        setCurrentEditedCourseId(null);
-        console.log("Course created successfully");
-      }
-    } catch (error) {
-      console.error("Create course failed", error);
+  try {
+    const response = isEditMode
+      ? await updateCourseByIdService(
+          currentEditedCourseId,
+          courseFinalFormData
+        )
+      : await addNewCourseService(courseFinalFormData);
+
+    if (response?.success) {
+      toast.success(
+        isEditMode
+          ? "Course updated successfully 🎉"
+          : "Course created successfully 🚀"
+      );
+
+      setCourseLandingFormData(courseLandingInitialFormData || {});
+      setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
+      setCourseFinalQuiz(null);
+      setCurrentEditedCourseId(null);
+
+      navigate("/instructor/my-courses");
+    } else {
+      toast.error(
+        response?.message ||
+          (isEditMode
+            ? "Failed to update course"
+            : "Failed to create course")
+      );
     }
-    console.log(courseFinalFormData);
+  } catch (error) {
+    console.error("Course action failed", error);
+
+    toast.error(
+      error?.response?.data?.message ||
+        (isEditMode
+          ? "Something went wrong while updating the course"
+          : "Something went wrong while creating the course")
+    );
   }
+}
+
 
   async function fetchCurrentCourseDetails() {
     try {

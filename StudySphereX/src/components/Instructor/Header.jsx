@@ -4,17 +4,19 @@ import { useContext } from "react";
 import { AuthContext }from '../../context/AuthContext'
 
 import { Navigate, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export const Header = ({ setIsSidebarOpen }) => {
 
-  const {resetCredentials} = useContext(AuthContext) 
-  const handleLogout = () => {
-     resetCredentials()
-      sessionStorage.clear()
-  };
-
   const { auth } = useContext(AuthContext)
   const navigate = useNavigate();
+  const {resetCredentials} = useContext(AuthContext) 
+
+  const handleLogout = () => {
+     resetCredentials()
+      localStorage.clear()
+      toast.success("Logout Successful")
+  };
 
 
   return (
