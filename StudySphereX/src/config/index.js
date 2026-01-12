@@ -26,7 +26,7 @@ export const signUpFormControls = [
     label: "Sign up as",
     componentType: "radioButton",
     options: [
-      { label: "User", value: "user" },
+      { label: "Student", value: "user" },
       { label: "Instructor", value: "instructor" },
     ],
   },
