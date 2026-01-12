@@ -17,7 +17,7 @@ export const CallToAction = () => {
 
         {/* CTA Button */}
         <div className="flex justify-center">
-          <Link to="/courses">
+          <Link to="/auth">
             <button className="group inline-flex items-center justify-center px-10 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-full hover:bg-indigo-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transform hover:-translate-y-1">
               Join Now
               <FaArrowRight className="ml-3 transition-transform duration-200 group-hover:translate-x-1" />

@@ -6,6 +6,7 @@ const { default: mongoose } = require('mongoose');
 const authRoute = require('./routes/authRoute');
 const mediaRoute = require('./routes/mediaRoute');
 const CourseRoute = require('./routes/CourseRoute')
+const ContactRoute= require('./routes/ContactRoute')
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,7 @@ mongoose.connect(MONGO_URI)
 
 app.use('/auth', authRoute);
 app.use('/media', mediaRoute);
+app.use('/contact', ContactRoute);
 app.use("/instructor/course", CourseRoute);
 
 app.use((err, req, res, next) => {

@@ -14,7 +14,7 @@ export const Hero = () => {
        Empowering learners worldwide with accessible, high-quality education and industry-recognized certifications
           </p>
           <div className="relative group  ">
-            <Link to="/login">
+            <Link to="/auth">
               <button className="relative inline-block p-px text-sm font-bold leading-6 text-white bg-blue-500 shadow-2xl cursor-pointer rounded-xl shadow-cyan-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
                 <span className="absolute inset-0 rounded-xl bg-linear-to-r from-teal-400 via-blue-500 to-purple-500 p-0.5 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
 

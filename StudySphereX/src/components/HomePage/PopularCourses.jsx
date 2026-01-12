@@ -78,9 +78,7 @@ export const PopularCourses = () => {
                     </span>
                   ))}
                 </div>
-                <div className="flex items-center text-sm font-semibold text-indigo-600 group-hover:translate-x-1 transition-transform">
-                  View Path <FaArrowRight  className="w-4 h-4 ml-1" />
-                </div>
+              
               </div>
             </div>
           ))}

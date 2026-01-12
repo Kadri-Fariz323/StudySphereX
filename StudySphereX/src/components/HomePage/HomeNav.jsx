@@ -3,20 +3,21 @@ import logo from '../../assets/logo.png'
 import { FaBars } from "react-icons/fa";
 import { useRef, useState } from "react";
 import { FaWindowClose } from "react-icons/fa";
+import { Navigate, useNavigate } from "react-router-dom"
 
 export const HomeNav = () => {
   const [navMenu, setNavMenu] = useState(false);
   const menuRef = useRef();
-
   const handleNavMenu = () => {
     setNavMenu((prev) => !prev);
   };
-
+  
+  const navigate = useNavigate()
   return (
     <div className="HomeNav px-4 md:px-12 lg:px-20 flex items-center bg-transparent rounded-xl justify-between md:h-[65px] lg:h-[70px]">
       {/* LOGO */}
-      <div className="flex-shrink-0">
-        <img src={logo} alt="Logo" className="w-30 md:w-40 lg:w-44 h-auto" />
+      <div className="flex-shrink-0 cursor-pointer" >
+        <img src={logo} alt="Logo" className="w-30 md:w-40 lg:w-44 h-auto" onClick={() => navigate('/')}/>
       </div>
 
       {/* Nav Links */}

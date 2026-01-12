@@ -62,32 +62,7 @@ export const Footer = () => {
           </div>
 
           {/* Newsletter Section - Takes 2 columns on Large screens to balance the layout */}
-          <div className="lg:col-span-2">
-            <h2 className="mb-4 text-xs font-bold text-gray-900 uppercase tracking-widest">
-              Stay Updated
-            </h2>
-            <p className="mb-4 text-sm text-gray-500">
-              Subscribe to our newsletter for the latest updates, new courses,
-              and exclusive offers.
-            </p>
-
-            <form
-              className="flex flex-col sm:flex-row gap-2"
-              onSubmit={(e) => e.preventDefault()}
-            >
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm transition-colors focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-              />
-              <button
-                type="submit"
-                className="shrink-0 rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
+         
         </div>
 
         {/* Divider */}

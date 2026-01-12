@@ -69,3 +69,8 @@ export async function AddQuizInDB(id, formData) {
   return data;
 }
 
+// Contact 
+export async function saveContactForm(formdata) {
+  const { data } = await axiosInstance.post(`/contact`, formdata); // Adjusted route to match standard REST
+  return data;
+}
