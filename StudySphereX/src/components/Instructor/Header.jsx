@@ -10,12 +10,13 @@ export const Header = ({ setIsSidebarOpen }) => {
 
   const { auth } = useContext(AuthContext)
   const navigate = useNavigate();
-  const {resetCredentials} = useContext(AuthContext) 
+  const { resetCredentials } = useContext(AuthContext) 
 
   const handleLogout = () => {
      resetCredentials()
-      localStorage.clear()
+     localStorage.removeItem("accessToken");
       toast.success("Logout Successful")
+      navigate('/auth', { replace: true })
   };
 
 

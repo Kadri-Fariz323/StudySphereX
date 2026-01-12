@@ -38,14 +38,17 @@ export const AuthPage = () => {
     );
   }
 
-    function checkIfSignUpFormIsValid(){
-      return (
-      signUpFormData &&
-      signUpFormData.name !== "" &&
-      signUpFormData.email !== "" &&
-      signUpFormData.password !== ""
-    );
-  }
+   function checkIfSignUpFormIsValid() {
+  return (
+    signUpFormData &&
+    signUpFormData.name?.trim() !== "" &&
+    signUpFormData.email?.trim() !== "" &&
+    signUpFormData.password?.trim() !== "" &&
+    signUpFormData.role?.trim() !== ""
+  );
+}
+
+console.log(signUpFormData);
 
 
   return (
@@ -70,6 +73,7 @@ export const AuthPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
+                
                 <CommonForm
                   formControls={signInFormControls}
                   buttonText={"Sign In"}
@@ -90,6 +94,8 @@ export const AuthPage = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
+
+
                 <CommonForm
                   formControls={signUpFormControls}
                   buttonText={"Sign Up"}

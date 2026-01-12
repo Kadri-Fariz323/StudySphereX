@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "../../UI/select";
 import { Textarea } from "../../UI/textarea";
+import { RadioGroup, RadioGroupItem  } from "../../UI/radio-group";
 
 export const FormControls = ({ formControls = [], formData, setFormData }) => {
   function renderComponentByType(getControlItem) {
@@ -74,6 +75,34 @@ export const FormControls = ({ formControls = [], formData, setFormData }) => {
           />
         );
         break;
+
+  case "radioButton":
+  element = (
+    <RadioGroup
+      value={currentControlItemValue}
+      onValueChange={(value) => {
+        setFormData({
+          ...formData,
+          [getControlItem.name]: value,
+        });
+      }}
+      className="flex gap-6"
+    >
+      {getControlItem.options.map((option) => (
+        <div key={option.value} className="flex items-center space-x-2">
+          <RadioGroupItem
+            id={`${getControlItem.name}-${option.value}`}
+            value={option.value}
+          />
+          <Label htmlFor={`${getControlItem.name}-${option.value}`}>
+            {option.label}
+          </Label>
+        </div>
+      ))}
+    </RadioGroup>
+  );
+  break;
+
 
       default:
         element = (
