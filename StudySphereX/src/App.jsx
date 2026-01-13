@@ -8,7 +8,6 @@ import { CreateCourse } from "./pages/instructor/CreateCourse";
 import { RouteGuard } from "./components/HomePage/RouteGuard";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
-import { UserLayout } from "./layouts/UserLayout";
 import { Dashboard } from "./pages/user/Dashboard";
 import { AuthPage } from "./pages/AuthPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
@@ -16,6 +15,7 @@ import { ManageUsers } from "./pages/instructor/ManageUsers";
 import { MyCourses } from "./pages/instructor/MyCourses";
 import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
+import { StudentLayout } from "./layouts/StudentLayout";
 
 
 export const App = () => {
@@ -46,7 +46,7 @@ export const App = () => {
           path="/user"
           element={
             <RouteGuard
-              element={<UserLayout />}
+              element={<StudentLayout />}
               authenticated={auth.authenticate}
               user={auth?.user}
             />

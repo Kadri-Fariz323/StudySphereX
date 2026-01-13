@@ -7,6 +7,8 @@ const authRoute = require('./routes/authRoute');
 const mediaRoute = require('./routes/mediaRoute');
 const CourseRoute = require('./routes/CourseRoute')
 const ContactRoute= require('./routes/ContactRoute')
+const StudentRoute= require('./routes/StudentRoute')
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +34,8 @@ app.use('/auth', authRoute);
 app.use('/media', mediaRoute);
 app.use('/contact', ContactRoute);
 app.use("/instructor/course", CourseRoute);
+app.use("/student/course", StudentRoute);
+
 
 app.use((err, req, res, next) => {
     console.log(err.stack);

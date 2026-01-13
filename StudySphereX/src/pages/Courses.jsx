@@ -1,6 +1,9 @@
+import { AllCoursesList } from "@/components/StudentView/AllCoursesList"
 
 export const Courses = () => {
   return (
-    <div>Courses</div>
+    <div>
+      <AllCoursesList />
+    </div>
   )
 }
