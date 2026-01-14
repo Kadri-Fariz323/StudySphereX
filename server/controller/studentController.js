@@ -10,6 +10,7 @@ exports.getAllCourses = async (req, res) => {
       primaryLanguage = "",
       sortBy = "price-lowtohigh",
       limit = null, // Added limit support
+      search = "",
     } = req.query;
 
     let filters = {};
@@ -23,6 +24,16 @@ exports.getAllCourses = async (req, res) => {
     }
     if (primaryLanguage) {
       filters.primaryLanguage = { $in: primaryLanguage.split(",") };
+    }
+
+    // Add search filter if search query is provided
+    if (search) {
+      filters.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { instructorName: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
     }
 
     let sortParam = {};

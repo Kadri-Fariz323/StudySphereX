@@ -16,6 +16,7 @@ import { MyCourses } from "./pages/instructor/MyCourses";
 import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
 import { StudentLayout } from "./layouts/StudentLayout";
+import { CoursesDetails } from "./components/StudentView/CoursesDetails";
 
 
 export const App = () => {
@@ -37,6 +38,8 @@ export const App = () => {
             }
           />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/course/details/:id" element={<CoursesDetails />} />
+          
           <Route path="/contact" element={<Contact />} />
         </Route>
 
