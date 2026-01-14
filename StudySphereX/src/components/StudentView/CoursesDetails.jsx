@@ -184,7 +184,9 @@ export const CoursesDetails = () => {
                    </div>
 
                    <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 text-lg shadow-lg shadow-indigo-200 transition-all mb-3 rounded-lg">
-                      Buy Now
+                      {
+                        localStorage.getItem("accessToken") ? "Buy Now" : "Login to Enroll "
+                      }
                    </Button>
                    <p className="text-center text-xs text-gray-500 mt-3">30-Day Money-Back Guarantee</p>
                    
