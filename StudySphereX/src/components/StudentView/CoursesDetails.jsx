@@ -4,15 +4,21 @@ import { StudentContext } from "@/context/StudentContext";
 import { fetchStudentViewCourseDetailsService } from "@/services/StudentViewService";
 import { Button } from "../UI/button";
 import { 
-  PlayCircle, Lock, Globe, CheckCircle, Clock, User, Video, FileText
+  PlayCircle, Lock, Globe, CheckCircle, Clock, User, Video, FileText, 
+  HelpCircle, Award, Trophy 
 } from "lucide-react";
+import { Navigate, useNavigate } from 'react-router-dom'
+import { AuthContext } from "@/context/AuthContext";
 
 export const CoursesDetails = () => {
+  const { auth } = useContext(AuthContext);
+  
   const {
     studentViewCourseDetails,
     setStudentViewCourseDetails,
   } = useContext(StudentContext);
 
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { id } = useParams(); 
 
@@ -23,12 +29,9 @@ export const CoursesDetails = () => {
         const response = await fetchStudentViewCourseDetailsService(id);
         
         if (response?.success) {
-          // --- FIX START ---
-          // If backend returns an array (like Array(7)), grab the first item [0]
-          // If it returns a single object, use it directly.
+          // Handling Array vs Object return from backend
           const courseData = Array.isArray(response.data) ? response.data[0] : response.data;
           setStudentViewCourseDetails(courseData);
-          // --- FIX END ---
         } else {
           setStudentViewCourseDetails(null);
         }
@@ -41,17 +44,14 @@ export const CoursesDetails = () => {
     }
   }, [id, setStudentViewCourseDetails]);
 
-  // Handle Loading
   if (loading) return <CourseDetailsSkeleton />;
 
-  // Handle Missing Data
   if (!studentViewCourseDetails) {
     return <div className="p-20 text-center text-gray-500">No Course Details Found</div>;
   }
 
-  // Now this destructuring will work because studentViewCourseDetails is definitely an Object
   const {
-    title, subtitle, date, language, level, pricing, objectives, curriculum, instructorName, image, category
+    title, subtitle, date, language, level, pricing, objectives, curriculum, instructorName, image, category, finalQuiz
   } = studentViewCourseDetails;
 
   return (
@@ -63,7 +63,6 @@ export const CoursesDetails = () => {
           
           {/* Left Column: Course Info */}
           <div className="lg:col-span-2 space-y-5">
-            {/* Breadcrumb / Badges */}
             <div className="flex items-center gap-3 text-blue-200 text-xs font-bold uppercase tracking-widest">
                <span className="bg-blue-800/50 px-3 py-1 rounded-full border border-blue-500/30">{category}</span>
                <span>•</span>
@@ -77,7 +76,6 @@ export const CoursesDetails = () => {
               {subtitle}
             </p>
 
-            {/* Meta Data */}
             <div className="flex flex-wrap gap-6 text-sm mt-6 pt-6 border-t border-blue-500/30 text-blue-100">
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4 text-blue-300" />
@@ -94,7 +92,6 @@ export const CoursesDetails = () => {
             </div>
           </div>
           
-          {/* Right Column: Placeholder for spacing (Image is sticky below) */}
           <div className="hidden lg:block"></div> 
         </div>
       </div>
@@ -102,10 +99,10 @@ export const CoursesDetails = () => {
       {/* 2. MAIN CONTENT GRID */}
       <div className="container mx-auto px-4 -mt-8 relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* LEFT COLUMN: Objectives & Curriculum */}
+        {/* LEFT COLUMN: Objectives, Curriculum & Certificate */}
         <div className="lg:col-span-2 space-y-8 mt-8 lg:mt-0">
           
-          {/* What You Will Learn Card */}
+          {/* What You Will Learn */}
           <div className="bg-white rounded-xl p-8 border border-gray-100 shadow-sm">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">What you'll learn</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -126,6 +123,7 @@ export const CoursesDetails = () => {
              </div>
              
              <div className="space-y-0 divide-y divide-gray-100 border border-gray-100 rounded-lg overflow-hidden">
+                {/* Lectures Map */}
                 {curriculum?.map((lecture, index) => (
                   <div 
                     key={index} 
@@ -144,26 +142,65 @@ export const CoursesDetails = () => {
                          </span>
                        </div>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      {lecture.freePreview && (
+                    {lecture.freePreview && (
                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded uppercase">Free</span>
-                      )}
-                    </div>
+                    )}
                   </div>
                 ))}
+
+                {/* Final Quiz Item (Displayed at the end of curriculum) */}
+                {finalQuiz && (
+                  <div className="flex items-center justify-between p-4 bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer border-t border-indigo-100">
+                    <div className="flex items-center gap-4">
+                       <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm bg-indigo-600 text-white">
+                         <HelpCircle className="h-4 w-4"/> 
+                       </div>
+                       <div className="flex flex-col">
+                         <span className="font-bold text-indigo-900">
+                            Final Quiz: {finalQuiz.title || "Course Assessment"}
+                         </span>
+                         <span className="text-xs text-indigo-600">
+                            {finalQuiz.questions?.length || 0} Questions • Passing: {finalQuiz.passingMarks || 70}%
+                         </span>
+                       </div>
+                    </div>
+                    <span className="px-2 py-1 bg-indigo-200 text-indigo-800 text-xs font-bold rounded uppercase">
+                        Required
+                    </span>
+                  </div>
+                )}
+
+                 <div 
+                  
+                    className="flex items-center justify-between p-4 bg-white hover:bg-indigo-50/50 transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-4">
+                       <div className={`
+                          h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm
+                          'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'
+                       `}>
+                        <Lock className="h-4 w-4"/>
+                       </div>
+                       <div className="flex flex-col">
+                         <span className="font-medium text-gray-800 group-hover:text-indigo-700 transition-colors">
+                            Certificate of Completion
+                         </span>
+                         <span className="font-medium mt-2 text-red-500 bg-red-200 rounded-2xl px-2 text-sm">Note: {auth?.user || "Student Name"}, will be displayed on certificate</span>
+                       </div>
+                    </div>
+                  
+                  </div>
              </div>
-          </div>
+          </div>          
+
         </div>
 
         {/* RIGHT COLUMN: Sticky Sidebar Card */}
         <div className="lg:col-span-1 relative">
-           {/* Negative margin pulls it up into the header area */}
            <div className="sticky top-24 lg:-mt-[200px] z-20 space-y-6">
               
               {/* Purchase Card */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden">
-                {/* Course Image Preview */}
                 <div className="h-52 bg-gray-200 relative group cursor-pointer">
                    <img 
                       src={image} 
@@ -171,7 +208,6 @@ export const CoursesDetails = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                    />
                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
-                   {/* Play Overlay Button */}
                    <div className="absolute inset-0 flex items-center justify-center">
                      <PlayCircle className="h-16 w-16 text-white opacity-90 group-hover:scale-110 transition-transform drop-shadow-lg" />
                    </div>
@@ -183,12 +219,9 @@ export const CoursesDetails = () => {
                       <span className="text-lg text-gray-400 line-through mb-1">${(pricing * 1.5).toFixed(2)}</span>
                    </div>
 
-                   <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 text-lg shadow-lg shadow-indigo-200 transition-all mb-3 rounded-lg">
-                      {
-                        localStorage.getItem("accessToken") ? "Buy Now" : "Login to Enroll "
-                      }
+                   <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 text-lg shadow-lg shadow-indigo-200 transition-all mb-3 rounded-lg cursor-pointer" >
+                      {localStorage.getItem("accessToken") ? "Buy Now" : "Login to Enroll"}
                    </Button>
-                   <p className="text-center text-xs text-gray-500 mt-3">30-Day Money-Back Guarantee</p>
                    
                    <div className="mt-6 space-y-4 pt-6 border-t border-gray-100">
                       <h4 className="font-bold text-sm text-gray-900 uppercase tracking-wide">This course includes:</h4>
@@ -197,16 +230,16 @@ export const CoursesDetails = () => {
                         <span>{curriculum?.length || 0} Video Lectures</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
-                         <FileText className="h-4 w-4 text-indigo-500" />
-                         <span>Assignments & Resources</span>
+                         <HelpCircle className="h-4 w-4 text-indigo-500" />
+                         <span>{finalQuiz ? "1 Final Quiz" : "No Quiz"}</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-gray-600">
+                         <Award className="h-4 w-4 text-indigo-500" />
+                         <span>Completion Certificate</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-gray-600">
                         <Globe className="h-4 w-4 text-indigo-500" />
                         <span>Full Lifetime Access</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                         <User className="h-4 w-4 text-indigo-500" />
-                         <span>Access on Mobile & TV</span>
                       </div>
                    </div>
                 </div>
@@ -220,7 +253,7 @@ export const CoursesDetails = () => {
   );
 };
 
-// Simple Skeleton for loading state
+// Skeleton remains the same...
 const CourseDetailsSkeleton = () => (
   <div className="bg-gray-50 min-h-screen pb-20">
     <div className="bg-gray-200 h-[350px] w-full animate-pulse mb-8" />

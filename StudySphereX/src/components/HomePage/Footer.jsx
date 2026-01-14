@@ -62,6 +62,8 @@ export const Footer = () => {
           </div>
 
           {/* Newsletter Section - Takes 2 columns on Large screens to balance the layout */}
+
+          
          
         </div>
 
