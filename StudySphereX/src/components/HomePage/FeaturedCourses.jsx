@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/StudentContext";
 import { fetchStudentViewCourseListService } from "../../services/StudentViewService"; 
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 export const FeaturedCourses = () => {
   const { studentViewCoursesList, setStudentViewCoursesList } = useContext(StudentContext);
@@ -9,7 +9,9 @@ export const FeaturedCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       // Passing query for backend extensibility, but we will also slice locally
-      const response = await fetchStudentViewCourseListService("limit=4&sort=-date");
+     // In FeaturedCourses.jsx
+const response = await fetchStudentViewCourseListService("limit=4&sortBy=date"); 
+// Note: You might need to add case "date" to your controller switch if you want to sort by date!
       if (response?.success) {
         setStudentViewCoursesList(response.data);
       }
@@ -19,7 +21,7 @@ export const FeaturedCourses = () => {
   }, [setStudentViewCoursesList]);
 
   const displayCourses = studentViewCoursesList ? studentViewCoursesList.slice(0, 4) : [];
-
+   const navigate = useNavigate()
   return (
     <section className="py-12 container mx-auto px-4">
         {/* Section Header */}
@@ -68,7 +70,7 @@ export const FeaturedCourses = () => {
               <button
                 type="button"
                 className="select-none rounded-lg bg-blue-500 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none w-full"
-              >
+              onClick={() => navigate('/courses')}>
                 Read More
               </button>
             </div>
