@@ -52,7 +52,7 @@ export const Header = ({ setIsSidebarOpen }) => {
           className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border border-gray-200 flex-shrink-0 cursor-pointer"
         />
 
-        <button
+       <button
           onClick={handleLogout}
           className="
             cursor-pointer font-bold transition-all 

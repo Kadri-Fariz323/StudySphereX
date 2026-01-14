@@ -7,7 +7,7 @@ export const Working = () => {
       id: 1,
       title: 'Create Your Account',
       description: 'Sign up and choose your learning goal.',
-      icon: <FaUserPlus  lus className="w-8 h-8 text-indigo-600" />,
+      icon: <FaUserPlus   className="w-8 h-8 text-indigo-600" />,
     },
     {
       id: 2,

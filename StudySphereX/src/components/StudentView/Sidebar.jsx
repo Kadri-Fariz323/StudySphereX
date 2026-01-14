@@ -10,10 +10,9 @@ import logo from "../../assets/logo.png";
 
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
-    { name: "Dashboard", icon: MdDashboard, path: "/instructor" },
-    { name: "My Courses", icon: FaPhotoVideo, path: "/instructor/add-course" },
-    { name: "Certificates", icon: PiCertificateFill, path: "/instructor/my-courses" },
-    { name: "Newsletters", icon: MdEmail, path: "/instructor/manage-users" },
+  { name: "Dashboard", icon: MdDashboard, path: "/user" },
+    { name: "Explore Courses", icon: FaPhotoVideo, path: "/user/courses" },
+
 
   ];
 

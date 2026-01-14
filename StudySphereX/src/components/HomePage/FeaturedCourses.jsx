@@ -2,18 +2,22 @@ import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/StudentContext";
 import { fetchStudentViewCourseListService } from "../../services/StudentViewService"; 
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useLoader } from "@/context/LoaderContext";
 
 export const FeaturedCourses = () => {
+     const { setLoading } = useLoader();
+  
   const { studentViewCoursesList, setStudentViewCoursesList } = useContext(StudentContext);
 
   useEffect(() => {
     const fetchCourses = async () => {
-      // Passing query for backend extensibility, but we will also slice locally
-     // In FeaturedCourses.jsx
+      
+  setLoading(true)   
 const response = await fetchStudentViewCourseListService("limit=4&sortBy=date"); 
-// Note: You might need to add case "date" to your controller switch if you want to sort by date!
+
       if (response?.success) {
         setStudentViewCoursesList(response.data);
+        setLoading(false)
       }
     };
 

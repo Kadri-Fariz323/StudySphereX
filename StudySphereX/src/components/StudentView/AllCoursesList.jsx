@@ -14,8 +14,11 @@ import {
 } from "../UI/dropdown-menu";
 import { Label } from "../UI/label";
 import { Checkbox } from "../UI/checkbox";
+import { useLoader } from "@/context/LoaderContext";
 
 export const AllCoursesList = () => {
+  const { setLoading } = useLoader();
+
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { studentViewCoursesList, setStudentViewCoursesList } =
@@ -32,16 +35,6 @@ export const AllCoursesList = () => {
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
   );
-
-  const createSearchParamsHelper = (filterParams) => {
-    const queryParams = [];
-    Object.keys(filterParams).forEach((key) => {
-      if (filterParams[key].length > 0) {
-        queryParams.push(`${key}=${filterParams[key].join(",")}`);
-      }
-    });
-    return queryParams.join("&");
-  };
 
   const handleFilterOnChange = (sectionId, optionId, checked) => {
     setFilters((prev) => {
@@ -64,36 +57,51 @@ export const AllCoursesList = () => {
     setSearchQuery(searchInput);
   };
 
- useEffect(() => {
-  const timeout = setTimeout(() => {
-    const fetchCourses = async () => {
-      const params = new URLSearchParams();
+  const handleCourseNavigate = (courseId) => {
+    // Check if user is logged in (adjust 'accessToken' to your actual key name)
+    const token = localStorage.getItem("accessToken"); 
 
-      params.set("limit", "10");
-      params.set("sortBy", sort);
+    if (token) {
+      // 🟢 Logged In: Go to User view (Clean UI)
+      navigate(`/user/course/details/${courseId}`);
+    } else {
+      // ⚪ Public: Go to Public view (With Navbar)
+      navigate(`/course/details/${courseId}`);
+    }
+  };
 
-      if (searchQuery) params.set("search", searchQuery);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const fetchCourses = async () => {
+        const params = new URLSearchParams();
 
-      Object.keys(filters).forEach((key) => {
-        if (filters[key]?.length > 0) {
-          params.set(key, filters[key].join(","));
+        params.set("limit", "10");
+        params.set("sortBy", sort);
+
+        if (searchQuery) params.set("search", searchQuery);
+
+        Object.keys(filters).forEach((key) => {
+          if (filters[key]?.length > 0) {
+            params.set(key, filters[key].join(","));
+          }
+        });
+        setLoading(true);
+        const response = await fetchStudentViewCourseListService(
+          params.toString()
+        );
+
+        if (response?.success) {
+          setStudentViewCoursesList(response.data);
+          setLoading(false);
         }
-      });
 
-      const response = await fetchStudentViewCourseListService(params.toString());
+        setSearchParams(params);
+      };
 
-      if (response?.success) {
-        setStudentViewCoursesList(response.data);
-      }
+      fetchCourses();
+    }, 300); // 👈 debounce delay
 
-      setSearchParams(params);
-    };
-
-    fetchCourses();
-  }, 300); // 👈 debounce delay
-
-  return () => clearTimeout(timeout);
-
+    return () => clearTimeout(timeout);
   }, [sort, filters, searchQuery, setStudentViewCoursesList, setSearchParams]);
 
   useEffect(() => {
@@ -187,6 +195,27 @@ export const AllCoursesList = () => {
           <span className="font-bold text-indigo-900 text-sm tracking-wide whitespace-nowrap">
             {studentViewCoursesList?.length || 0} Results
           </span>
+          {localStorage.getItem("accessToken") ? (
+            <button onClick={() => navigate('/user')}
+              className="
+            cursor-pointer font-bold transition-all 
+            bg-blue-500 text-white rounded-lg 
+            border-blue-600 
+            
+            text-xs px-3 py-1.5 border-b-[3px] 
+            
+            sm:text-sm sm:px-6 sm:py-2 sm:border-b-[4px]
+            
+            hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[4px] sm:hover:border-b-[6px]
+            
+            active:border-b-[1px] active:brightness-90 active:translate-y-[2px]
+            
+            flex-shrink-0
+          "
+            >
+              Dashboard
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -238,7 +267,7 @@ export const AllCoursesList = () => {
                 <div
                   key={course._id}
                   className="group flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 overflow-hidden cursor-pointer"
-                  onClick={() => navigate(`/course/details/${course?._id}`)}
+                 onClick={() => handleCourseNavigate(course?._id)}
                 >
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden bg-gray-200">

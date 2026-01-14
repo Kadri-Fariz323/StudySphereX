@@ -42,7 +42,7 @@ export const Hero = () => {
 
         <div className="content-right mt-14 flex justify-center items-center">
           <img
-            src=""
+            src={null}
             className="w-87.5 shadow-xl md:w-150 lg:w-137.5"
             alt=" illustration"
           />
