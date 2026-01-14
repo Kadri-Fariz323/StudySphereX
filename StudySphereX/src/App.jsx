@@ -17,12 +17,14 @@ import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
 import { StudentLayout } from "./layouts/StudentLayout";
 import { CoursesDetails } from "./components/StudentView/CoursesDetails";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
   return (
     <>
+    <ScrollToTop />
       <Routes>
         {/* Public Home page Routes */}
         <Route element={<PublicLayout />}>
