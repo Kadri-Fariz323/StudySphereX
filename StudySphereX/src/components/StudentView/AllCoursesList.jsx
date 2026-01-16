@@ -15,6 +15,7 @@ import {
 import { Label } from "../UI/label";
 import { Checkbox } from "../UI/checkbox";
 import { useLoader } from "@/context/LoaderContext";
+import { VideoPlayer } from "../UI/VideoPlayer";
 
 export const AllCoursesList = () => {
   const { setLoading } = useLoader();
@@ -58,14 +59,14 @@ export const AllCoursesList = () => {
   };
 
   const handleCourseNavigate = (courseId) => {
-    // Check if user is logged in (adjust 'accessToken' to your actual key name)
+    
     const token = localStorage.getItem("accessToken"); 
 
     if (token) {
-      // 🟢 Logged In: Go to User view (Clean UI)
+      
       navigate(`/user/course/details/${courseId}`);
     } else {
-      // ⚪ Public: Go to Public view (With Navbar)
+      
       navigate(`/course/details/${courseId}`);
     }
   };
@@ -99,7 +100,7 @@ export const AllCoursesList = () => {
       };
 
       fetchCourses();
-    }, 300); // 👈 debounce delay
+    }, 300); 
 
     return () => clearTimeout(timeout);
   }, [sort, filters, searchQuery, setStudentViewCoursesList, setSearchParams]);

@@ -1,1 +1,0 @@
-Start lecture from 5:25

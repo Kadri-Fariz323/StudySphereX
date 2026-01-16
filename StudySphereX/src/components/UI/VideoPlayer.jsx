@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   FaPlay,
   FaPause,
@@ -10,7 +10,7 @@ import {
   FaCompress,
 } from "react-icons/fa";
 
-export const VideoPlayer = ({src}) => {
+export const VideoPlayer = ({ src, width = "100%", height = "100%", isEnded }) => {
   const videoRef = useRef(null);
   const playerRef = useRef(null);
   
@@ -108,9 +108,11 @@ export const VideoPlayer = ({src}) => {
         <video
           ref={videoRef}
           className="w-full h-auto cursor-pointer"
+          style={{ width, height }}
           onClick={togglePlay}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
+          onEnded={isEnded}
           src={src}
         />
 
