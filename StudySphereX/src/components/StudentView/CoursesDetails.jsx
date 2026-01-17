@@ -1,7 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { StudentContext } from "@/context/StudentContext";
-import { fetchStudentViewCourseDetailsService } from "@/services/StudentViewService";
+import {
+  createPaymentService,
+  fetchStudentViewCourseDetailsService,
+} from "@/services/StudentViewService";
 import { Button } from "../UI/button";
 import { VideoPlayer } from "../UI/VideoPlayer";
 import {
@@ -27,7 +30,7 @@ export const CoursesDetails = () => {
 
   const { studentViewCourseDetails, setStudentViewCourseDetails } =
     useContext(StudentContext);
-
+  const [approvalUrl, setApprovalUrl] = useState("");
   const navigate = useNavigate();
   const { setLoading } = useLoader();
   const { id } = useParams();
@@ -55,7 +58,6 @@ export const CoursesDetails = () => {
     }
   }, [id, setStudentViewCourseDetails, setLoading]);
 
-  
   useEffect(() => {
     if (studentViewCourseDetails?.curriculum) {
       const freeLecture = studentViewCourseDetails.curriculum.find(
@@ -75,18 +77,54 @@ export const CoursesDetails = () => {
     );
   }
 
-    const handleCourseNavigate = (courseId) => {
-    
-    const token = localStorage.getItem("accessToken"); 
+  const handleCreatePayment = async () => {
+  const token = localStorage.getItem("accessToken");
 
-    if (token) {
-      
-      navigate('');
-    } else {
-      
-      navigate('/auth');
-    }
+  if (!token) {
+    navigate("/auth");
+    return;
+  }
+
+  // ✅ Logged in → Create PayPal payment
+  const paymentPayload = {
+    userId: auth?.user?._id,
+    userName: auth?.user?.name,
+    userEmail: auth?.user?.email,
+    orderStatus: "pending",
+    paymentMethod: "paypal",
+    paymentStatus: "initiated",
+    orderDate: new Date(),
+    paymentId: "",
+    payerId: "",
+    instructorId: studentViewCourseDetails?.instructorId,
+    instructorName: studentViewCourseDetails?.instructorName,
+    courseImage: studentViewCourseDetails?.image,
+    courseTitle: studentViewCourseDetails?.title,
+    courseId: studentViewCourseDetails?._id,
+    coursePricing: studentViewCourseDetails?.pricing,
   };
+
+  setLoading(true);
+
+  const response = await createPaymentService(paymentPayload);
+
+  if (response?.success) {
+    localStorage.setItem(
+      "currentOrderId",
+      JSON.stringify(response.data.orderId)
+    );
+
+    setApprovalUrl(response.data.approveUrl);
+  }
+
+  setLoading(false);
+};
+
+  if (approvalUrl) {
+    window.location.href = approvalUrl;
+  }
+
+
 
   const {
     title,
@@ -107,7 +145,7 @@ export const CoursesDetails = () => {
     if (displayVideoUrl) {
       setIsPlaying(true);
     } else {
-        alert("No preview video available for this course.");
+      alert("No preview video available for this course.");
     }
   };
 
@@ -196,11 +234,11 @@ export const CoursesDetails = () => {
                   key={index}
                   className="flex items-center justify-between p-4 bg-white hover:bg-indigo-50/50 transition-colors group cursor-pointer"
                   onClick={() => {
-                     if(lecture.freePreview && lecture.videoUrl) {
-                        setDisplayVideoUrl(lecture.videoUrl);
-                        setIsPlaying(true);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                     }
+                    if (lecture.freePreview && lecture.videoUrl) {
+                      setDisplayVideoUrl(lecture.videoUrl);
+                      setIsPlaying(true);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
                   }}
                 >
                   <div className="flex items-center gap-4">
@@ -234,7 +272,7 @@ export const CoursesDetails = () => {
                 </div>
               ))}
 
-               {finalQuiz && (
+              {finalQuiz && (
                 <div className="flex items-center justify-between p-4 bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer border-t border-indigo-100">
                   <div className="flex items-center gap-4">
                     <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm bg-indigo-600 text-white">
@@ -281,9 +319,12 @@ export const CoursesDetails = () => {
           <div className="sticky top-24 lg:-mt-[200px] z-20 space-y-6">
             <div className="bg-white rounded-xl border border-gray-200 shadow-2xl overflow-hidden">
               <div className="aspect-video bg-gray-900 relative group">
-                
                 {/* 1. THE VIDEO PLAYER (Using Custom Component) */}
-                <div className={`${isPlaying ? "block" : "hidden"} w-full h-full relative`}>
+                <div
+                  className={`${
+                    isPlaying ? "block" : "hidden"
+                  } w-full h-full relative`}
+                >
                   <VideoPlayer
                     src={displayVideoUrl}
                     width="100%"
@@ -305,7 +346,9 @@ export const CoursesDetails = () => {
                 {/* 2. THE THUMBNAIL */}
                 <div
                   onClick={handlePreviewStart}
-                  className={`${isPlaying ? "hidden" : "block"} w-full h-full relative cursor-pointer`}
+                  className={`${
+                    isPlaying ? "hidden" : "block"
+                  } w-full h-full relative cursor-pointer`}
                 >
                   <img
                     src={image}
@@ -314,7 +357,7 @@ export const CoursesDetails = () => {
                   />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <div className="bg-white/90 rounded-full p-4 mb-3 shadow-lg group-hover:scale-110 transition-transform">
-                       <Play className="h-10 w-10 text-indigo-600 fill-indigo-100" />
+                      <Play className="h-10 w-10 text-indigo-600 fill-indigo-100" />
                     </div>
                     <span className="font-bold text-white text-sm uppercase tracking-wider drop-shadow-md">
                       Preview this course
@@ -336,14 +379,17 @@ export const CoursesDetails = () => {
                   </span>
                 </div>
 
-                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 text-lg shadow-lg shadow-indigo-200 transition-all mb-3 rounded-lg cursor-pointer" onClick={handleCourseNavigate}>
+                <Button
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 text-lg shadow-lg shadow-indigo-200 transition-all mb-3 rounded-lg cursor-pointer"
+                  onClick={handleCreatePayment}
+                >
                   {localStorage.getItem("accessToken")
                     ? "Buy Now"
                     : "Login to Enroll"}
                 </Button>
-                
+
                 <p className="text-center text-xs text-gray-500 mb-6">
-                    30-Day Money-Back Guarantee
+                  30-Day Money-Back Guarantee
                 </p>
 
                 <div className="mt-6 space-y-4 pt-6 border-t border-gray-100">

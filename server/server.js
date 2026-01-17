@@ -8,7 +8,7 @@ const mediaRoute = require('./routes/mediaRoute');
 const CourseRoute = require('./routes/CourseRoute')
 const ContactRoute= require('./routes/ContactRoute')
 const StudentRoute= require('./routes/StudentRoute')
-
+const StudentOrderRoute = require('./routes/OrderRoute')
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,6 +35,7 @@ app.use('/media', mediaRoute);
 app.use('/contact', ContactRoute);
 app.use("/instructor/course", CourseRoute);
 app.use("/student/course", StudentRoute);
+app.use("/student/order", StudentOrderRoute)
 
 
 app.use((err, req, res, next) => {
