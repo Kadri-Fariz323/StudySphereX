@@ -23,12 +23,15 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 // User Pages
 import { Dashboard } from "./pages/user/Dashboard";
 
+
 // Instructor Pages
 import { CreateCourse } from "./pages/instructor/CreateCourse";
 import { ManageUsers } from "./pages/instructor/ManageUsers";
 import { MyCourses } from "./pages/instructor/MyCourses";
 import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
+import { PaymentReturn } from "./pages/user/PaymentReturn";
+import { PurchasedCourses } from "./pages/user/PurchasedCourses";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -70,6 +73,8 @@ export const App = () => {
           }
         >
           <Route index element={<Dashboard />} />
+          <Route path="student-courses" element={<PurchasedCourses />} />
+
         </Route>
 
         {/* 2. User Courses (WITHOUT Sidebar/Layout - as requested for UI) */}
@@ -95,6 +100,9 @@ export const App = () => {
             />
           }
         />
+
+          <Route path="/payment-return" element={<PaymentReturn />} />
+
 
         {/* ================= INSTRUCTOR ROUTES ================= */}
         <Route

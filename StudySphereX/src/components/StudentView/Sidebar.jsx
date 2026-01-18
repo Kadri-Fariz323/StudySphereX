@@ -1,18 +1,14 @@
 import { NavLink } from "react-router-dom";
-import {
-  MdDashboard,
-  MdEmail,
-  MdClose,
-} from "react-icons/md";
+import { MdDashboard, MdEmail, MdClose } from "react-icons/md";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiCertificateFill } from "react-icons/pi";
 import logo from "../../assets/logo.png";
 
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
-  { name: "Dashboard", icon: MdDashboard, path: "/user" },
+    { name: "Dashboard", icon: MdDashboard, path: "/user" },
     { name: "Explore Courses", icon: FaPhotoVideo, path: "/user/courses" },
-
+    { name: "My Courses", icon: FaPhotoVideo, path: "/user/student-courses" },
 
   ];
 
@@ -28,7 +24,7 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       {/* --- HEADER --- */}
       <div className="flex items-center justify-between p-4 border-b border-indigo-50 h-16">
         <img src={logo} alt="Logo" className="w-30 md:w-40 lg:w-40 h-auto" />
-        
+
         {/* --- CLOSE BUTTON FOR MOBILE --- */}
         <button
           onClick={() => setIsSidebarOpen(false)}
@@ -59,7 +55,10 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               >
                 {({ isActive }) => (
                   <>
-                    <link.icon className={`mr-3 ${isActive ? "text-indigo-600" : ""}`} size={20} />
+                    <link.icon
+                      className={`mr-3 ${isActive ? "text-indigo-600" : ""}`}
+                      size={20}
+                    />
                     {link.name}
                   </>
                 )}
