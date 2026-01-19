@@ -1,10 +1,13 @@
 import { useState, useEffect, useContext } from "react";
 import { StudentContext } from "@/context/StudentContext";
-import { fetchStudentViewCourseListService } from "@/services/StudentViewService";
+import {
+  checkCoursePurchaseInfoService,
+  fetchStudentViewCourseListService,
+} from "@/services/StudentViewService";
 import { filterOptions, sortOptions } from "@/config";
 import { Button } from "../UI/button";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowUpDownIcon, FilterIcon, User, SearchIcon } from "lucide-react";
+import { ArrowUpDownIcon, FilterIcon, User, SearchIcon, ArrowLeft } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -15,11 +18,11 @@ import {
 import { Label } from "../UI/label";
 import { Checkbox } from "../UI/checkbox";
 import { useLoader } from "@/context/LoaderContext";
-import { VideoPlayer } from "../UI/VideoPlayer";
+import { AuthContext } from "@/context/AuthContext";
 
 export const AllCoursesList = () => {
   const { setLoading } = useLoader();
-
+  const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { studentViewCoursesList, setStudentViewCoursesList } =
@@ -58,16 +61,41 @@ export const AllCoursesList = () => {
     setSearchQuery(searchInput);
   };
 
-  const handleCourseNavigate = (courseId) => {
-    
-    const token = localStorage.getItem("accessToken"); 
+  const handleCourseNavigate = async (courseId) => {
+    if (!courseId) return;
 
-    if (token) {
-      
-      navigate(`/user/course/details/${courseId}`);
-    } else {
-      
+    // Check strict authentication status
+    const token = localStorage.getItem("accessToken");
+    const isLoggedIn = token && auth?.user?._id;
+
+    // 1. GUEST USER: Directly navigate to course details
+    if (!isLoggedIn) {
+      console.log("Guest User: Navigating to details for", courseId);
       navigate(`/course/details/${courseId}`);
+      return;
+    }
+
+    // 2. LOGGED IN USER: Check if they already bought the course
+    setLoading(true);
+    try {
+      const response = await checkCoursePurchaseInfoService(
+        courseId,
+        auth?.user?._id
+      );
+
+      if (response?.success && response?.data) {
+        // User has purchased -> Go to Learning Page
+        navigate(`/course-progress/${courseId}`);
+      } else {
+        // User hasn't purchased -> Go to Details Page
+        navigate(`/user/course/details/${courseId}`);
+      }
+    } catch (error) {
+      console.error("Error checking purchase info:", error);
+      // Fallback on error -> Go to Details Page
+      navigate(`/course/details/${courseId}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,13 +114,22 @@ export const AllCoursesList = () => {
             params.set(key, filters[key].join(","));
           }
         });
-        setLoading(true);
-        const response = await fetchStudentViewCourseListService(
-          params.toString()
-        );
 
-        if (response?.success) {
-          setStudentViewCoursesList(response.data);
+        setLoading(true);
+        try {
+          const response = await fetchStudentViewCourseListService(
+            params.toString()
+          );
+
+          if (response?.success) {
+            setStudentViewCoursesList(response.data);
+          } else {
+            setStudentViewCoursesList([]);
+          }
+        } catch (error) {
+          console.error(error);
+          setStudentViewCoursesList([]);
+        } finally {
           setLoading(false);
         }
 
@@ -100,10 +137,10 @@ export const AllCoursesList = () => {
       };
 
       fetchCourses();
-    }, 300); 
+    }, 300);
 
     return () => clearTimeout(timeout);
-  }, [sort, filters, searchQuery, setStudentViewCoursesList, setSearchParams]);
+  }, [sort, filters, searchQuery, setStudentViewCoursesList, setSearchParams, setLoading]);
 
   useEffect(() => {
     if (searchParams.get("search") !== searchQuery) {
@@ -196,25 +233,25 @@ export const AllCoursesList = () => {
           <span className="font-bold text-indigo-900 text-sm tracking-wide whitespace-nowrap">
             {studentViewCoursesList?.length || 0} Results
           </span>
+
+          {/* Dashboard Button - Only shows if logged in */}
           {localStorage.getItem("accessToken") ? (
-            <button onClick={() => navigate('/user')}
+            <button
+              onClick={() => navigate("/user")}
               className="
             cursor-pointer font-bold transition-all 
             bg-blue-500 text-white rounded-lg 
             border-blue-600 
-            
             text-xs px-3 py-1.5 border-b-[3px] 
-            
             sm:text-sm sm:px-6 sm:py-2 sm:border-b-[4px]
-            
             hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[4px] sm:hover:border-b-[6px]
-            
             active:border-b-[1px] active:brightness-90 active:translate-y-[2px]
-            
             flex-shrink-0
           "
             >
-              Dashboard
+              <div className="flex gap-2 items-center">
+                <ArrowLeft className="w-4 h-4" /> Dashboard
+              </div>
             </button>
           ) : null}
         </div>
@@ -237,7 +274,6 @@ export const AllCoursesList = () => {
                 <h3 className="font-bold mb-3 text-indigo-900 text-sm tracking-wide">
                   {keyItem.toUpperCase()}
                 </h3>
-                A
                 <div className="grid gap-3 mt-2">
                   {filterOptions[keyItem].map((option) => (
                     <Label
@@ -250,7 +286,6 @@ export const AllCoursesList = () => {
                           handleFilterOnChange(keyItem, option.id, checked)
                         }
                       />
-
                       {option.label}
                     </Label>
                   ))}
@@ -268,7 +303,7 @@ export const AllCoursesList = () => {
                 <div
                   key={course._id}
                   className="group flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 overflow-hidden cursor-pointer"
-                 onClick={() => handleCourseNavigate(course?._id)}
+                  onClick={() => handleCourseNavigate(course?._id)}
                 >
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden bg-gray-200">

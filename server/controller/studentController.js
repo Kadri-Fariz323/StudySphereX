@@ -91,7 +91,6 @@ exports.getCourseDetails = async (req, res) => {
         message: "Course not found",
       });
     }
-
     res.status(200).json({
       success: true,
       data: courseDetails,
@@ -101,6 +100,47 @@ exports.getCourseDetails = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong",
+    });
+  }
+};
+
+exports.checkCoursePurchaseInfo = async (req, res) => {
+  try {
+    const { id, studentId } = req.params;
+
+    // ✅ Guest user → cannot own a course
+    if (!studentId) {
+      return res.status(200).json({
+        success: true,
+        data: false,
+      });
+    }
+
+    const studentCourses = await StudentCourses.findOne({
+      userId: studentId,
+    });
+
+    // ✅ User exists but has never bought any course
+    if (!studentCourses || !Array.isArray(studentCourses.courses)) {
+      return res.status(200).json({
+        success: true,
+        data: false,
+      });
+    }
+
+    const alreadyBought = studentCourses.courses.some(
+      (item) => item.courseId.toString() === id
+    );
+
+    res.status(200).json({
+      success: true,
+      data: alreadyBought,
+    });
+  } catch (e) {
+    console.error("checkCoursePurchaseInfo error:", e);
+    res.status(500).json({
+      success: false,
+      message: "Some error occurred",
     });
   }
 };

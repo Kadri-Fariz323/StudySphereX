@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { StudentContext } from "@/context/StudentContext";
 import {
+  checkCoursePurchaseInfoService,
   createPaymentService,
   fetchStudentViewCourseDetailsService,
 } from "@/services/StudentViewService";
@@ -35,28 +36,53 @@ export const CoursesDetails = () => {
   const { setLoading } = useLoader();
   const { id } = useParams();
 
-  useEffect(() => {
-    if (id) {
-      const fetchDetails = async () => {
-        setLoading(true);
-        const response = await fetchStudentViewCourseDetailsService(id);
+useEffect(() => {
+  if (!id) {
+    setStudentViewCourseDetails(null);
+    return;
+  }
 
-        if (response?.success) {
-          const courseData = Array.isArray(response.data)
-            ? response.data[0]
-            : response.data;
-          setStudentViewCourseDetails(courseData);
-        } else {
-          setStudentViewCourseDetails(null);
+  const fetchDetails = async () => {
+    setLoading(true);
+
+    try {
+      // ✅ ONLY check purchase info if user exists (logged in)
+      if (auth?.user?._id) {
+        const checkCoursePurchaseInfoResponse =
+          await checkCoursePurchaseInfoService(id, auth.user._id);
+
+        if (
+          checkCoursePurchaseInfoResponse?.success &&
+          checkCoursePurchaseInfoResponse?.data
+        ) {
+          navigate(`/course-progress/${id}`);
+          return;
         }
-        setLoading(false);
-      };
+      }
 
-      fetchDetails();
-    } else {
+      // ✅ Guests & logged-in users both reach here
+      const response = await fetchStudentViewCourseDetailsService(id);
+
+      if (response?.success) {
+        const courseData = Array.isArray(response.data)
+          ? response.data[0]
+          : response.data;
+
+        setStudentViewCourseDetails(courseData);
+      } else {
+        setStudentViewCourseDetails(null);
+      }
+    } catch (error) {
+      console.error("Failed to fetch course details:", error);
       setStudentViewCourseDetails(null);
+    } finally {
+      setLoading(false);
     }
-  }, [id, setStudentViewCourseDetails, setLoading]);
+  };
+
+  fetchDetails();
+}, [id, auth?.user?._id, setStudentViewCourseDetails, setLoading, navigate]);
+
 
   useEffect(() => {
     if (studentViewCourseDetails?.curriculum) {

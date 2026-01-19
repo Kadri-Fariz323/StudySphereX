@@ -23,7 +23,6 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 // User Pages
 import { Dashboard } from "./pages/user/Dashboard";
 
-
 // Instructor Pages
 import { CreateCourse } from "./pages/instructor/CreateCourse";
 import { ManageUsers } from "./pages/instructor/ManageUsers";
@@ -32,6 +31,7 @@ import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
 import { PaymentReturn } from "./pages/user/PaymentReturn";
 import { PurchasedCourses } from "./pages/user/PurchasedCourses";
+import { StudentCourseProgress } from "./pages/user/StudentCourseProgress";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -60,7 +60,7 @@ export const App = () => {
         </Route>
 
         {/* ================= USER ROUTES ================= */}
-        
+
         {/* 1. Dashboard (WITH Sidebar/Layout) */}
         <Route
           path="/user"
@@ -74,7 +74,6 @@ export const App = () => {
         >
           <Route index element={<Dashboard />} />
           <Route path="student-courses" element={<PurchasedCourses />} />
-
         </Route>
 
         {/* 2. User Courses (WITHOUT Sidebar/Layout - as requested for UI) */}
@@ -101,8 +100,18 @@ export const App = () => {
           }
         />
 
-          <Route path="/payment-return" element={<PaymentReturn />} />
+        <Route
+          path="/course-progress/:id"
+          element={
+            <RouteGuard
+              element={<StudentCourseProgress />}
+              authenticated={auth.authenticate}
+              user={auth?.user}
+            />
+          }
+        />
 
+        <Route path="/payment-return" element={<PaymentReturn />} />
 
         {/* ================= INSTRUCTOR ROUTES ================= */}
         <Route
@@ -116,10 +125,10 @@ export const App = () => {
           }
         >
           <Route index element={<InstructorDashboard />} />
-          
+
           {/* FIXED: Added < /> around Component Name */}
           <Route path="profile" element={<InstructorProfile />} />
-          
+
           <Route path="add-course" element={<CreateCourse />} />
           <Route path="edit-course/:courseId" element={<CreateCourse />} />
           <Route path="my-courses" element={<MyCourses />} />

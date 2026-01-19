@@ -1,21 +1,26 @@
 import { Button } from "@/components/UI/button";
 import { Card } from "@/components/UI/Card";
 import { AuthContext } from "@/context/AuthContext";
+import { useLoader } from "@/context/LoaderContext";
 import { StudentContext } from "@/context/StudentContext";
 import { fetchStudentBoughtCoursesService } from "@/services/StudentViewService";
 import { Play } from "lucide-react";
 import { useEffect, useContext } from "react";
 import { FaBookOpen } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"; // 1. Import useNavigate
 
 export const PurchasedCourses = () => {
   const { auth } = useContext(AuthContext);
   const { studentBoughtCoursesList, setStudentBoughtCoursesList } =
     useContext(StudentContext);
+  const { setLoading } = useLoader();
+  const navigate = useNavigate(); // 2. Initialize hook
 
   const fetchCourses = async () => {
     try {
       if (!auth?.user?._id) return;
 
+      setLoading(true);
       const response = await fetchStudentBoughtCoursesService(auth.user._id);
 
       if (response?.success) {
@@ -23,6 +28,8 @@ export const PurchasedCourses = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false); // 3. Fix: Ensure loader stops even if API fails
     }
   };
 
@@ -78,7 +85,17 @@ export const PurchasedCourses = () => {
                 Purchased on{" "}
                 {new Date(course.dateOfPurchase).toLocaleDateString()}
               </p>
-              <Button className='mt-4 w-full cursor-pointer'>  Start Watching <Play /></Button>
+              
+              {/* 4. Navigation Button */}
+              <Button 
+                className='mt-4 w-full cursor-pointer flex items-center gap-2'
+                onClick={() => {
+            
+                   navigate(`/course-progress/${course.courseId}`)
+                }}
+              > 
+                 Start Watching <Play className="h-4 w-4" />
+              </Button>
             </div>
           </Card>
         ))}
