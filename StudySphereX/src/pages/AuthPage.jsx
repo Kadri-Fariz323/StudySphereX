@@ -48,7 +48,6 @@ export const AuthPage = () => {
   );
 }
 
-console.log(signUpFormData);
 
 
   return (

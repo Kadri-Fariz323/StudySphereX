@@ -1,4 +1,5 @@
 const Course = require("../model/Course"); 
+const StudentCourses = require("../model/StudentCourses");
 
 // Fetch all courses
 
@@ -103,3 +104,4 @@ exports.getCourseDetails = async (req, res) => {
     });
   }
 };
+
