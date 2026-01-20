@@ -10,6 +10,7 @@ const ContactRoute= require('./routes/ContactRoute')
 const StudentRoute= require('./routes/StudentRoute')
 const StudentOrderRoute = require('./routes/OrderRoute')
 const studentCoursesRoutes = require("./routes/studentCoursesRoutes");
+const studentCourseProgressRoutes = require("./routes/courseProgressRoute");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -38,7 +39,7 @@ app.use("/instructor/course", CourseRoute);
 app.use("/student/course", StudentRoute);
 app.use("/student/order", StudentOrderRoute)
 app.use("/student/courses-bought", studentCoursesRoutes);
-
+app.use("/student/course-progress", studentCourseProgressRoutes);
 
 app.use((err, req, res, next) => {
     console.log(err.stack);
