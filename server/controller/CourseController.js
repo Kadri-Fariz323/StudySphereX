@@ -129,6 +129,7 @@ const getCourseDetailsByID = async (req, res) => {
 const updateCourseByID = async (req, res) => {
   try {
     const { id } = req.params;
+    const courseData = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -139,7 +140,7 @@ const updateCourseByID = async (req, res) => {
 
     const updatedCourse = await Course.findByIdAndUpdate(
       id,
-      req.body,
+      courseData,
       { new: true, runValidators: true }
     );
 
@@ -163,6 +164,7 @@ const updateCourseByID = async (req, res) => {
     });
   }
 };
+
 
 /* ===================== SAVE FINAL QUIZ (Standalone) ===================== */
 
