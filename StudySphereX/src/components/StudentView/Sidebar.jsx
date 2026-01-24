@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { MdDashboard, MdEmail, MdClose } from "react-icons/md";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiCertificateFill } from "react-icons/pi";
+import { TiNews } from "react-icons/ti";
 import logo from "../../assets/logo.png";
 
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
@@ -9,6 +10,9 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { name: "Dashboard", icon: MdDashboard, path: "/user" },
     { name: "Explore Courses", icon: FaPhotoVideo, path: "/user/courses" },
     { name: "My Courses", icon: FaPhotoVideo, path: "/user/student-courses" },
+    { name: "Certificates", icon: PiCertificateFill, path: "/user/Certificates" },
+    { name: "Discover", icon: TiNews, path: "/user/Discover" },
+
 
   ];
 

@@ -32,6 +32,7 @@ import { ManageUsers } from "./pages/instructor/ManageUsers";
 import { MyCourses } from "./pages/instructor/MyCourses";
 import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
+import { QuizLandingPage } from "./pages/user/QuizLandingPage";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -77,6 +78,7 @@ export const App = () => {
         >
           <Route index element={<Dashboard />} />
           <Route path="student-courses" element={<PurchasedCourses />} />
+          
         </Route>
 
         {/* 2. User Courses (WITHOUT Sidebar/Layout) */}
@@ -113,6 +115,18 @@ export const App = () => {
             />
           }
         />
+
+          <Route
+          path="/user/quiz"
+          element={
+            <RouteGuard
+              element={<QuizLandingPage />}
+              authenticated={auth.authenticate}
+              user={auth?.user}
+            />
+          }
+        />
+
 
         <Route path="/payment-return" element={<PaymentReturn />} />
 

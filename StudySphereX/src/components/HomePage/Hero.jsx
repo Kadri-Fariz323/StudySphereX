@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-
+import landingBg from '../../assets/landingBG.png'
 
 export const Hero = () => {
   return (
@@ -42,7 +42,7 @@ export const Hero = () => {
 
         <div className="content-right mt-14 flex justify-center items-center">
           <img
-            src={null}
+            src={landingBg}
             className="w-87.5 shadow-xl md:w-150 lg:w-137.5"
             alt=" illustration"
           />
