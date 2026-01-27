@@ -30,7 +30,26 @@ const addNewCourse = async (req, res) => {
   }
 };
 
+const getInstructorCourses = async (req, res) => {
+  try {
+    // Assuming you pass the instructorId in the URL params
+    const { instructorId } = req.params; 
 
+    // FILTER: Only find courses where the instructorId matches
+    const coursesList = await Course.find({ instructorId: instructorId });
+
+    res.status(200).json({
+      success: true,
+      data: coursesList,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      success: false,
+      message: "Some error occurred!",
+    });
+  }
+};
 
 
 
@@ -235,5 +254,6 @@ module.exports = {
   updateCourseByID,
   getCourseDetailsByID,
   saveFinalQuiz,
-  deleteCourse
+  deleteCourse,
+  getInstructorCourses
 };
