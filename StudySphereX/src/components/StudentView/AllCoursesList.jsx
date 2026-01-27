@@ -19,6 +19,7 @@ import { Label } from "../UI/label";
 import { Checkbox } from "../UI/checkbox";
 import { useLoader } from "@/context/LoaderContext";
 import { AuthContext } from "@/context/AuthContext";
+import { CourseSkeleton } from "../skeletons/CourseSkeleton";
 
 export const AllCoursesList = () => {
   const { setLoading } = useLoader();
@@ -27,6 +28,7 @@ export const AllCoursesList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { studentViewCoursesList, setStudentViewCoursesList } =
     useContext(StudentContext);
+const [skeleton, setSkeleton] = useState(true);
 
   const [sort, setSort] = useState("price-lowtohigh");
   const [filters, setFilters] = useState({});
@@ -115,7 +117,6 @@ export const AllCoursesList = () => {
           }
         });
 
-        setLoading(true);
         try {
           const response = await fetchStudentViewCourseListService(
             params.toString()
@@ -129,14 +130,12 @@ export const AllCoursesList = () => {
         } catch (error) {
           console.error(error);
           setStudentViewCoursesList([]);
-        } finally {
-          setLoading(false);
-        }
+        } 
 
         setSearchParams(params);
       };
 
-      fetchCourses();
+       fetchCourses().then(() => setSkeleton(false));
     }, 300);
 
     return () => clearTimeout(timeout);
@@ -149,6 +148,7 @@ export const AllCoursesList = () => {
     }
   }, [searchParams]);
 
+  
   return (
     <div className="container mx-auto p-4 min-h-screen bg-gray-50/30">
       {/* Header Section */}
@@ -297,14 +297,20 @@ export const AllCoursesList = () => {
 
         {/* Main Content: Course Grid */}
         <main className="flex-1">
-          {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {studentViewCoursesList.map((course) => (
-                <div
-                  key={course._id}
-                  className="group flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 overflow-hidden cursor-pointer"
-                  onClick={() => handleCourseNavigate(course?._id)}
-                >
+          {skeleton ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <CourseSkeleton key={i} />
+      ))}
+    </div>
+  ) : studentViewCoursesList?.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {studentViewCoursesList.map((course) => (
+        <div
+          key={course._id}
+          className="group flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 overflow-hidden cursor-pointer"
+          onClick={() => handleCourseNavigate(course?._id)}
+        >
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden bg-gray-200">
                     <img
