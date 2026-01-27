@@ -1,7 +1,7 @@
 const Course = require("../model/Course");
 const mongoose = require("mongoose");
 
-/* ===================== ADD COURSE ===================== */
+
 const addNewCourse = async (req, res) => {
   try {
     const courseData = req.body;
@@ -30,15 +30,15 @@ const addNewCourse = async (req, res) => {
   }
 };
 
-/* ===================== Delete COURSE ===================== */
 
 
-// DELETE COURSE
+
+
  const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    // 1. Check if course exists
+    
     const course = await Course.findById(courseId);
 
     if (!course) {
@@ -48,16 +48,16 @@ const addNewCourse = async (req, res) => {
       });
     }
 
-    // 2. Optional: Authorization check (recommended)
-    // Only instructor who created it OR admin
-    // if (course.instructorId !== req.user.id && req.user.role !== "moderator") {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "Not authorized to delete this course",
-    //   });
-    // }
+    
+    
+    
+    
+    
+    
+    
+    
 
-    // 3. Delete course
+    
     await Course.findByIdAndDelete(courseId);
 
     return res.status(200).json({
@@ -74,7 +74,7 @@ const addNewCourse = async (req, res) => {
 };
 
 
-/* ===================== GET ALL COURSES ===================== */
+
 const getAllCourses = async (req, res) => {
   try {
     const coursesList = await Course.find({});
@@ -91,7 +91,9 @@ const getAllCourses = async (req, res) => {
   }
 };
 
-/* ===================== GET COURSE BY ID ===================== */
+
+
+
 const getCourseDetailsByID = async (req, res) => {
   try {
     const { id } = req.params;
@@ -125,11 +127,14 @@ const getCourseDetailsByID = async (req, res) => {
   }
 };
 
-/* ===================== UPDATE COURSE ===================== */
+
 const updateCourseByID = async (req, res) => {
   try {
     const { id } = req.params;
-    const courseData = req.body;
+    const courseData = { ...req.body };
+
+    
+    delete courseData._id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -140,7 +145,7 @@ const updateCourseByID = async (req, res) => {
 
     const updatedCourse = await Course.findByIdAndUpdate(
       id,
-      courseData,
+      { $set: courseData },   
       { new: true, runValidators: true }
     );
 
@@ -166,48 +171,61 @@ const updateCourseByID = async (req, res) => {
 };
 
 
-/* ===================== SAVE FINAL QUIZ (Standalone) ===================== */
+
+
 
 const saveFinalQuiz = async (req, res) => {
   try {
-
-    const { id } = req.params; 
+    const { id } = req.params;
     
+    
+    const quizData = req.body.finalQuiz || req.body.courseFinalQuiz || req.body.quiz;
 
-    const finalQuiz = req.body.finalQuiz || req.body.quizData;
-
-    if (!finalQuiz) {
-       return res.status(400).json({ message: "Quiz data is missing in request body" });
+    if (!quizData) {
+       return res.status(400).json({ 
+         success: false, 
+         message: "Quiz data is missing in request body." 
+       });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid Course ID" });
+        return res.status(400).json({ 
+          success: false, 
+          message: "Invalid Course ID" 
+        });
     }
 
     const course = await Course.findById(id);
     if (!course) {
-      return res.status(404).json({ message: "Course not found" });
+      return res.status(404).json({ 
+        success: false, 
+        message: "Course not found" 
+      });
     }
 
-
-    course.finalQuiz = finalQuiz;
     
-  
-    if (course.schema.path('isCertificateLocked')) {
-        course.isCertificateLocked = true; 
-    }
+    
+    
+    course.courseFinalQuiz = quizData; 
+    
+    
+    course.isCertificateLocked = true; 
 
     await course.save();
 
     res.status(200).json({
       success: true,
-      message: "Final quiz updated successfully.",
+      message: "Final quiz updated successfully",
       data: course
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("Save Quiz Error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server Error", 
+      error: error.message 
+    });
   }
 };
 

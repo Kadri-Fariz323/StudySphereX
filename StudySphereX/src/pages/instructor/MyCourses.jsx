@@ -6,7 +6,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { CourseContext } from "@/context/CourseContext";
 import { useContext } from "react";
 import { useEffect, useState} from "react";
-
+import { AuthContext } from "@/context/AuthContext";
 
 export const MyCourses = () => {
 const [courses, setCourses] = useState([]);
@@ -20,6 +20,8 @@ const {
 
   async function fetchAllCourses() {
     const response = await fetchInstructorCourseListService();
+    console.log(response);
+    
     if (response?.success) setInstructorCoursesList(response?.data);
     setCourses(response);
   }

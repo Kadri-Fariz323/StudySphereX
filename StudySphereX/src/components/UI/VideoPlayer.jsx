@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { useEffect } from "react";
 import {
   FaPlay,
   FaPause,
@@ -10,7 +11,7 @@ import {
   FaCompress,
 } from "react-icons/fa";
 
-export const VideoPlayer = ({ src, width = "100%", height = "100%", isEnded }) => {
+export const VideoPlayer = ({ src, width = "100%", height = "100%", isEnded, onProgressUpdate, progressData, }) => {
   const videoRef = useRef(null);
   const playerRef = useRef(null);
   
@@ -21,6 +22,9 @@ export const VideoPlayer = ({ src, width = "100%", height = "100%", isEnded }) =
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+   const [played, setPlayed] = useState(0);
+
+   
 
   // Handle Play/Pause
   const togglePlay = () => {
@@ -33,6 +37,8 @@ export const VideoPlayer = ({ src, width = "100%", height = "100%", isEnded }) =
       setIsPlaying(!isPlaying);
     }
   };
+
+
 
   // Handle Volume Change
   const handleVolumeChange = (e) => {
@@ -61,9 +67,13 @@ export const VideoPlayer = ({ src, width = "100%", height = "100%", isEnded }) =
   };
 
   // Update Progress Bar
-  const handleTimeUpdate = () => {
-    setCurrentTime(videoRef.current.currentTime);
-  };
+const handleTimeUpdate = () => {
+  const current = videoRef.current.currentTime;
+  const total = videoRef.current.duration;
+
+  setCurrentTime(current);
+  setPlayed(total ? current / total : 0); // value between 0 and 1
+};
 
   // Handle Loaded Metadata (Duration)
   const handleLoadedMetadata = () => {
@@ -97,6 +107,15 @@ export const VideoPlayer = ({ src, width = "100%", height = "100%", isEnded }) =
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
+
+    useEffect(() => {
+    if (played === 1) {
+      onProgressUpdate({
+        ...progressData,
+        progressValue: played,
+      });
+    }
+  }, [played]);
 
   return (
     <div className="flex justify-center items-center w-full bg-gray-50 p-4">

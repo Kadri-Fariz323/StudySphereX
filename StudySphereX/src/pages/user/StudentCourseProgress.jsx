@@ -1,6 +1,6 @@
 import { AuthContext } from "@/context/AuthContext";
 import { StudentContext } from "@/context/StudentContext";
-import { getCurrentCourseProgressService } from "@/services/StudentViewService";
+import { getCurrentCourseProgressService, markLectureAsViewedService } from "@/services/StudentViewService";
 import { 
   ArrowLeft, 
   Menu, 
@@ -33,16 +33,24 @@ export const StudentCourseProgress = () => {
   const { auth } = useContext(AuthContext);
   const { studentCurrentCourseProgress, setStudentCurrentCourseProgress } =
     useContext(StudentContext);
-  const { id } = useParams();
-    const { setLoading } = useLoader();
+    
+  // --- FIX START: Extract 'id' correctly here ---
+  const { id } = useParams(); 
+  // --- FIX END ---
+  
+  const { setLoading } = useLoader();
   
   const [lockCourse, setLockCourse] = useState(false);
   const [currentLecture, setCurrentLecture] = useState(null);
   const [showCourseCompleteDialog, setShowCourseCompleteDialog] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+  
+  // New state to track if videos are finished to unlock assessment
+  const [isCourseCompleted, setIsCourseCompleted] = useState(false);
 
   async function fetchCurrentCourseProgress() {
+    // Now 'id' is defined, so this won't be undefined
     const response = await getCurrentCourseProgressService(auth?.user?._id, id);
     if (response?.success) {
       if (!response?.data?.isPurchased) {
@@ -54,10 +62,7 @@ export const StudentCourseProgress = () => {
         });
 
         if (response?.data?.completed) {
-          setCurrentLecture(response?.data?.courseDetails?.curriculum[0]);
-          setShowCourseCompleteDialog(true);
-          setShowConfetti(true);
-          return;
+          setIsCourseCompleted(true);
         }
         
         if (response?.data?.courseDetails?.curriculum?.length > 0) {
@@ -66,23 +71,41 @@ export const StudentCourseProgress = () => {
       }
     }
   }
+  
+  async function updateCourseProgress() {
+    if (currentLecture) {
+      const response = await markLectureAsViewedService(
+        auth?.user?._id,
+        studentCurrentCourseProgress?.courseDetails?._id,
+        currentLecture._id
+      );
+
+      if (response?.success) {
+        fetchCurrentCourseProgress();
+      }
+    }
+  }
 
   useEffect(() => {
-    fetchCurrentCourseProgress();
+    if (id) fetchCurrentCourseProgress(); // Only fetch if ID exists
   }, [id]);
+
+  useEffect(() => {
+    if (currentLecture?.progressValue === 1) updateCourseProgress();
+  }, [currentLecture]);
 
   useEffect(() => {
     if (showConfetti) setTimeout(() => setShowConfetti(false), 15000);
   }, [showConfetti]);
 
- const handleLectureClick = (lecture) => {
-  setCurrentLecture(lecture);
-  // Auto close on mobile
-  if (window.innerWidth < 1024) {
-    setIsSideBarOpen(false);
-  }
-};
-
+  const handleLectureClick = (lecture) => {
+    setCurrentLecture(lecture);
+    if (window.innerWidth < 1024) {
+      setIsSideBarOpen(false);
+    }
+  };
+  
+  console.log(currentLecture);
 
   const courseTitle = studentCurrentCourseProgress?.courseDetails?.title || "Course Progress";
   const curriculum = studentCurrentCourseProgress?.courseDetails?.curriculum || [];
@@ -120,7 +143,7 @@ export const StudentCourseProgress = () => {
               {currentLecture ? (
                 <VideoPlayer
                   src={currentLecture?.videoUrl}
-                  onProgressUpdate={() => {}}
+                  onProgressUpdate={setCurrentLecture}
                   progressData={currentLecture}
                 />
               ) : (
@@ -141,9 +164,6 @@ export const StudentCourseProgress = () => {
                    Course Material
                 </h3>
                 
-                {/* TODO: Replace `currentLecture?.pdfUrl` with your actual data field name 
-                  (e.g., lectureMaterialUrl, attachmentUrl, public_id, etc.)
-                */}
                 {currentLecture?.pdfUrl ? (
                   <a
                     href={currentLecture?.pdfUrl}
@@ -207,7 +227,7 @@ export const StudentCourseProgress = () => {
                       `}
                     >
                       <div className="mt-1">
-                         {isActive ? <Play className="w-4 h-4 fill-indigo-600 text-indigo-600" /> : <span className="font-medium text-sm text-gray-400">#{index + 1}</span>}
+                          {isActive ? <Play className="w-4 h-4 fill-indigo-600 text-indigo-600" /> : <span className="font-medium text-sm text-gray-400">#{index + 1}</span>}
                       </div>
                       <span className="text-sm font-medium line-clamp-2">
                         {item?.title}
@@ -221,14 +241,33 @@ export const StudentCourseProgress = () => {
 
               {/* Locked Final Sections */}
               <div className="space-y-1 p-2 pb-10">
+                 
                  {/* Final Assessment */}
-                 <div className="flex items-center gap-3 p-3 rounded-md bg-gray-100 opacity-60 cursor-not-allowed text-gray-500">
-                    <FileQuestion className="w-5 h-5 flex-shrink-0" />
+                 <div 
+                   onClick={() => {
+                       // --- FIX START: Check if id exists before navigating ---
+                       if (isCourseCompleted && id) {
+                           navigate(`/user/course/${id}/quiz-view/`);
+                       } else {
+                           console.error("Navigation failed: ID is missing or course not complete");
+                       }
+                       // --- FIX END ---
+                   }}
+                   className={`
+                     flex items-center gap-3 p-3 rounded-md transition-all
+                     ${isCourseCompleted 
+                         ? 'bg-indigo-50 border-l-4 border-indigo-600 cursor-pointer hover:bg-indigo-100 text-indigo-900' 
+                         : 'bg-gray-100 opacity-60 cursor-not-allowed text-gray-500'}
+                   `}
+                 >
+                    <FileQuestion className={`w-5 h-5 flex-shrink-0 ${isCourseCompleted ? 'text-indigo-600' : ''}`} />
                     <div className="flex-1">
                       <span className="text-sm font-medium block">Final Assessment</span>
-                      <span className="text-xs">Complete all lectures to unlock</span>
+                      <span className="text-xs">
+                        {isCourseCompleted ? "Ready to start" : "Complete all lectures to unlock"}
+                      </span>
                     </div>
-                    <Lock className="w-4 h-4" />
+                    {isCourseCompleted ? <Play className="w-4 h-4 fill-indigo-600 text-indigo-600" /> : <Lock className="w-4 h-4" />}
                  </div>
 
                  {/* Certificate */}

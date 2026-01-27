@@ -117,7 +117,7 @@ export const App = () => {
         />
 
           <Route
-          path="/user/quiz"
+          path="/user/course/:id/quiz-view/"
           element={
             <RouteGuard
               element={<QuizLandingPage />}
