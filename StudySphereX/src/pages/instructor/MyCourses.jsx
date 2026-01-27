@@ -9,7 +9,6 @@ import { AuthContext } from "@/context/AuthContext";
 export const MyCourses = () => {
   
   const { auth } = useContext(AuthContext); 
-  
   const {
     instructorCoursesList,
     setInstructorCoursesList,
@@ -22,7 +21,6 @@ export const MyCourses = () => {
     
     if (!auth?.user?._id) return;
 
-    
     const response = await fetchInstructorCourseListService(auth.user._id);
     
     console.log(response);

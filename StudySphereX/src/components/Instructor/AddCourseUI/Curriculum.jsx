@@ -16,10 +16,13 @@ import {
   FiPlusCircle,
   FiAward, // Added icon for Final Quiz
 } from "react-icons/fi";
+import { useLoader } from "@/context/LoaderContext";
 
 export const Curriculum = () => {
   // State to manage if the Final Quiz Modal is open
   const [isFinalQuizOpen, setIsFinalQuizOpen] = useState(false);
+      const { setLoading } = useLoader();
+  
 
   const {
     courseCurriculumFormData,
@@ -201,6 +204,9 @@ export const Curriculum = () => {
         setCourseFinalQuiz(null);
     }
   };
+
+ 
+
 
   return (
     <>

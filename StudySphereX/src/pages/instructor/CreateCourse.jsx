@@ -190,6 +190,8 @@ export const CreateCourse = () => {
     if (params?.courseId) setCurrentEditedCourseId(params?.courseId);
   }, [params?.courseId]);
 
+  
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between">
