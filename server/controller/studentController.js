@@ -1,7 +1,5 @@
-const Course = require("../model/Course"); 
+const Course = require("../model/Course");
 const StudentCourses = require("../model/StudentCourses");
-
-// Fetch all courses
 
 exports.getAllCourses = async (req, res) => {
   try {
@@ -10,13 +8,12 @@ exports.getAllCourses = async (req, res) => {
       level = "",
       primaryLanguage = "",
       sortBy = "price-lowtohigh",
-      limit = null, // Added limit support
+      limit = null,
       search = "",
     } = req.query;
 
     let filters = {};
 
-    // Use if(category) to ensure it's not an empty string before splitting
     if (category) {
       filters.category = { $in: category.split(",") };
     }
@@ -27,7 +24,6 @@ exports.getAllCourses = async (req, res) => {
       filters.primaryLanguage = { $in: primaryLanguage.split(",") };
     }
 
-    // Add search filter if search query is provided
     if (search) {
       filters.$or = [
         { title: { $regex: search, $options: "i" } },
@@ -56,10 +52,8 @@ exports.getAllCourses = async (req, res) => {
         break;
     }
 
-    // Chain the query methods
     let coursesQuery = Course.find(filters).sort(sortParam);
 
-    // Apply limit if provided (e.g. for landing page)
     if (limit) {
       coursesQuery = coursesQuery.limit(parseInt(limit));
     }
@@ -79,7 +73,6 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
-// Fetch specific course details by ID
 exports.getCourseDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -108,7 +101,6 @@ exports.checkCoursePurchaseInfo = async (req, res) => {
   try {
     const { id, studentId } = req.params;
 
-    // ✅ Guest user → cannot own a course
     if (!studentId) {
       return res.status(200).json({
         success: true,
@@ -120,7 +112,6 @@ exports.checkCoursePurchaseInfo = async (req, res) => {
       userId: studentId,
     });
 
-    // ✅ User exists but has never bought any course
     if (!studentCourses || !Array.isArray(studentCourses.courses)) {
       return res.status(200).json({
         success: true,
@@ -129,7 +120,7 @@ exports.checkCoursePurchaseInfo = async (req, res) => {
     }
 
     const alreadyBought = studentCourses.courses.some(
-      (item) => item.courseId.toString() === id
+      (item) => item.courseId.toString() === id,
     );
 
     res.status(200).json({
@@ -144,4 +135,3 @@ exports.checkCoursePurchaseInfo = async (req, res) => {
     });
   }
 };
-

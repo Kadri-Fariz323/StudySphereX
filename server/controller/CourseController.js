@@ -1,7 +1,6 @@
 const Course = require("../model/Course");
 const mongoose = require("mongoose");
 
-
 const addNewCourse = async (req, res) => {
   try {
     const courseData = req.body;
@@ -33,7 +32,7 @@ const addNewCourse = async (req, res) => {
 const getInstructorCourses = async (req, res) => {
   try {
     // Assuming you pass the instructorId in the URL params
-    const { instructorId } = req.params; 
+    const { instructorId } = req.params;
 
     // FILTER: Only find courses where the instructorId matches
     const coursesList = await Course.find({ instructorId: instructorId });
@@ -51,13 +50,10 @@ const getInstructorCourses = async (req, res) => {
   }
 };
 
-
-
- const deleteCourse = async (req, res) => {
+const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
 
-    
     const course = await Course.findById(courseId);
 
     if (!course) {
@@ -67,16 +63,6 @@ const getInstructorCourses = async (req, res) => {
       });
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
     await Course.findByIdAndDelete(courseId);
 
     return res.status(200).json({
@@ -91,8 +77,6 @@ const getInstructorCourses = async (req, res) => {
     });
   }
 };
-
-
 
 const getAllCourses = async (req, res) => {
   try {
@@ -109,9 +93,6 @@ const getAllCourses = async (req, res) => {
     });
   }
 };
-
-
-
 
 const getCourseDetailsByID = async (req, res) => {
   try {
@@ -146,13 +127,11 @@ const getCourseDetailsByID = async (req, res) => {
   }
 };
 
-
 const updateCourseByID = async (req, res) => {
   try {
     const { id } = req.params;
     const courseData = { ...req.body };
 
-    
     delete courseData._id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -164,8 +143,8 @@ const updateCourseByID = async (req, res) => {
 
     const updatedCourse = await Course.findByIdAndUpdate(
       id,
-      { $set: courseData },   
-      { new: true, runValidators: true }
+      { $set: courseData },
+      { new: true, runValidators: true },
     );
 
     if (!updatedCourse) {
@@ -189,61 +168,52 @@ const updateCourseByID = async (req, res) => {
   }
 };
 
-
-
-
-
 const saveFinalQuiz = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    
-    const quizData = req.body.finalQuiz || req.body.courseFinalQuiz || req.body.quiz;
+
+    const quizData =
+      req.body.finalQuiz || req.body.courseFinalQuiz || req.body.quiz;
 
     if (!quizData) {
-       return res.status(400).json({ 
-         success: false, 
-         message: "Quiz data is missing in request body." 
-       });
+      return res.status(400).json({
+        success: false,
+        message: "Quiz data is missing in request body.",
+      });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Invalid Course ID" 
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Course ID",
+      });
     }
 
     const course = await Course.findById(id);
     if (!course) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Course not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
       });
     }
 
-    
-    
-    
-    course.courseFinalQuiz = quizData; 
-    
-    
-    course.isCertificateLocked = true; 
+    course.courseFinalQuiz = quizData;
+
+    course.isCertificateLocked = true;
 
     await course.save();
 
     res.status(200).json({
       success: true,
       message: "Final quiz updated successfully",
-      data: course
+      data: course,
     });
-
   } catch (error) {
     console.error("Save Quiz Error:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Server Error", 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
     });
   }
 };
@@ -255,5 +225,5 @@ module.exports = {
   getCourseDetailsByID,
   saveFinalQuiz,
   deleteCourse,
-  getInstructorCourses
+  getInstructorCourses,
 };

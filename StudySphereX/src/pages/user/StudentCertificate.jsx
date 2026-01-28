@@ -17,9 +17,7 @@ const courseId = id;
 useEffect(() => {
     const fetchCertificate = async () => {
       try {
-        console.log("1. Starting fetchCertificate..."); // DEBUG
-        console.log("   User ID:", auth.user?._id);     // DEBUG
-        console.log("   Course ID:", courseId);         // DEBUG
+   
 
         setLoading(true);
         const response = await unlockCertificateService(auth.user._id, courseId);

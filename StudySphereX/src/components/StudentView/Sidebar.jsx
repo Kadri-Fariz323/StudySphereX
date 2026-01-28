@@ -10,7 +10,7 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { name: "Dashboard", icon: MdDashboard, path: "/user" },
     { name: "Explore Courses", icon: FaPhotoVideo, path: "/user/courses" },
     { name: "My Courses", icon: FaPhotoVideo, path: "/user/student-courses" },
-    { name: "Certificates", icon: PiCertificateFill, path: "/user/Certificates" },
+    { name: "Certificates", icon: PiCertificateFill, path: "/user/certificates" },
     { name: "Discover", icon: TiNews, path: "/user/Discover" },
 
 

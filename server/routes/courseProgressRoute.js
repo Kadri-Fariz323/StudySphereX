@@ -4,7 +4,8 @@ const {
   resetCurrentCourseProgress,
   markCurrentLectureAsViewed,
   submitQuiz,
-  unlockCertificate
+  unlockCertificate,
+
 } = require("../controller/courseProgressController");
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.post("/mark-lecture-viewed", markCurrentLectureAsViewed);
 router.post("/reset-progress", resetCurrentCourseProgress);
 router.post("/quiz/submit", submitQuiz);
 router.post("/certificate/unlock", unlockCertificate);
+
 
 module.exports = router;

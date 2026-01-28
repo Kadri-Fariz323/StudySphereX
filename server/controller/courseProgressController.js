@@ -322,6 +322,7 @@ const unlockCertificate = async (req, res) => {
 };
 
 
+
 module.exports = {
   getCurrentCourseProgress,
   resetCurrentCourseProgress,
