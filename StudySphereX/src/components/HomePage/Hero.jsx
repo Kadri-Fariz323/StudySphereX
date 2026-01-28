@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import landingBg from '../../assets/landingBG.png'
+import landingBg from '../../assets/landingBG.jpeg'
 
 export const Hero = () => {
   return (

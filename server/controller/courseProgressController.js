@@ -2,7 +2,7 @@ const CourseProgress = require("../model/CourseProgress");
 const Course = require("../model/Course");
 const StudentCourses = require("../model/StudentCourses");
 
-//mark current lecture as viewed
+
 const markCurrentLectureAsViewed = async (req, res) => {
   try {
     const { userId, courseId, lectureId } = req.body;
@@ -48,7 +48,7 @@ const markCurrentLectureAsViewed = async (req, res) => {
       });
     }
 
-    //check all the lectures are viewed or not
+    
     const allLecturesViewed =
       progress.lecturesProgress.length === course.curriculum.length &&
       progress.lecturesProgress.every((item) => item.viewed);
@@ -134,6 +134,8 @@ const getCurrentCourseProgress = async (req, res) => {
         completed: currentUserCourseProgress.completed,
         completionDate: currentUserCourseProgress.completionDate,
         isPurchased: true,
+        quizProgress: currentUserCourseProgress.quizProgress, 
+    certificateProgress: currentUserCourseProgress.certificateProgress
       },
     });
   } catch (error) {
@@ -178,8 +180,119 @@ const resetCurrentCourseProgress = async (req, res) => {
   }
 };
 
+
+const submitQuiz = async (req, res) => {
+  try {
+    // 1. Receive 'answers' instead of 'score'
+    const { userId, courseId, quizId, answers } = req.body;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    // 2. Validate & Calculate Score Server-Side
+    const quizQuestions = course.finalQuiz.questions; // Assuming your model structure
+    const passingMarks = course.finalQuiz.passingMarks || 70; // Fallback to 70 if not set
+    let correctCount = 0;
+
+    // answers format from frontend: [{ questionId: "...", selectedOption: 1 }]
+    answers.forEach((userAnswer) => {
+      const question = quizQuestions.find(
+        (q) => q._id.toString() === userAnswer.questionId
+      );
+
+      // Check if answer is correct
+      if (question && question.correctAnswerIndex === userAnswer.selectedOption) {
+        correctCount++;
+      }
+    });
+
+    const score = (correctCount / quizQuestions.length) * 100;
+    const passed = score >= passingMarks;
+
+    // 3. Update Progress
+    let progress = await CourseProgress.findOne({ userId, courseId });
+    if (!progress) {
+      progress = new CourseProgress({ userId, courseId });
+    }
+
+    progress.quizProgress = {
+      quizId,
+      score,
+      passed,
+      attemptedDate: new Date(),
+    };
+
+    // 4. Mark Course Complete if Passed
+    if (passed) {
+      progress.completed = true;
+      progress.completionDate = new Date();
+    }
+
+    await progress.save();
+
+    res.status(200).json({
+      success: true,
+      message: passed ? "Quiz Passed!" : "Quiz Failed. Try again.",
+      data: {
+        score,
+        passed,
+        passingMarks,
+        quizProgress: progress.quizProgress
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+const unlockCertificate = async (req, res) => {
+  try {
+    const { userId, courseId, certificateId } = req.body;
+
+    const progress = await CourseProgress.findOne({ userId, courseId });
+
+    if (!progress) {
+      return res.status(404).json({ success: false, message: "Course progress not found." });
+    }
+
+    // STRICT CHECK: Ensure quiz is passed AND course is marked completed
+    if (!progress.quizProgress?.passed) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "You must pass the final quiz to unlock the certificate." 
+      });
+    }
+
+    // Optional: Check if all lectures are viewed if that is a requirement
+    // if (!progress.completed) ...
+
+    progress.certificateProgress = {
+      certificateId,
+      isIssued: true,
+      issueDate: new Date()
+    };
+
+    await progress.save();
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Certificate Unlocked Successfully!", 
+      certificateUrl: `/certificates/${certificateId}` 
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getCurrentCourseProgress,
   resetCurrentCourseProgress,
-  markCurrentLectureAsViewed
+  markCurrentLectureAsViewed,
+  submitQuiz,
+  unlockCertificate
 };

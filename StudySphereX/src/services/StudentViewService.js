@@ -82,3 +82,29 @@ export async function resetCourseProgressService(userId, courseId) {
 
   return data;
 }
+
+export async function submitQuizService(userId, courseId, quizId, answers) {
+  const { data } = await axiosInstance.post(
+    `/student/course-progress/quiz/submit`,
+    {
+      userId,
+      courseId,
+      quizId,
+      answers,
+    }
+  );
+
+  return data;
+}
+
+export async function unlockCertificateService(userId, courseId) {
+  const { data } = await axiosInstance.post(
+    `/student/course-progress/certificate/unlock`,
+    {
+      userId,
+      courseId,
+    }
+  );
+
+  return data;
+}

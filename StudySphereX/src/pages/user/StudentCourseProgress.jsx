@@ -10,7 +10,8 @@ import {
   FileQuestion, 
   Award,
   Download,
-  FileText
+  FileText,
+  CheckCircle 
 } from "lucide-react";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -31,13 +32,8 @@ import { useLoader } from "@/context/LoaderContext";
 export const StudentCourseProgress = () => {
   const navigate = useNavigate();
   const { auth } = useContext(AuthContext);
-  const { studentCurrentCourseProgress, setStudentCurrentCourseProgress } =
-    useContext(StudentContext);
-    
-  // --- FIX START: Extract 'id' correctly here ---
-  const { id } = useParams(); 
-  // --- FIX END ---
-  
+  const { studentCurrentCourseProgress, setStudentCurrentCourseProgress } = useContext(StudentContext);
+  const { id } = useParams();
   const { setLoading } = useLoader();
   
   const [lockCourse, setLockCourse] = useState(false);
@@ -46,11 +42,11 @@ export const StudentCourseProgress = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
   
-  // New state to track if videos are finished to unlock assessment
+  // State for Course & Quiz Status
   const [isCourseCompleted, setIsCourseCompleted] = useState(false);
+  const [isQuizPassed, setIsQuizPassed] = useState(false);
 
   async function fetchCurrentCourseProgress() {
-    // Now 'id' is defined, so this won't be undefined
     const response = await getCurrentCourseProgressService(auth?.user?._id, id);
     if (response?.success) {
       if (!response?.data?.isPurchased) {
@@ -59,13 +55,23 @@ export const StudentCourseProgress = () => {
         setStudentCurrentCourseProgress({
           courseDetails: response?.data?.courseDetails,
           progress: response?.data?.progress,
+          // Store these newly fetched details in context or utilize them directly
+          quizProgress: response?.data?.quizProgress,
+          certificateProgress: response?.data?.certificateProgress
         });
 
+        // 1. Check if all lectures are done
         if (response?.data?.completed) {
           setIsCourseCompleted(true);
         }
+
+        // 2. Check if Quiz is passed
+        if (response?.data?.quizProgress?.passed) {
+          setIsQuizPassed(true);
+        }
         
-        if (response?.data?.courseDetails?.curriculum?.length > 0) {
+        // 3. Set Initial Lecture if not set
+        if (response?.data?.courseDetails?.curriculum?.length > 0 && !currentLecture) {
              setCurrentLecture(response?.data?.courseDetails?.curriculum[0]);
         }
       }
@@ -87,7 +93,7 @@ export const StudentCourseProgress = () => {
   }
 
   useEffect(() => {
-    if (id) fetchCurrentCourseProgress(); // Only fetch if ID exists
+    if (id) fetchCurrentCourseProgress();
   }, [id]);
 
   useEffect(() => {
@@ -104,8 +110,6 @@ export const StudentCourseProgress = () => {
       setIsSideBarOpen(false);
     }
   };
-  
-  console.log(currentLecture);
 
   const courseTitle = studentCurrentCourseProgress?.courseDetails?.title || "Course Progress";
   const curriculum = studentCurrentCourseProgress?.courseDetails?.curriculum || [];
@@ -157,7 +161,7 @@ export const StudentCourseProgress = () => {
                 {currentLecture?.title || "Course Introduction"}
               </h2>
 
-              {/* --- NEW: Resources Section --- */}
+              {/* --- Resources Section --- */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-6">
                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                    <FileText className="w-4 h-4 text-indigo-600" />
@@ -192,8 +196,6 @@ export const StudentCourseProgress = () => {
                   </p>
                 )}
               </div>
-              {/* --- End Resources Section --- */}
-
            </div>
         </div>
 
@@ -215,6 +217,10 @@ export const StudentCourseProgress = () => {
               <div className="space-y-1 p-2">
                 {curriculum.map((item, index) => {
                   const isActive = currentLecture?._id === item?._id;
+                  const isWatched = studentCurrentCourseProgress?.progress?.some(
+                    (prog) => prog.lectureId === item._id
+                  );
+
                   return (
                     <div 
                       key={item._id || index}
@@ -223,11 +229,19 @@ export const StudentCourseProgress = () => {
                         flex items-center gap-3 p-3 rounded-md cursor-pointer transition-all
                         ${isActive 
                            ? 'bg-indigo-50 border-l-4 border-indigo-600 text-indigo-900' 
+                           : isWatched
+                           ? 'bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700'
                            : 'hover:bg-gray-100 text-gray-700 border-l-4 border-transparent'}
                       `}
                     >
                       <div className="mt-1">
-                          {isActive ? <Play className="w-4 h-4 fill-indigo-600 text-indigo-600" /> : <span className="font-medium text-sm text-gray-400">#{index + 1}</span>}
+                          {isActive ? (
+                             <Play className="w-4 h-4 fill-indigo-600 text-indigo-600" />
+                          ) : isWatched ? (
+                             <CheckCircle className="w-4 h-4 text-emerald-600" /> 
+                          ) : (
+                             <span className="font-medium text-sm text-gray-400">#{index + 1}</span>
+                          )}
                       </div>
                       <span className="text-sm font-medium line-clamp-2">
                         {item?.title}
@@ -242,42 +256,70 @@ export const StudentCourseProgress = () => {
               {/* Locked Final Sections */}
               <div className="space-y-1 p-2 pb-10">
                  
-                 {/* Final Assessment */}
+                 {/* --- Final Assessment Section --- */}
                  <div 
-                   onClick={() => {
-                       // --- FIX START: Check if id exists before navigating ---
-                       if (isCourseCompleted && id) {
-                           navigate(`/user/course/${id}/quiz-view/`);
-                       } else {
-                           console.error("Navigation failed: ID is missing or course not complete");
-                       }
-                       // --- FIX END ---
-                   }}
-                   className={`
-                     flex items-center gap-3 p-3 rounded-md transition-all
-                     ${isCourseCompleted 
-                         ? 'bg-indigo-50 border-l-4 border-indigo-600 cursor-pointer hover:bg-indigo-100 text-indigo-900' 
-                         : 'bg-gray-100 opacity-60 cursor-not-allowed text-gray-500'}
-                   `}
+                    onClick={() => {
+                        // Allow click if course is completed (even if quiz is already passed, they might want to review)
+                        if (isCourseCompleted && id) {
+                            navigate(`/user/course/${id}/quiz-view/`);
+                        }
+                    }}
+                    className={`
+                      flex items-center gap-3 p-3 rounded-md transition-all
+                      ${isCourseCompleted 
+                          ? 'bg-indigo-50 border-l-4 border-indigo-600 cursor-pointer hover:bg-indigo-100 text-indigo-900' 
+                          : 'bg-gray-100 opacity-60 cursor-not-allowed text-gray-500'}
+                    `}
                  >
                     <FileQuestion className={`w-5 h-5 flex-shrink-0 ${isCourseCompleted ? 'text-indigo-600' : ''}`} />
                     <div className="flex-1">
                       <span className="text-sm font-medium block">Final Assessment</span>
                       <span className="text-xs">
-                        {isCourseCompleted ? "Ready to start" : "Complete all lectures to unlock"}
+                        {isQuizPassed 
+                            ? "Completed successfully" 
+                            : isCourseCompleted 
+                                ? "Ready to start" 
+                                : "Complete all lectures to unlock"}
                       </span>
                     </div>
-                    {isCourseCompleted ? <Play className="w-4 h-4 fill-indigo-600 text-indigo-600" /> : <Lock className="w-4 h-4" />}
+                    {/* LOGIC: Show Check if Passed, Lock if Locked, Play if Ready */}
+                    {isQuizPassed ? (
+                        <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    ) : isCourseCompleted ? (
+                        <Play className="w-4 h-4 fill-indigo-600 text-indigo-600" /> 
+                    ) : (
+                        <Lock className="w-4 h-4" />
+                    )}
                  </div>
 
-                 {/* Certificate */}
-                 <div className="flex items-center gap-3 p-3 rounded-md bg-gray-100 opacity-60 cursor-not-allowed text-gray-500">
-                    <Award className="w-5 h-5 flex-shrink-0" />
+                 {/* --- Certificate Section --- */}
+                 <div 
+                    onClick={() => {
+                        if (isQuizPassed) {
+                            // Navigate to Certificate View/Download Page
+                            navigate(`/course-certificate/${id}`);
+                        }
+                    }}
+                    className={`
+                        flex items-center gap-3 p-3 rounded-md transition-all
+                        ${isQuizPassed
+                           ? 'bg-emerald-50 border-l-4 border-emerald-600 cursor-pointer hover:bg-emerald-100 text-emerald-900' 
+                           : 'bg-gray-100 opacity-60 cursor-not-allowed text-gray-500'}
+                    `}
+                 >
+                    <Award className={`w-5 h-5 flex-shrink-0 ${isQuizPassed ? 'text-emerald-600' : ''}`} />
                     <div className="flex-1">
                       <span className="text-sm font-medium block">Course Certificate</span>
-                      <span className="text-xs">Pass assessment to unlock</span>
+                      <span className="text-xs">
+                         {isQuizPassed ? "Click to view certificate" : "Pass assessment to unlock"}
+                      </span>
                     </div>
-                    <Lock className="w-4 h-4" />
+                    
+                    {isQuizPassed ? (
+                        <Download className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                        <Lock className="w-4 h-4" />
+                    )}
                  </div>
               </div>
             </div>
@@ -304,12 +346,14 @@ export const StudentCourseProgress = () => {
           <DialogHeader>
             <DialogTitle>Congratulations!</DialogTitle>
             <DialogDescription className="flex flex-col gap-3">
-              <Label>You have completed the course</Label>
+              <Label>You have completed all lectures!</Label>
               <div className="flex flex-row gap-3">
-                <Button onClick={() => navigate("/user/student-courses")}>
-                  My Courses Page
+                <Button onClick={() => setShowCourseCompleteDialog(false)}>
+                    Stay Here
                 </Button>
-                <Button onClick={() => setShowCourseCompleteDialog(false)}>Rewatch Course</Button>
+                <Button onClick={() => navigate(`/user/course/${id}/quiz-view/`)}>
+                  Take Final Exam
+                </Button>
               </div>
             </DialogDescription>
           </DialogHeader>

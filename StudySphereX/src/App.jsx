@@ -33,6 +33,9 @@ import { MyCourses } from "./pages/instructor/MyCourses";
 import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
 import { QuizLandingPage } from "./pages/user/QuizLandingPage";
+import { FinalExam } from "./pages/user/FinalExam";
+import { StudentQuizResult } from "./pages/user/StudentQuizResult";
+import { StudentCertificate } from "./pages/user/StudentCertificate";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -127,6 +130,23 @@ export const App = () => {
           }
         />
 
+            <Route
+          path="/user/course/:id/quiz/"
+          element={
+            <RouteGuard
+              element={<FinalExam />}
+              authenticated={auth.authenticate}
+              user={auth?.user}
+            />
+          }
+        />
+
+        {/* NEW Route for Result */}
+      <Route path="/course/quiz-result/:id" element={<StudentQuizResult />} />
+
+      <Route path="/course-certificate/:id" element={<StudentCertificate />} />
+
+      
 
         <Route path="/payment-return" element={<PaymentReturn />} />
 

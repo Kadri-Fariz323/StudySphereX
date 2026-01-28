@@ -2,34 +2,29 @@ import { AuthContext } from "@/context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { Card } from "@/components/UI/Card";
 import { Button } from "@/components/UI/button";
-import {
-  fetchStudentViewCourseDetailsService, 
-} from "@/services/StudentViewService";
-import { useParams } from "react-router-dom"; 
+import { fetchStudentViewCourseDetailsService } from "@/services/StudentViewService";
+import { useParams, useNavigate } from "react-router-dom";
 
 export const QuizLandingPage = () => {
   const { auth } = useContext(AuthContext);
-  
-  
-  const { id } = useParams(); 
-  
-  
+
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   const [examInfo, setExamInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchCourse() {
-      
       if (!id) return;
 
       try {
         const res = await fetchStudentViewCourseDetailsService(id);
         console.log(res);
-        
+
         if (res?.success && res?.data) {
-          
           const quiz = res.data.finalQuiz;
-          
+
           if (quiz) {
             setExamInfo({
               totalQuestions: quiz.questions?.length || 0,
@@ -39,7 +34,7 @@ export const QuizLandingPage = () => {
               title: quiz.title,
             });
           } else {
-             console.error("No quiz found for this course");
+            console.error("No quiz found for this course");
           }
         }
       } catch (error) {
@@ -57,7 +52,11 @@ export const QuizLandingPage = () => {
   }
 
   if (!examInfo) {
-     return <div className="text-center p-10 text-red-500">No Final Assessment available for this course.</div>;
+    return (
+      <div className="text-center p-10 text-red-500">
+        No Final Assessment available for this course.
+      </div>
+    );
   }
 
   return (
@@ -66,7 +65,7 @@ export const QuizLandingPage = () => {
         <div className="space-y-6">
           {/* Title */}
           <h1 className="text-2xl md:text-3xl font-bold text-center">
-             Certificate Final Exam
+            {examInfo.title}
           </h1>
 
           {/* Important Notice */}
@@ -81,37 +80,28 @@ export const QuizLandingPage = () => {
               </span>
               .
             </p>
-           
           </div>
 
           {/* Exam Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-500">Total Questions</p>
-              <p className="text-xl font-bold">
-                {examInfo.totalQuestions}
-              </p>
+              <p className="text-xl font-bold">{examInfo.totalQuestions}</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-500">Time Limit</p>
-              <p className="text-xl font-bold">
-                {examInfo.timeLimit} Minutes
-              </p>
+              <p className="text-xl font-bold">{examInfo.timeLimit} Minutes</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-500">Max Marks</p>
-              <p className="text-xl font-bold">
-                {examInfo.maxMarks}
-              </p>
+              <p className="text-xl font-bold">{examInfo.maxMarks}</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-500">Passing Marks</p>
-              <p className="text-xl font-bold">
-                {examInfo.passingMarks}%
-              </p>
+              <p className="text-xl font-bold">{examInfo.passingMarks}%</p>
             </div>
           </div>
 
@@ -125,7 +115,10 @@ export const QuizLandingPage = () => {
           {/* Start Button */}
           <div className="flex justify-center pt-4">
             {/* You will likely need an onClick handler here to navigate to the actual quiz questions page */}
-            <Button className="w-full sm:w-auto px-8 py-2 text-lg">
+            <Button
+              className="w-full sm:w-auto px-8 py-2 text-lg"
+              onClick={() => navigate(`/user/course/${id}/quiz/`)}
+            >
               Start Exam
             </Button>
           </div>
