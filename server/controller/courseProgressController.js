@@ -183,7 +183,6 @@ const resetCurrentCourseProgress = async (req, res) => {
 
 const submitQuiz = async (req, res) => {
   try {
-    
     const { userId, courseId, quizId, answers } = req.body;
 
     const course = await Course.findById(courseId);
@@ -193,18 +192,15 @@ const submitQuiz = async (req, res) => {
         .json({ success: false, message: "Course not found" });
     }
 
-    
-    const quizQuestions = course.finalQuiz.questions; 
-    const passingMarks = course.finalQuiz.passingMarks || 70; 
+    const quizQuestions = course.finalQuiz.questions;
+    const passingMarks = course.finalQuiz.passingMarks || 70;
     let correctCount = 0;
 
-    
     answers.forEach((userAnswer) => {
       const question = quizQuestions.find(
         (q) => q._id.toString() === userAnswer.questionId,
       );
 
-      
       if (
         question &&
         question.correctAnswerIndex === userAnswer.selectedOption
@@ -216,7 +212,6 @@ const submitQuiz = async (req, res) => {
     const score = (correctCount / quizQuestions.length) * 100;
     const passed = score >= passingMarks;
 
-    
     let progress = await CourseProgress.findOne({ userId, courseId });
     if (!progress) {
       progress = new CourseProgress({ userId, courseId });
@@ -229,16 +224,14 @@ const submitQuiz = async (req, res) => {
       attemptedDate: new Date(),
     };
 
-    
-   const lecturesCompleted =
-  progress.lecturesProgress?.length === course.curriculum.length &&
-  progress.lecturesProgress.every(l => l.viewed);
+    const lecturesCompleted =
+      progress.lecturesProgress?.length === course.curriculum.length &&
+      progress.lecturesProgress.every((l) => l.viewed);
 
-if (passed && lecturesCompleted) {
-  progress.completed = true;
-  progress.completionDate = new Date();
-}
-
+    if (passed && lecturesCompleted) {
+      progress.completed = true;
+      progress.completionDate = new Date();
+    }
 
     await progress.save();
 
@@ -258,7 +251,6 @@ if (passed && lecturesCompleted) {
   }
 };
 
-
 const unlockCertificate = async (req, res) => {
   try {
     const { userId, courseId, certificateId } = req.body;
@@ -272,7 +264,6 @@ const unlockCertificate = async (req, res) => {
       });
     }
 
-    // 1. Check if quiz is passed
     if (!progress.quizProgress?.passed) {
       return res.status(403).json({
         success: false,
@@ -280,7 +271,6 @@ const unlockCertificate = async (req, res) => {
       });
     }
 
-    // 2. Update Certificate Progress
     progress.certificateProgress = {
       certificateId,
       isIssued: true,
@@ -289,10 +279,6 @@ const unlockCertificate = async (req, res) => {
 
     await progress.save();
 
-    // ---------------------------------------------------------
-    // 3. CRITICAL STEP: Fetch Course Details for the Certificate
-    // ---------------------------------------------------------
-    // We explicitly find the course to get the title and instructorName
     const course = await Course.findById(courseId);
 
     if (!course) {
@@ -302,15 +288,14 @@ const unlockCertificate = async (req, res) => {
       });
     }
 
-    // 4. Send the data back to the frontend
     res.status(200).json({
       success: true,
       message: "Certificate Unlocked Successfully!",
       data: {
         certificateId: certificateId,
-        // These fields must match exactly what you use in the frontend
-        courseTitle: course.title,           // From your DB: "test1"
-        instructorName: course.instructorName, // From your DB: "instructor1"
+
+        courseTitle: course.title,
+        instructorName: course.instructorName,
         issueDate: progress.certificateProgress.issueDate,
         studentId: userId,
       },
@@ -321,7 +306,55 @@ const unlockCertificate = async (req, res) => {
   }
 };
 
+const getAllCompletedCertificates = async (req, res) => {
+  try {
+    const { userId } = req.params;
 
+    const completedCourses = await CourseProgress.find({
+      userId,
+      "certificateProgress.isIssued": true,
+    });
+
+    if (!completedCourses || completedCourses.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No certificates found",
+        data: [],
+      });
+    }
+
+    const courseIds = completedCourses.map((item) => item.courseId);
+
+    const coursesDetails = await Course.find({ _id: { $in: courseIds } });
+
+    const certificates = completedCourses.map((progress) => {
+      const course = coursesDetails.find(
+        (c) => c._id.toString() === progress.courseId.toString(),
+      );
+
+      return {
+        certificateId: progress.certificateProgress.certificateId,
+        issueDate: progress.certificateProgress.issueDate,
+        courseTitle: course ? course.title : "Unknown Course",
+        instructorName: course ? course.instructorName : "Unknown Instructor",
+        courseId: progress.courseId,
+        studentId: userId,
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Certificates fetched successfully",
+      data: certificates,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Some error occured!",
+    });
+  }
+};
 
 module.exports = {
   getCurrentCourseProgress,
@@ -329,4 +362,5 @@ module.exports = {
   markCurrentLectureAsViewed,
   submitQuiz,
   unlockCertificate,
+  getAllCompletedCertificates,
 };

@@ -36,7 +36,7 @@ import { QuizLandingPage } from "./pages/user/QuizLandingPage";
 import { FinalExam } from "./pages/user/FinalExam";
 import { StudentQuizResult } from "./pages/user/StudentQuizResult";
 import { StudentCertificate } from "./pages/user/StudentCertificate";
-import { StudentCertificates, StudentCertificatesList } from "./pages/user/StudentCertificatesList";
+import {  StudentCertificatesList } from "./pages/user/StudentCertificatesList";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);

@@ -109,3 +109,8 @@ export const unlockCertificateService = async (userId, courseId) => {
   return data; 
 };
 
+export const fetchStudentCertificatesService = async (userId) => {
+  const { data } = await axiosInstance.get(`/student/course-progress/certificates/${userId}`);
+  
+  return data;
+};
