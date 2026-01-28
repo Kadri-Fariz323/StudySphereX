@@ -39,8 +39,10 @@ export default function CourseProvider({ children }) {
          currentEditedCourseId,
           setCurrentEditedCourseId,
           courseFinalQuiz, setCourseFinalQuiz
+      
       }}
     >
+  
       {children}
     </CourseContext.Provider>
   );

@@ -29,7 +29,7 @@ export const CoursesDetails = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [displayVideoUrl, setDisplayVideoUrl] = useState(null);
 
-  const { studentViewCourseDetails, setStudentViewCourseDetails } =
+  const { studentViewCourseDetails, setStudentViewCourseDetails, setCurrentCourseMeta } =
     useContext(StudentContext);
   const [approvalUrl, setApprovalUrl] = useState("");
   const navigate = useNavigate();
@@ -69,6 +69,11 @@ useEffect(() => {
           : response.data;
 
         setStudentViewCourseDetails(courseData);
+        setCurrentCourseMeta({
+  id: courseData._id,
+  title: courseData.title,
+  instructorName: courseData.instructorName,
+});
       } else {
         setStudentViewCourseDetails(null);
       }
