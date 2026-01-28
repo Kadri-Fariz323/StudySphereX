@@ -183,7 +183,7 @@ const resetCurrentCourseProgress = async (req, res) => {
 
 const submitQuiz = async (req, res) => {
   try {
-    // 1. Receive 'answers' instead of 'score'
+    
     const { userId, courseId, quizId, answers } = req.body;
 
     const course = await Course.findById(courseId);
@@ -193,18 +193,18 @@ const submitQuiz = async (req, res) => {
         .json({ success: false, message: "Course not found" });
     }
 
-    // 2. Validate & Calculate Score Server-Side
-    const quizQuestions = course.finalQuiz.questions; // Assuming your model structure
-    const passingMarks = course.finalQuiz.passingMarks || 70; // Fallback to 70 if not set
+    
+    const quizQuestions = course.finalQuiz.questions; 
+    const passingMarks = course.finalQuiz.passingMarks || 70; 
     let correctCount = 0;
 
-    // answers format from frontend: [{ questionId: "...", selectedOption: 1 }]
+    
     answers.forEach((userAnswer) => {
       const question = quizQuestions.find(
         (q) => q._id.toString() === userAnswer.questionId,
       );
 
-      // Check if answer is correct
+      
       if (
         question &&
         question.correctAnswerIndex === userAnswer.selectedOption
@@ -216,7 +216,7 @@ const submitQuiz = async (req, res) => {
     const score = (correctCount / quizQuestions.length) * 100;
     const passed = score >= passingMarks;
 
-    // 3. Update Progress
+    
     let progress = await CourseProgress.findOne({ userId, courseId });
     if (!progress) {
       progress = new CourseProgress({ userId, courseId });
@@ -229,7 +229,7 @@ const submitQuiz = async (req, res) => {
       attemptedDate: new Date(),
     };
 
-    // 4. Mark Course Complete if Passed
+    
    const lecturesCompleted =
   progress.lecturesProgress?.length === course.curriculum.length &&
   progress.lecturesProgress.every(l => l.viewed);
@@ -258,6 +258,7 @@ if (passed && lecturesCompleted) {
   }
 };
 
+
 const unlockCertificate = async (req, res) => {
   try {
     const { userId, courseId, certificateId } = req.body;
@@ -265,12 +266,13 @@ const unlockCertificate = async (req, res) => {
     const progress = await CourseProgress.findOne({ userId, courseId });
 
     if (!progress) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Course progress not found." });
+      return res.status(404).json({
+        success: false,
+        message: "Course progress not found.",
+      });
     }
 
-    // STRICT CHECK: Ensure quiz is passed AND course is marked completed
+    // 1. Check if quiz is passed
     if (!progress.quizProgress?.passed) {
       return res.status(403).json({
         success: false,
@@ -278,9 +280,7 @@ const unlockCertificate = async (req, res) => {
       });
     }
 
-    // Optional: Check if all lectures are viewed if that is a requirement
-    // if (!progress.completed) ...
-
+    // 2. Update Certificate Progress
     progress.certificateProgress = {
       certificateId,
       isIssued: true,
@@ -289,15 +289,38 @@ const unlockCertificate = async (req, res) => {
 
     await progress.save();
 
+    // ---------------------------------------------------------
+    // 3. CRITICAL STEP: Fetch Course Details for the Certificate
+    // ---------------------------------------------------------
+    // We explicitly find the course to get the title and instructorName
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course data not found.",
+      });
+    }
+
+    // 4. Send the data back to the frontend
     res.status(200).json({
       success: true,
       message: "Certificate Unlocked Successfully!",
-      certificateUrl: `/certificates/${certificateId}`,
+      data: {
+        certificateId: certificateId,
+        // These fields must match exactly what you use in the frontend
+        courseTitle: course.title,           // From your DB: "test1"
+        instructorName: course.instructorName, // From your DB: "instructor1"
+        issueDate: progress.certificateProgress.issueDate,
+        studentId: userId,
+      },
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 module.exports = {
   getCurrentCourseProgress,

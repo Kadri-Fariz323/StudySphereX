@@ -13,8 +13,6 @@ router.get("/get/:userId/:courseId", getCurrentCourseProgress);
 router.post("/mark-lecture-viewed", markCurrentLectureAsViewed);
 router.post("/reset-progress", resetCurrentCourseProgress);
 router.post("/quiz/submit", submitQuiz);
-
-// Route to claim/unlock certificate
 router.post("/certificate/unlock", unlockCertificate);
 
 module.exports = router;

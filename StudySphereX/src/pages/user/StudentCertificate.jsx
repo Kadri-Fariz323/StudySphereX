@@ -1,159 +1,173 @@
+import { useEffect, useState, useContext, useRef } from "react";
+import { useParams } from "react-router-dom"; // Assuming you use React Router
 import { AuthContext } from "@/context/AuthContext";
+import { Loader2, AlertCircle, Download } from "lucide-react"; // Icons (optional)
 import { unlockCertificateService } from "@/services/StudentViewService";
-import { useContext, useEffect, useRef, useState } from "react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import logo from '../../assets/logo.png'; // Ensure this path is correct
-import { Loader2, Download } from "lucide-react"; // Optional: For icons
-import { StudentContext } from "@/context/StudentContext";
 
-export const StudentCertificate = ({ courseDetails }) => {
+export const StudentCertificate = () => {
   const { auth } = useContext(AuthContext);
+  const { id } = useParams(); 
+const courseId = id;
+  const certificateRef = useRef(null);
+
   const [certificateData, setCertificateData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const certificateRef = useRef();
 
-  const { currentCourseMeta } = useContext(StudentContext);
-
-const courseTitle = currentCourseMeta?.title;
-const instructorName = currentCourseMeta?.instructorName;
-console.log(currentCourseMeta);
-
-
-  useEffect(() => {
+useEffect(() => {
     const fetchCertificate = async () => {
       try {
-        if (auth?.user?._id && courseDetails?._id) {
-          const response = await unlockCertificateService(
-            auth.user._id,
-            courseDetails._id
-          );
+        console.log("1. Starting fetchCertificate..."); // DEBUG
+        console.log("   User ID:", auth.user?._id);     // DEBUG
+        console.log("   Course ID:", courseId);         // DEBUG
 
-          if (response?.success) {
-            setCertificateData(response.data);
-          } else {
-            setError("Certificate not available yet. Please complete the course.");
-          }
+        setLoading(true);
+        const response = await unlockCertificateService(auth.user._id, courseId);
+        
+        console.log("2. API Response received:", response); // DEBUG
+
+        if (response.success) {
+          setCertificateData(response.data);
+        } else {
+          setError(response.message);
         }
       } catch (err) {
-        console.error("Error fetching certificate:", err);
-        setError("Failed to load certificate.");
+        console.error("3. API Error:", err); // DEBUG
+        const msg = err.response?.data?.message || "Failed to load certificate.";
+        setError(msg);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCertificate();
-  }, [auth, courseDetails]);
+    // Check if we have the data needed to run
+    if (auth.user && courseId) {
+      fetchCertificate();
+    } else {
+      console.log("Waiting for auth.user or courseId...", { auth: auth.user, courseId });
+    }
+  }, [auth.user, courseId]);
 
-  const handleDownload = async () => {
-    const element = certificateRef.current;
-    const canvas = await html2canvas(element, {
-      scale: 2, // Improves resolution
-      useCORS: true, // Handles cross-origin images if necessary
-      backgroundColor: "#ffffff"
-    });
-
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("l", "mm", "a4"); // Landscape, millimeters, A4 size
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`${auth?.user?.name || "Student"}_Certificate.pdf`);
+  const handlePrint = () => {
+    window.print();
   };
 
+  // ---------------- Render: Loading State ----------------
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-48">
-        <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <span className="ml-2 text-gray-600">Generating Certificate...</span>
       </div>
     );
   }
 
+  // ---------------- Render: Error/Not Eligible State ----------------
   if (error) {
     return (
-      <div className="text-center p-6 bg-red-50 text-red-600 rounded-lg border border-red-200">
-        <p>{error}</p>
+      <div className="flex h-screen flex-col items-center justify-center p-4">
+        <div className="rounded-lg bg-red-50 p-6 text-center shadow-md">
+          <AlertCircle className="mx-auto mb-2 h-10 w-10 text-red-500" />
+          <h2 className="mb-2 text-xl font-bold text-red-700">Certificate Locked</h2>
+          <p className="text-gray-700">{error}</p>
+          <p className="mt-2 text-sm text-gray-500">
+            Please ensure you have completed all course materials and passed the final quiz.
+          </p>
+        </div>
       </div>
     );
   }
 
+  // ---------------- Render: Certificate UI ----------------
   return (
-    <div className="flex flex-col items-center gap-6 p-4">
-      {/* Certificate Container - This part gets printed */}
-      <div
+    <div className="flex min-h-screen flex-col items-center bg-gray-100 py-10">
+      
+      {/* Action Buttons (Hidden when printing) */}
+      <div className="mb-6 flex gap-4 print:hidden">
+        <button 
+          onClick={handlePrint}
+          className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
+        >
+          <Download size={18} /> Download / Print
+        </button>
+      </div>
+
+      {/* Actual Certificate Container */}
+      <div 
         ref={certificateRef}
-        className="relative w-full max-w-4xl bg-white border-[10px] border-double border-gray-800 p-12 shadow-lg text-center aspect-[1.414/1] flex flex-col justify-between"
+        className="relative w-[800px] bg-white p-10 text-center shadow-2xl print:w-full print:shadow-none"
+        style={{ border: "10px double #1f2937" }} // Double border for classic look
       >
-        {/* Header */}
-        <div className="flex flex-col items-center gap-2">
-          <img src={logo} alt="Organization Logo" className="h-16 w-auto mb-2 opacity-90" />
-          <h1 className="text-4xl font-serif font-bold text-gray-800 tracking-wider uppercase">
-            Certificate of Completion
+        {/* Decorative Corner Borders (CSS or SVG) */}
+        <div className="absolute top-4 left-4 h-16 w-16 border-t-4 border-l-4 border-yellow-500"></div>
+        <div className="absolute top-4 right-4 h-16 w-16 border-t-4 border-r-4 border-yellow-500"></div>
+        <div className="absolute bottom-4 left-4 h-16 w-16 border-b-4 border-l-4 border-yellow-500"></div>
+        <div className="absolute bottom-4 right-4 h-16 w-16 border-b-4 border-r-4 border-yellow-500"></div>
+
+        {/* Certificate Content */}
+        <div className="py-10">
+          <h1 className="mb-2 text-4xl font-serif font-bold uppercase tracking-widest text-gray-800">
+            Certificate
           </h1>
-          <p className="text-gray-500 font-medium">This is to certify that</p>
-        </div>
-
-        {/* Student Name */}
-        <div className="py-4">
-          <h2 className="text-5xl font-script font-bold text-blue-900 mb-2 italic">
-            {auth?.user?.name || "Student Name"}
+          <h2 className="mb-8 text-xl font-light uppercase tracking-widest text-gray-500">
+            Of Completion
           </h2>
-          <div className="h-0.5 w-1/2 bg-gray-300 mx-auto my-4"></div>
-          <p className="text-lg text-gray-600">
-            Has successfully completed the course
-          </p>
-        </div>
 
-        {/* Course Details */}
-        <div>
-          <h3 className="text-3xl font-bold text-gray-800 mb-2">
-            {courseTitle  || "Course Title Here"}
-          </h3>
-          <p className="text-gray-500">
-            Date Issued: {new Date().toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            })}
-          </p>
-        </div>
-
-        {/* Footer / Signatures */}
-        <div className="flex justify-between items-end mt-8 px-12">
-          <div className="text-center">
-          {instructorName}
-            <div className="border-t border-gray-400 w-40 mb-1"></div>
-            <p className="text-sm font-bold text-gray-600 uppercase tracking-widest">Instructor</p>
-          </div>
+          <p className="text-lg text-gray-600">This is to certify that</p>
           
-          {/* Optional Seal */}
-          <div className="opacity-80">
-            <div className="w-24 h-24 border-4 border-blue-900 rounded-full flex items-center justify-center text-blue-900 font-bold rotate-[-15deg]">
-              OFFICIAL
-              <br />
-              SEAL
+          <h3 className="my-4 text-3xl font-serif font-bold italic text-blue-900 border-b-2 border-gray-300 inline-block px-10 pb-2">
+            {auth.user.name}
+          </h3>
+
+          <p className="mt-4 text-lg text-gray-600">has successfully completed the course</p>
+          
+          <h4 className="my-4 text-2xl font-bold text-gray-800">
+            {certificateData?.courseTitle}
+          </h4>
+
+          <p className="mx-auto max-w-lg text-gray-500">
+            Demonstrating dedication and proficiency in the subject matter as prescribed by the SkillSync curriculum.
+          </p>
+        </div>
+
+        {/* Footer: Signatures and ID */}
+        <div className="mt-12 flex items-end justify-between px-10">
+          <div className="text-center">
+            <div className="mb-2 font-signature text-2xl text-gray-800">
+               {/* Simulating a signature font */}
+               <span style={{ fontFamily: "'Dancing Script', cursive" }}>
+                 {certificateData?.instructorName}
+               </span>
             </div>
+            <div className="h-px w-48 bg-gray-400"></div>
+            <p className="mt-2 text-sm font-bold text-gray-500">Instructor</p>
           </div>
 
           <div className="text-center">
-              KF
-            <div className="border-t border-gray-400 w-40 mb-1"></div>
-            <p className="text-sm font-bold text-gray-600 uppercase tracking-widest">Director</p>
+             {/* Formatting the ISO date */}
+            <div className="mb-2 text-lg text-gray-800">
+              {new Date(certificateData?.issueDate).toLocaleDateString()}
+            </div>
+            <div className="h-px w-48 bg-gray-400"></div>
+            <p className="mt-2 text-sm font-bold text-gray-500">Date Issued</p>
           </div>
+        </div>
+
+        {/* Certificate ID */}
+        <div className="mt-10 text-xs text-gray-400">
+          Certificate ID: {certificateData?.certificateId}
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <button
-        onClick={handleDownload}
-        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold"
-      >
-        <Download className="h-5 w-5" />
-        Download Certificate
-      </button>
+      {/* Print Styles */}
+      <style>{`
+        @media print {
+          @page { size: landscape; margin: 0; }
+          body { -webkit-print-color-adjust: exact; background: white; }
+          .print\\:hidden { display: none !important; }
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap');
+      `}</style>
     </div>
   );
 };

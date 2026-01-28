@@ -97,14 +97,14 @@ export async function submitQuizService(userId, courseId, quizId, answers) {
   return data;
 }
 
-export async function unlockCertificateService(userId, courseId) {
-  const { data } = await axiosInstance.post(
-    `/student/course-progress/certificate/unlock`,
-    {
-      userId,
-      courseId,
-    }
-  );
 
-  return data;
-}
+export const unlockCertificateService = async (userId, courseId) => {
+  // ✅ FIXED: Added "-progress" to match server.js
+  const { data } = await axiosInstance.post('/student/course-progress/certificate/unlock', {
+    userId,
+    courseId,
+    certificateId: `${userId}-${courseId}` 
+  });
+  
+  return data; 
+};
