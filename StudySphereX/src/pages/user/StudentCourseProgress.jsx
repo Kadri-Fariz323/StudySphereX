@@ -48,6 +48,7 @@ export const StudentCourseProgress = () => {
 
   async function fetchCurrentCourseProgress() {
     const response = await getCurrentCourseProgressService(auth?.user?._id, id);
+    
     if (response?.success) {
       if (!response?.data?.isPurchased) {
         setLockCourse(true);
@@ -88,6 +89,7 @@ export const StudentCourseProgress = () => {
 
       if (response?.success) {
         fetchCurrentCourseProgress();
+
       }
     }
   }
@@ -113,6 +115,8 @@ export const StudentCourseProgress = () => {
 
   const courseTitle = studentCurrentCourseProgress?.courseDetails?.title || "Course Progress";
   const curriculum = studentCurrentCourseProgress?.courseDetails?.curriculum || [];
+
+
 
   return (
     <div className="flex flex-col h-screen bg-white font-inter text-slate-800">

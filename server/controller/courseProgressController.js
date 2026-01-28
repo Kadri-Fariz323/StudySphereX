@@ -2,7 +2,6 @@ const CourseProgress = require("../model/CourseProgress");
 const Course = require("../model/Course");
 const StudentCourses = require("../model/StudentCourses");
 
-
 const markCurrentLectureAsViewed = async (req, res) => {
   try {
     const { userId, courseId, lectureId } = req.body;
@@ -23,7 +22,7 @@ const markCurrentLectureAsViewed = async (req, res) => {
       await progress.save();
     } else {
       const lectureProgress = progress.lecturesProgress.find(
-        (item) => item.lectureId === lectureId
+        (item) => item.lectureId === lectureId,
       );
 
       if (lectureProgress) {
@@ -48,15 +47,18 @@ const markCurrentLectureAsViewed = async (req, res) => {
       });
     }
 
-    
+    const hasQuiz =
+      course.finalQuiz &&
+      Array.isArray(course.finalQuiz.questions) &&
+      course.finalQuiz.questions.length > 0;
+
     const allLecturesViewed =
       progress.lecturesProgress.length === course.curriculum.length &&
       progress.lecturesProgress.every((item) => item.viewed);
 
-    if (allLecturesViewed) {
+    if (allLecturesViewed && !hasQuiz) {
       progress.completed = true;
       progress.completionDate = new Date();
-
       await progress.save();
     }
 
@@ -74,7 +76,6 @@ const markCurrentLectureAsViewed = async (req, res) => {
   }
 };
 
-
 const getCurrentCourseProgress = async (req, res) => {
   try {
     const { userId, courseId } = req.params;
@@ -83,7 +84,7 @@ const getCurrentCourseProgress = async (req, res) => {
 
     const isCurrentCoursePurchasedByCurrentUserOrNot =
       studentPurchasedCourses?.courses?.findIndex(
-        (item) => item.courseId === courseId
+        (item) => item.courseId === courseId,
       ) > -1;
 
     if (!isCurrentCoursePurchasedByCurrentUserOrNot) {
@@ -134,8 +135,8 @@ const getCurrentCourseProgress = async (req, res) => {
         completed: currentUserCourseProgress.completed,
         completionDate: currentUserCourseProgress.completionDate,
         isPurchased: true,
-        quizProgress: currentUserCourseProgress.quizProgress, 
-    certificateProgress: currentUserCourseProgress.certificateProgress
+        quizProgress: currentUserCourseProgress.quizProgress,
+        certificateProgress: currentUserCourseProgress.certificateProgress,
       },
     });
   } catch (error) {
@@ -180,7 +181,6 @@ const resetCurrentCourseProgress = async (req, res) => {
   }
 };
 
-
 const submitQuiz = async (req, res) => {
   try {
     // 1. Receive 'answers' instead of 'score'
@@ -188,7 +188,9 @@ const submitQuiz = async (req, res) => {
 
     const course = await Course.findById(courseId);
     if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found" });
     }
 
     // 2. Validate & Calculate Score Server-Side
@@ -199,11 +201,14 @@ const submitQuiz = async (req, res) => {
     // answers format from frontend: [{ questionId: "...", selectedOption: 1 }]
     answers.forEach((userAnswer) => {
       const question = quizQuestions.find(
-        (q) => q._id.toString() === userAnswer.questionId
+        (q) => q._id.toString() === userAnswer.questionId,
       );
 
       // Check if answer is correct
-      if (question && question.correctAnswerIndex === userAnswer.selectedOption) {
+      if (
+        question &&
+        question.correctAnswerIndex === userAnswer.selectedOption
+      ) {
         correctCount++;
       }
     });
@@ -225,10 +230,15 @@ const submitQuiz = async (req, res) => {
     };
 
     // 4. Mark Course Complete if Passed
-    if (passed) {
-      progress.completed = true;
-      progress.completionDate = new Date();
-    }
+   const lecturesCompleted =
+  progress.lecturesProgress?.length === course.curriculum.length &&
+  progress.lecturesProgress.every(l => l.viewed);
+
+if (passed && lecturesCompleted) {
+  progress.completed = true;
+  progress.completionDate = new Date();
+}
+
 
     await progress.save();
 
@@ -239,7 +249,7 @@ const submitQuiz = async (req, res) => {
         score,
         passed,
         passingMarks,
-        quizProgress: progress.quizProgress
+        quizProgress: progress.quizProgress,
       },
     });
   } catch (error) {
@@ -248,7 +258,6 @@ const submitQuiz = async (req, res) => {
   }
 };
 
-
 const unlockCertificate = async (req, res) => {
   try {
     const { userId, courseId, certificateId } = req.body;
@@ -256,14 +265,16 @@ const unlockCertificate = async (req, res) => {
     const progress = await CourseProgress.findOne({ userId, courseId });
 
     if (!progress) {
-      return res.status(404).json({ success: false, message: "Course progress not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course progress not found." });
     }
 
     // STRICT CHECK: Ensure quiz is passed AND course is marked completed
     if (!progress.quizProgress?.passed) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "You must pass the final quiz to unlock the certificate." 
+      return res.status(403).json({
+        success: false,
+        message: "You must pass the final quiz to unlock the certificate.",
       });
     }
 
@@ -273,17 +284,16 @@ const unlockCertificate = async (req, res) => {
     progress.certificateProgress = {
       certificateId,
       isIssued: true,
-      issueDate: new Date()
+      issueDate: new Date(),
     };
 
     await progress.save();
 
-    res.status(200).json({ 
-      success: true, 
-      message: "Certificate Unlocked Successfully!", 
-      certificateUrl: `/certificates/${certificateId}` 
+    res.status(200).json({
+      success: true,
+      message: "Certificate Unlocked Successfully!",
+      certificateUrl: `/certificates/${certificateId}`,
     });
-
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -294,5 +304,5 @@ module.exports = {
   resetCurrentCourseProgress,
   markCurrentLectureAsViewed,
   submitQuiz,
-  unlockCertificate
+  unlockCertificate,
 };
