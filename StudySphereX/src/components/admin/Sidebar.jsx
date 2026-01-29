@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { FaPhotoVideo } from "react-icons/fa";
 import logo from "../../assets/logo.png";
-import { MdCategory, MdClose, MdDashboard, MdPeople, MdReport } from "react-icons/md";
+import { MdCategory, MdClose, MdDashboard, MdPeople } from "react-icons/md";
+import { Mail } from "lucide-react";
 
 export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navLinks = [
@@ -9,7 +10,7 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { name: "Manage Users", icon: MdPeople, path: "/admin/users" },
     { name: "Manage Courses", icon: FaPhotoVideo, path: "/admin/courses" },
     { name: "Courses categories", icon: MdCategory, path: "/admin/categories" },
-    { name: "Reports", icon: MdReport, path: "/admin/reports" },
+    { name: "Reports", icon: Mail, path: "/admin/reports" },
 
 
   ];
