@@ -45,9 +45,9 @@ export const CreateCourse = () => {
   }
 
   function ValidateFormData() {
-    // 1. Validate Landing Page Data
+    
     for (const key in courseLandingFormData) {
-      // FIX: Skip system fields or arrays that shouldn't block submission
+      
       if (
         [
           "students",
@@ -69,7 +69,7 @@ export const CreateCourse = () => {
       }
     }
 
-    // 2. Validate Curriculum
+    
     if (
       !Array.isArray(courseCurriculumFormData) ||
       courseCurriculumFormData.length === 0
@@ -96,85 +96,79 @@ export const CreateCourse = () => {
     return hasFreePreview;
   }
 
- async function handleCreateCourse() {
-  const isEditMode = currentEditedCourseId !== null;
+  async function handleCreateCourse() {
+    const isEditMode = currentEditedCourseId !== null;
 
-  const courseFinalFormData = {
-    instructorId: auth?.user?._id,
-    instructorName: auth?.user?.name,
-    date: new Date(),
-    ...courseLandingFormData,
-    students: [],
-    curriculum: courseCurriculumFormData,
-    isPublished: true,
-    finalQuiz: courseFinalQuiz,
-  };
+    const courseFinalFormData = {
+      instructorId: auth?.user?._id,
+      instructorName: auth?.user?.name,
+      date: new Date(),
+      ...courseLandingFormData,
+      students: [],
+      curriculum: courseCurriculumFormData,
+      isPublished: true, 
+      approvalStatus: "pending", 
+      finalQuiz: courseFinalQuiz,
+    };
 
-  try {
-    const response = isEditMode
-      ? await updateCourseByIdService(
-          currentEditedCourseId,
-          courseFinalFormData
-        )
-      : await addNewCourseService(courseFinalFormData);
+    try {
+      const response = isEditMode
+        ? await updateCourseByIdService(
+            currentEditedCourseId,
+            courseFinalFormData,
+          )
+        : await addNewCourseService(courseFinalFormData);
 
-    if (response?.success) {
-      toast.success(
-        isEditMode
-          ? "Course updated successfully 🎉"
-          : "Course created successfully 🚀"
-      );
+      if (response?.success) {
+        
+        toast.success(
+          isEditMode
+            ? "Course updated & submitted for review! 📝"
+            : "Course created & submitted for review! 🚀",
+        );
 
-      setCourseLandingFormData(courseLandingInitialFormData || {});
-      setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
-      setCourseFinalQuiz(null);
-      setCurrentEditedCourseId(null);
+        
+        
+        if (!isEditMode) {
+          setCourseLandingFormData(courseLandingInitialFormData || {});
+          setCourseCurriculumFormData(courseCurriculumInitialFormData || []);
+          setCourseFinalQuiz(null);
+        }
 
-      navigate("/instructor/my-courses");
-    } else {
-      toast.error(
-        response?.message ||
-          (isEditMode
-            ? "Failed to update course"
-            : "Failed to create course")
-      );
+        setCurrentEditedCourseId(null);
+        navigate("/instructor/my-courses");
+      } else {
+        toast.error(response?.message || "Failed to submit course");
+      }
+    } catch (error) {
+      console.error("Course action failed", error);
+      toast.error(error?.message || "Something went wrong");
     }
-  } catch (error) {
-    console.error("Course action failed", error);
-
-    toast.error(
-      error?.response?.data?.message ||
-        (isEditMode
-          ? "Something went wrong while updating the course"
-          : "Something went wrong while creating the course")
-    );
   }
-}
-
 
   async function fetchCurrentCourseDetails() {
     try {
       const response = await fetchInstructorCourseDetailsService(
-        currentEditedCourseId
+        currentEditedCourseId,
       );
 
       if (response?.success) {
         console.log("Full Course Data:", response.data);
 
-        // 1. Set Landing Page Data
+        
         setCourseLandingFormData({
           ...courseLandingInitialFormData,
           ...response.data,
         });
 
-        // 2. Set Curriculum Data
+        
         if (response?.data?.curriculum) {
           console.log("Setting Curriculum Data to:", response.data.curriculum);
           setCourseCurriculumFormData(response.data.curriculum);
         }
 
-        // 3. 🚨 THE MISSING PART: Set Final Quiz Data 🚨
-        // This ensures the green "Edit Quiz" button appears
+        
+        
         setCourseFinalQuiz(response?.data?.finalQuiz || null);
       }
     } catch (err) {
@@ -190,8 +184,6 @@ export const CreateCourse = () => {
     if (params?.courseId) setCurrentEditedCourseId(params?.courseId);
   }, [params?.courseId]);
 
-  
-
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between">
@@ -204,10 +196,12 @@ export const CreateCourse = () => {
           disabled={!ValidateFormData()}
           onClick={handleCreateCourse}
         >
-          <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl  bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
+          <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-4xl bg-gradient-to-r from-transparent via-teal-300 to-transparent" />
           <span className="relative z-20">
-            {" "}
-            {currentEditedCourseId ? "Update" : "Create"}{" "}
+            {/* Logic to change text based on mode */}
+            {currentEditedCourseId
+              ? "Update & Submit Review"
+              : "Submit for Review"}
           </span>
         </button>
       </div>

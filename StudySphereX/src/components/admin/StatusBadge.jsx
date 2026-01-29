@@ -1,13 +1,29 @@
-export const StatusBadge = ({ status }) => {
-  const styles = {
-    pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    approved: "bg-green-100 text-green-800 border-green-200",
-    rejected: "bg-red-100 text-red-800 border-red-200",
-  };
+export const StatusBadge = ({ status, isPublished }) => {
+if (status === 'pending') {
+    return (
+      <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+         Pending
+      </span>
+    );
+  }
 
-  return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${styles[status] || styles.pending}`}>
-      {status ? status.toUpperCase() : "PENDING"}
-    </span>
-  );
+  // 2. Rejected Logic
+  if (status === 'rejected') {
+    return (
+      <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+         Rejected
+      </span>
+    );
+  }
+
+  // 3. Approved Logic (Check isPublished to be sure)
+  if (status === 'approved') {
+    return (
+      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+        {isPublished ? " Live" : "⏸️ Approved (Hidden)"}
+      </span>
+    );
+  }
+
+  return <span>Draft</span>;
 };

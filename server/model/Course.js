@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// 1. Define QuizSchema
 const QuizSchema = new mongoose.Schema({
   title: { type: String, required: true },
   questions: [
@@ -13,7 +12,6 @@ const QuizSchema = new mongoose.Schema({
   passingMarks: { type: Number, default: 70 },
 });
 
-// 2.  LectureSchema
 const LectureSchema = new mongoose.Schema({
   title: String,
   videoUrl: String,
@@ -24,7 +22,6 @@ const LectureSchema = new mongoose.Schema({
   quiz: QuizSchema,
 });
 
-// 3. Define CourseSchema
 const CourseSchema = new mongoose.Schema({
   instructorId: String,
   instructorName: String,
@@ -65,6 +62,27 @@ const CourseSchema = new mongoose.Schema({
     type: QuizSchema,
     default: null,
   },
+});
+
+CourseSchema.pre("save", function () {
+  if (this.isModified("approvalStatus") && this.approvalStatus !== "approved") {
+    this.isPublished = false;
+  }
+});
+
+CourseSchema.pre("findOneAndUpdate", function () {
+  const update = this.getUpdate();
+
+  const status =
+    update.approvalStatus || (update.$set && update.$set.approvalStatus);
+
+  if (status && status !== "approved") {
+    if (update.$set) {
+      update.$set.isPublished = false;
+    } else {
+      update.isPublished = false;
+    }
+  }
 });
 
 module.exports = mongoose.model("Course", CourseSchema);

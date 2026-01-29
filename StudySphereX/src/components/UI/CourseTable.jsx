@@ -62,8 +62,9 @@ export const CourseTable = ({ listOfCourses, onRefresh }) => {
                 </td>
 
                <td className="py-2 px-4 border-b">
-          <StatusBadge status={course.approvalStatus} />
+          <StatusBadge status={course.approvalStatus} isPublished={course.isPublished} />
         </td>
+
 
                 <td className="px-4 py-3">
                   <div className="flex justify-center gap-2">

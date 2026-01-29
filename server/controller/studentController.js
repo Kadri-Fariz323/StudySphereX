@@ -12,8 +12,13 @@ exports.getAllCourses = async (req, res) => {
       search = "",
     } = req.query;
 
-    let filters = {};
+    // 1. BASE FILTER: Strictly limit to Published & Approved courses
+    let filters = {
+      isPublished: true,
+      approvalStatus: "approved", 
+    };
 
+    // 2. Apply Dynamic Filters
     if (category) {
       filters.category = { $in: category.split(",") };
     }
@@ -78,12 +83,23 @@ exports.getCourseDetails = async (req, res) => {
     const { id } = req.params;
     const courseDetails = await Course.findById(id);
 
+    // 1. CHECK: Course must exist AND be approved
+    // If it exists but is pending/rejected, we treat it as "Not Found" for students
     if (!courseDetails) {
       return res.status(404).json({
         success: false,
         message: "Course not found",
       });
     }
+
+    // 2. SECURITY: Prevent direct URL access to unapproved courses
+    if (courseDetails.approvalStatus !== "approved" || !courseDetails.isPublished) {
+       return res.status(404).json({
+        success: false,
+        message: "Course is not available",
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: courseDetails,
