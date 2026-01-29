@@ -28,6 +28,7 @@ export const signUpFormControls = [
     options: [
       { label: "Student", value: "user" },
       { label: "Instructor", value: "instructor" },
+      
     ],
   },
 

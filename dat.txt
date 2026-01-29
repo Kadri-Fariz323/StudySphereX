@@ -39,3 +39,13 @@ s8[57JW$
 us Login 
 sb-4797fo48788776@personal.example.com
 _?!K2{xO
+
+fa642005iz
+
+
+db.users.insertOne({
+  name: "Kadri Fariz",
+  email: "fariz1@gmail.com",
+  password: "$2b$10$uGWezbFTMSk99rH/s1Z1UuGKSGwiz6ZnhCk5gkBcop/H2NMEp3hrO",
+  role: "admin"
+})

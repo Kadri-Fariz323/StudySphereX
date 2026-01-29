@@ -28,7 +28,7 @@ import { StudentCourseProgress } from "./pages/user/StudentCourseProgress";
 
 // Instructor Pages
 import { CreateCourse } from "./pages/instructor/CreateCourse";
-import { ManageUsers } from "./pages/instructor/ManageUsers";
+import { ViewUsers } from "./pages/instructor/ViewUsers";
 import { MyCourses } from "./pages/instructor/MyCourses";
 import { InstructorDashboard } from "./pages/instructor/InstructorDashboard";
 import { InstructorProfile } from "./pages/instructor/InstructorProfile";
@@ -36,7 +36,13 @@ import { QuizLandingPage } from "./pages/user/QuizLandingPage";
 import { FinalExam } from "./pages/user/FinalExam";
 import { StudentQuizResult } from "./pages/user/StudentQuizResult";
 import { StudentCertificate } from "./pages/user/StudentCertificate";
-import {  StudentCertificatesList } from "./pages/user/StudentCertificatesList";
+import { StudentCertificatesList } from "./pages/user/StudentCertificatesList";
+import { AdminLayout } from "./layouts/AdminLayout";
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { ManageCourses } from "./pages/admin/ManageCourses";
+import { CoursesCategories } from "./pages/admin/CoursesCategories";
+import { Reports } from "./pages/admin/Reports";
+import { ManageUsers } from "./pages/admin/ManageUsers";
 
 export const App = () => {
   const { auth } = useContext(AuthContext);
@@ -83,8 +89,6 @@ export const App = () => {
           <Route index element={<Dashboard />} />
           <Route path="student-courses" element={<PurchasedCourses />} />
           <Route path="certificates" element={<StudentCertificatesList />} />
-
-          
         </Route>
 
         {/* 2. User Courses (WITHOUT Sidebar/Layout) */}
@@ -122,7 +126,7 @@ export const App = () => {
           }
         />
 
-          <Route
+        <Route
           path="/user/course/:id/quiz-view/"
           element={
             <RouteGuard
@@ -133,7 +137,7 @@ export const App = () => {
           }
         />
 
-            <Route
+        <Route
           path="/user/course/:id/quiz/"
           element={
             <RouteGuard
@@ -145,11 +149,12 @@ export const App = () => {
         />
 
         {/* NEW Route for Result */}
-      <Route path="/course/quiz-result/:id" element={<StudentQuizResult />} />
+        <Route path="/course/quiz-result/:id" element={<StudentQuizResult />} />
 
-      <Route path="/course-certificate/:id" element={<StudentCertificate />} />
-
-      
+        <Route
+          path="/course-certificate/:id"
+          element={<StudentCertificate />}
+        />
 
         <Route path="/payment-return" element={<PaymentReturn />} />
 
@@ -169,7 +174,25 @@ export const App = () => {
           <Route path="add-course" element={<CreateCourse />} />
           <Route path="edit-course/:courseId" element={<CreateCourse />} />
           <Route path="my-courses" element={<MyCourses />} />
-          <Route path="manage-users" element={<ManageUsers />} />
+          <Route path="manage-users" element={<ViewUsers />} />
+        </Route>
+
+        {/* ================= ADMIN ROUTES ================= */}
+        <Route
+          path="/admin"
+          element={
+            <RouteGuard
+              element={<AdminLayout />}
+              authenticated={auth.authenticate}
+              user={auth?.user}
+            />
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<ManageUsers />} />
+          <Route path="courses" element={<ManageCourses />} />
+          <Route path="categories" element={<CoursesCategories />} />
+          <Route path="reports" element={<Reports />} />
         </Route>
 
         {/* ================= CATCH ALL ================= */}

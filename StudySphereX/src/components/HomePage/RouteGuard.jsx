@@ -16,6 +16,15 @@ export const RouteGuard = ({ authenticated, user, element }) => {
   ) {
     return <Navigate to="/user" />;
   }
+
+  if (
+  authenticated &&
+  user?.role === "admin" &&
+  !location.pathname.includes("admin")
+) {
+  return <Navigate to="/admin" />;
+}
+
  
   if (
     authenticated &&
