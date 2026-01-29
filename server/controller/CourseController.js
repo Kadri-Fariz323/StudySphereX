@@ -80,17 +80,14 @@ const deleteCourse = async (req, res) => {
 
 const getAllCourses = async (req, res) => {
   try {
-    const coursesList = await Course.find({});
-    res.status(200).json({
-      success: true,
-      data: coursesList,
-    });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({
-      success: false,
-      message: "Some error occurred!",
-    });
+    const courses = await Course.find({ 
+      isPublished: true, 
+      approvalStatus: "approved" // Only fetch approved courses
+    }).select("-students -curriculum"); // Exclude heavy data if needed
+
+    res.status(200).json({ success: true, data: courses });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 

@@ -1,6 +1,7 @@
 import { MdEdit, MdDeleteForever } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { deleteCourseById } from "../../services/index";
+import { StatusBadge } from "../admin/StatusBadge";
 
 export const CourseTable = ({ listOfCourses, onRefresh }) => {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ export const CourseTable = ({ listOfCourses, onRefresh }) => {
             <th className="px-4 py-3">Course</th>
             <th className="px-4 py-3">Students</th>
             <th className="px-4 py-3">Revenue</th>
+            <th className="px-4 py-3">Status</th>
             <th className="px-4 py-3 text-center">Actions</th>
           </tr>
         </thead>
@@ -58,6 +60,10 @@ export const CourseTable = ({ listOfCourses, onRefresh }) => {
                 <td className="px-4 py-3">
                   ${course?.pricing}
                 </td>
+
+               <td className="py-2 px-4 border-b">
+          <StatusBadge status={course.approvalStatus} />
+        </td>
 
                 <td className="px-4 py-3">
                   <div className="flex justify-center gap-2">
