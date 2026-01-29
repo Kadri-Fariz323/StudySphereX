@@ -95,6 +95,14 @@ export const courseCategories = [
   { id: "mobile-development", label: "Mobile Development" },
   { id: "game-development", label: "Game Development" },
   { id: "software-engineering", label: "Software Engineering" },
+  { id: "Business-category", label: "Business" },
+  { id: "health-category", label: "Health" },
+  { id: "Math-And-Logic", label: "Math And Logic" },
+  { id: "Language-Learning", label: "Language Learning" },
+  { id: "Personal-Development", label: "Personal Development" },
+  { id: "  Social-Sciences", label: "  Social Sciences" },
+
+
 ];
 
 export const courseLandingPageFormControls = [
