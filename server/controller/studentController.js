@@ -1,5 +1,6 @@
 const Course = require("../model/Course");
 const StudentCourses = require("../model/StudentCourses");
+const courseProgress = require("../model/CourseProgress");
 
 exports.getAllCourses = async (req, res) => {
   try {
@@ -15,7 +16,7 @@ exports.getAllCourses = async (req, res) => {
     // 1. BASE FILTER: Strictly limit to Published & Approved courses
     let filters = {
       isPublished: true,
-      approvalStatus: "approved", 
+      approvalStatus: "approved",
     };
 
     // 2. Apply Dynamic Filters
@@ -93,8 +94,11 @@ exports.getCourseDetails = async (req, res) => {
     }
 
     // 2. SECURITY: Prevent direct URL access to unapproved courses
-    if (courseDetails.approvalStatus !== "approved" || !courseDetails.isPublished) {
-       return res.status(404).json({
+    if (
+      courseDetails.approvalStatus !== "approved" ||
+      !courseDetails.isPublished
+    ) {
+      return res.status(404).json({
         success: false,
         message: "Course is not available",
       });
@@ -148,6 +152,70 @@ exports.checkCoursePurchaseInfo = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Some error occurred",
+    });
+  }
+};
+
+exports.getStudentStats = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Student ID is required",
+      });
+    }
+
+    // Fetch student's purchased courses
+    const studentCoursesDoc = await StudentCourses.findOne({
+      userId: studentId,
+    });
+    const purchasedCourses = studentCoursesDoc ? studentCoursesDoc.courses : [];
+    const totalPurchased = purchasedCourses.length;
+
+    // Get course IDs for progress check
+    const purchasedCourseIds = purchasedCourses.map(
+      (course) => course.courseId,
+    );
+
+    // Fetch progress for purchased courses
+    const progressDocs = await courseProgress.find({
+      userId: studentId,
+      courseId: { $in: purchasedCourseIds },
+    });
+
+    // Calculate completed courses
+    const completedCourseIds = progressDocs
+      .filter((progress) => progress.completed)
+      .map((progress) => progress.courseId);
+    const totalCompleted = completedCourseIds.length;
+
+    // Calculate in-progress courses (purchased but not completed)
+    const totalInProgress = purchasedCourseIds.filter(
+      (courseId) => !completedCourseIds.includes(courseId),
+    ).length;
+
+    // Calculate total certificates earned
+    const totalCertificates = progressDocs.filter(
+      (progress) =>
+        progress.certificateProgress && progress.certificateProgress.isIssued,
+    ).length;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalPurchased,
+        totalInProgress,
+        totalCompleted,
+        totalCertificates,
+      },
+    });
+  } catch (e) {
+    console.error("getStudentStats error:", e);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
     });
   }
 };

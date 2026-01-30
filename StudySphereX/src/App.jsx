@@ -21,7 +21,7 @@ import { AuthPage } from "./pages/AuthPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
 // User Pages
-import { Dashboard } from "./pages/user/Dashboard";
+import { StudentDashboard } from "./pages/user/StudentDashboard";
 import { PaymentReturn } from "./pages/user/PaymentReturn";
 import { PurchasedCourses } from "./pages/user/PurchasedCourses";
 import { StudentCourseProgress } from "./pages/user/StudentCourseProgress";
@@ -86,7 +86,7 @@ export const App = () => {
             />
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route index element={<StudentDashboard />} />
           <Route path="student-courses" element={<PurchasedCourses />} />
           <Route path="certificates" element={<StudentCertificatesList />} />
         </Route>

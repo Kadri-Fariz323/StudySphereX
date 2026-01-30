@@ -49,3 +49,5 @@ db.users.insertOne({
   password: "$2b$10$uGWezbFTMSk99rH/s1Z1UuGKSGwiz6ZnhCk5gkBcop/H2NMEp3hrO",
   role: "admin"
 })
+
+
