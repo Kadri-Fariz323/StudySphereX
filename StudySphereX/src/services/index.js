@@ -69,3 +69,9 @@ export async function saveContactForm(formdata) {
     const { data } = await axiosInstance.post(`/contact`, formdata); 
     return data;
 }
+
+export const fetchInstructorStatsService = async (instructorId) => {
+  const { data } = await axiosInstance.get(`/instructor/course/get/instructor-stats/${instructorId}`);
+
+  return data;
+};

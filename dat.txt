@@ -50,4 +50,26 @@ db.users.insertOne({
   role: "admin"
 })
 
+@/server/controller/CourseController.js
+
+create and add a new api in this controller for displaying total count for stats card for instructor dashboard 
+fetch counts like 
+
+total Enrolled Students 
+total My courses 
+total pending courses 
+total rejected courses 
+total revenue 
+total approved courses 
+
+also add routes for that 
+
+and add that api for frontend integration 
+@/StudySphereX/src/services/StudentViewService.js
+
+finally integrate it here
+@/StudySphereX/src/pages/instructor/InstructorDashboard.jsx
+
+
+
 

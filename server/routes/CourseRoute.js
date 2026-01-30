@@ -8,7 +8,8 @@ const {
   updateCourseByID,
   saveFinalQuiz,
   deleteCourse,
-  getInstructorCourses
+  getInstructorCourses,
+  getInstructorStats
 } = require("../controller/CourseController");
 
 
@@ -29,5 +30,7 @@ router.get("/get/instructor/:instructorId", getInstructorCourses);
 
 router.get("/get", getAllCourses);
 router.get("/get/details/:id", getCourseDetailsByID);
+router.get("/get/instructor-stats/:instructorId", getInstructorStats);
+
 
 module.exports = router;

@@ -120,3 +120,4 @@ export const fetchStudentStatsService = async (studentId) => {
 
   return data;
 };
+

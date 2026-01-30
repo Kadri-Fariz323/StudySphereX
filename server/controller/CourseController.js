@@ -215,6 +215,71 @@ const saveFinalQuiz = async (req, res) => {
   }
 };
 
+const getInstructorStats = async (req, res) => {
+  try {
+    const { instructorId } = req.params;
+
+    if (!instructorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Instructor ID is required",
+      });
+    }
+
+    // Fetch all courses by instructorId
+    const courses = await Course.find({ instructorId });
+
+    let totalEnrolledStudents = 0;
+    let totalRevenue = 0;
+    let totalMyCourses = courses.length;
+    let totalPendingCourses = 0;
+    let totalRejectedCourses = 0;
+    let totalApprovedCourses = 0;
+
+    courses.forEach(course => {
+      // Count enrolled students
+      totalEnrolledStudents += course.students ? course.students.length : 0;
+
+      // Sum revenue from paidAmount
+      if (course.students) {
+        course.students.forEach(student => {
+          if (student.paidAmount) {
+            totalRevenue += parseFloat(student.paidAmount) || 0;
+          }
+        });
+      }
+
+      // Count by approval status
+      if (course.approvalStatus === "pending") {
+        totalPendingCourses++;
+      } else if (course.approvalStatus === "rejected") {
+        totalRejectedCourses++;
+      } else if (course.approvalStatus === "approved") {
+        totalApprovedCourses++;
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalEnrolledStudents,
+        totalMyCourses,
+        totalPendingCourses,
+        totalRejectedCourses,
+        totalRevenue,
+        totalApprovedCourses,
+      },
+    });
+  } catch (error) {
+    console.error("Get Instructor Stats Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   addNewCourse,
   getAllCourses,
@@ -223,4 +288,5 @@ module.exports = {
   saveFinalQuiz,
   deleteCourse,
   getInstructorCourses,
+  getInstructorStats,
 };
