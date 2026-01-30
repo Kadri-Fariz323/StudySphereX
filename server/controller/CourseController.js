@@ -80,9 +80,9 @@ const deleteCourse = async (req, res) => {
 
 const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find({ 
-      isPublished: true, 
-      approvalStatus: "approved" // Only fetch approved courses
+    const courses = await Course.find({
+      isPublished: true,
+      approvalStatus: "approved", // Only fetch approved courses
     }).select("-students -curriculum"); // Exclude heavy data if needed
 
     res.status(200).json({ success: true, data: courses });
@@ -236,13 +236,13 @@ const getInstructorStats = async (req, res) => {
     let totalRejectedCourses = 0;
     let totalApprovedCourses = 0;
 
-    courses.forEach(course => {
+    courses.forEach((course) => {
       // Count enrolled students
       totalEnrolledStudents += course.students ? course.students.length : 0;
 
       // Sum revenue from paidAmount
       if (course.students) {
-        course.students.forEach(student => {
+        course.students.forEach((student) => {
           if (student.paidAmount) {
             totalRevenue += parseFloat(student.paidAmount) || 0;
           }
@@ -280,6 +280,59 @@ const getInstructorStats = async (req, res) => {
   }
 };
 
+const getEnrolledStudents = async (req, res) => {
+  try {
+    const { instructorId } = req.params;
+
+    if (!instructorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Instructor ID is required",
+      });
+    }
+
+    const courses = await Course.find({ instructorId });
+
+    const enrolledStudentsMap = new Map();
+
+    courses.forEach((course) => {
+      if (course.students) {
+        course.students.forEach((student) => {
+          const existing = enrolledStudentsMap.get(student.studentId);
+          
+          // ⬇️ FIX: Convert to number immediately to prevent string concatenation
+          const amount = Number(student.paidAmount) || 0;
+
+          if (existing) {
+            existing.totalAmount += amount;
+          } else {
+            enrolledStudentsMap.set(student.studentId, {
+              studentId: student.studentId,
+              studentName: student.studentName,
+              studentEmail: student.studentEmail,
+              totalAmount: amount, // Initialize with the number
+            });
+          }
+        });
+      }
+    });
+
+    const enrolledStudents = Array.from(enrolledStudentsMap.values());
+
+    res.status(200).json({
+      success: true,
+      data: enrolledStudents,
+    });
+  } catch (error) {
+    console.error("Get Enrolled Students Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   addNewCourse,
   getAllCourses,
@@ -289,4 +342,5 @@ module.exports = {
   deleteCourse,
   getInstructorCourses,
   getInstructorStats,
+  getEnrolledStudents,
 };

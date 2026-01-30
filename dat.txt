@@ -43,32 +43,33 @@ _?!K2{xO
 fa642005iz
 
 
-db.users.insertOne({
-  name: "Kadri Fariz",
-  email: "fariz1@gmail.com",
-  password: "$2b$10$uGWezbFTMSk99rH/s1Z1UuGKSGwiz6ZnhCk5gkBcop/H2NMEp3hrO",
-  role: "admin"
-})
 
-@/server/controller/CourseController.js
+table:---------------------------------------------
 
-create and add a new api in this controller for displaying total count for stats card for instructor dashboard 
-fetch counts like 
+ <div className="w-[380px] sm:w-full overflow-x-auto shadow-md sm:rounded-lg bg-white">
+          <table className="w-full min-w-[600px] text-sm text-left text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+              <tr>
+                <th className="px-4 py-3"></th>
+                <th className="px-4 py-3"></th>
+                <th className="px-4 py-3"></th>
+                <th className="px-4 py-3"></th>
+                <th className="px-4 py-3 text-center"></th>
+              </tr>
+            </thead>
+    
+            <tbody className="divide-y divide-gray-200">
+             <td>xxx</td>
+             <td>xxx</td>
+             <td>xxx</td>
+             <td>xxx</td>
+             <td>xxx</td>
+            </tbody>
+          </table>
+        </div>
 
-total Enrolled Students 
-total My courses 
-total pending courses 
-total rejected courses 
-total revenue 
-total approved courses 
+---------------------------------------------table:
 
-also add routes for that 
-
-and add that api for frontend integration 
-@/StudySphereX/src/services/StudentViewService.js
-
-finally integrate it here
-@/StudySphereX/src/pages/instructor/InstructorDashboard.jsx
 
 
 

@@ -13,24 +13,26 @@ export const StudentDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (auth.user?.id) {
-        try {
-          const response = await fetchStudentStatsService(auth.user.id);
-          if (response.success) {
-            setStats(response.data);
-          }
-        } catch (error) {
-          console.error("Error fetching student stats:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
+useEffect(() => {
+  if (!auth?.user?.id) return;
 
-    fetchStats();
-  }, [auth.user?.id]);
+  const fetchStats = async () => {
+    setLoading(true);
+    try {
+      const response = await fetchStudentStatsService(auth.user.id);
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching student stats:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchStats();
+}, [auth?.user?.id]);
+
 
   return (
     <div>
