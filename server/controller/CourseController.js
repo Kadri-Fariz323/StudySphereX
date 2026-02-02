@@ -283,6 +283,8 @@ const getInstructorStats = async (req, res) => {
 const getEnrolledStudents = async (req, res) => {
   try {
     const { instructorId } = req.params;
+    // Get query params with defaults
+    const { page = 1, limit = 10, search = "" } = req.query;
 
     if (!instructorId) {
       return res.status(400).json({
@@ -293,14 +295,13 @@ const getEnrolledStudents = async (req, res) => {
 
     const courses = await Course.find({ instructorId });
 
+    // 1. Aggregate all students (Deduplication Logic)
     const enrolledStudentsMap = new Map();
 
     courses.forEach((course) => {
       if (course.students) {
         course.students.forEach((student) => {
           const existing = enrolledStudentsMap.get(student.studentId);
-          
-          // ⬇️ FIX: Convert to number immediately to prevent string concatenation
           const amount = Number(student.paidAmount) || 0;
 
           if (existing) {
@@ -310,18 +311,40 @@ const getEnrolledStudents = async (req, res) => {
               studentId: student.studentId,
               studentName: student.studentName,
               studentEmail: student.studentEmail,
-              totalAmount: amount, // Initialize with the number
+              totalAmount: amount,
             });
           }
         });
       }
     });
 
-    const enrolledStudents = Array.from(enrolledStudentsMap.values());
+    let allStudents = Array.from(enrolledStudentsMap.values());
+
+    // 2. Apply Search Filter (Case-insensitive)
+    if (search) {
+      const searchLower = search.toLowerCase();
+      allStudents = allStudents.filter(
+        (student) =>
+          student.studentName.toLowerCase().includes(searchLower) ||
+          student.studentEmail.toLowerCase().includes(searchLower),
+      );
+    }
+
+    // 3. Apply Pagination (Slice the array)
+    const totalStudents = allStudents.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + Number(limit);
+
+    const paginatedStudents = allStudents.slice(startIndex, endIndex);
 
     res.status(200).json({
       success: true,
-      data: enrolledStudents,
+      data: paginatedStudents,
+      pagination: {
+        totalStudents,
+        currentPage: Number(page),
+        totalPages: Math.ceil(totalStudents / limit),
+      },
     });
   } catch (error) {
     console.error("Get Enrolled Students Error:", error);
@@ -332,7 +355,6 @@ const getEnrolledStudents = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   addNewCourse,
   getAllCourses,

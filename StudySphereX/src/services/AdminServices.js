@@ -6,3 +6,12 @@ export const fetchAdminStatsService = async () => {
   return data;
 };
 
+export const fetchUsersService = async (page = 1, limit = 10, search = '') => {
+  const { data } = await axiosInstance.get(`/admin/users?page=${page}&limit=${limit}&search=${search}`);
+  return data;
+};
+
+export const toggleBlockUserService = async (userId) => {
+  const { data } = await axiosInstance.put(`/admin/users/${userId}/block`);
+  return data;
+};

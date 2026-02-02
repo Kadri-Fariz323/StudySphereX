@@ -45,8 +45,10 @@ import { Reports } from "./pages/admin/Reports";
 import { ManageUsers } from "./pages/admin/ManageUsers";
 
 export const App = () => {
-  const { auth } = useContext(AuthContext);
-
+  const { auth, loading } = useContext(AuthContext);
+if (loading) {
+    return <Loader />; // Or your Skeleton component
+  }
   return (
     <>
       <ScrollToTop />

@@ -2,22 +2,18 @@ import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/StudentContext";
 import { fetchStudentViewCourseListService } from "../../services/StudentViewService"; 
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import { useLoader } from "@/context/LoaderContext";
 
 export const FeaturedCourses = () => {
-     const { setLoading } = useLoader();
   
   const { studentViewCoursesList, setStudentViewCoursesList } = useContext(StudentContext);
 
   useEffect(() => {
     const fetchCourses = async () => {
       
-  setLoading(true)   
 const response = await fetchStudentViewCourseListService("limit=4&sortBy=date"); 
 
       if (response?.success) {
         setStudentViewCoursesList(response.data);
-        setLoading(false)
       }
     };
 

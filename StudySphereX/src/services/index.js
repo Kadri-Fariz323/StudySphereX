@@ -76,9 +76,10 @@ export const fetchInstructorStatsService = async (instructorId) => {
   return data;
 };
 
-export const FetchEnrolledStudents = async (instructorId) => {
-  const { data } = await axiosInstance.get(`/instructor/course/get/enrolled-students/${instructorId}`);
 
+export const FetchEnrolledStudents = async (instructorId, page = 1, limit = 10, search = "") => {
+  const { data } = await axiosInstance.get(
+    `/instructor/course/get/enrolled-students/${instructorId}?page=${page}&limit=${limit}&search=${search}`
+  );
   return data;
 };
-
