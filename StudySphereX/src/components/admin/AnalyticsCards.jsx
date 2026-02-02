@@ -1,28 +1,47 @@
-import { User } from "lucide-react";
-import { DashboardCard } from "../UI/DashboardCard";
-import { Video } from "lucide-react";
-import { MdApproval } from "react-icons/md";
-import { Mails } from "lucide-react";
+import { DashboardCard } from "@/components/UI/DashboardCard";
+import { User, BookOpen, FileText, AlertCircle } from "lucide-react"; 
 
-export const AnalyticsCards = () => {
+export const AnalyticsCards = ({ stats }) => {
   return (
-    <div>
-      {/* //cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-        <DashboardCard title="Total Users" value="2" icon={<User />} />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
 
-        <DashboardCard title="Total Instructors" value="2" icon={<User />} />
+       <DashboardCard 
+        title="Total Users" 
+        value={stats.totalUsers} 
+        icon={<User />} 
+      />
+      
 
-        <DashboardCard title="Total Courses" value="2" icon={<Video />} />
+      <DashboardCard 
+        title="Total Courses" 
+        value={stats.totalCourses} 
+        icon={<BookOpen />} 
+      />
+      
+      <DashboardCard 
+        title="Total Students" 
+        value={stats.totalStudents} 
+        icon={<User />} 
+      />
 
-        <DashboardCard
-          title="Pending Approvals"
-          value="2"
-          icon={<MdApproval />}
-        />
-
-        <DashboardCard title="Reports" value="2" icon={<Mails />} />
-      </div>
+      
+      <DashboardCard 
+        title="Instructors" 
+        value={stats.totalInstructors} 
+        icon={<User className="text-blue-500"/>} 
+      />
+      
+      <DashboardCard 
+        title="Pending Approvals" 
+        value={stats.pendingCourses} 
+        icon={<AlertCircle className="text-orange-500"/>} 
+      />
+      
+      <DashboardCard 
+        title="Reports" 
+        value={stats.totalReports} 
+        icon={<FileText className="text-red-500"/>} 
+      />
     </div>
   );
 };
