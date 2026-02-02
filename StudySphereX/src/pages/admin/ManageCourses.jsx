@@ -1,6 +1,8 @@
 
 export const ManageCourses = () => {
   return (
-    <div>ManageCourses</div>
+    <div>
+      
+    </div>
   )
 }

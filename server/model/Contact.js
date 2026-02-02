@@ -24,7 +24,6 @@ const contactSchema = new mongoose.Schema({
     trim: true,
     minLength: [10, "Message must be at least 10 characters"]
   },
-  // Useful for admin panels to track requests
   status: {
     type: String,
     enum: ["new", "read", "responded"],

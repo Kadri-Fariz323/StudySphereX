@@ -1,7 +1,9 @@
-import React from 'react'
+import { ContactsTable } from '@/components/admin/Tables/ContactsTable'
 
 export const Reports = () => {
   return (
-    <div>Reports</div>
+    <div>
+      <ContactsTable />
+    </div>
   )
 }

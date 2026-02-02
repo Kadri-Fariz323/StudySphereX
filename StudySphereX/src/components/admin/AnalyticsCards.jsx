@@ -38,8 +38,8 @@ export const AnalyticsCards = ({ stats }) => {
       />
       
       <DashboardCard 
-        title="Reports" 
-        value={stats.totalReports} 
+        title="Mails" 
+        value={stats.totalContacts} 
         icon={<FileText className="text-red-500"/>} 
       />
     </div>

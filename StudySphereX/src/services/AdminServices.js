@@ -15,3 +15,24 @@ export const toggleBlockUserService = async (userId) => {
   const { data } = await axiosInstance.put(`/admin/users/${userId}/block`);
   return data;
 };
+
+export const updateContactStatusService = async (id, status) => {
+  const { data } = await axiosInstance.put(`/admin/contacts/${id}/status`, { status });
+  return data;
+};
+
+export const fetchContactsService = async (page = 1, limit = 10, search = '') => {
+  const { data } = await axiosInstance.get(`/admin/contacts?page=${page}&limit=${limit}&search=${search}`);
+  return data;
+};
+
+export const fetchCoursesService = async (page = 1, limit = 10, search = '') => {
+  const { data } = await axiosInstance.get(`/admin/courses?page=${page}&limit=${limit}&search=${search}`);
+  return data;
+};
+
+export const updateCourseApprovalService = async (courseId, action) => {
+  // action should be 'approve' or 'reject'
+  const { data } = await axiosInstance.put(`/admin/courses/${courseId}/approval`, { action });
+  return data;
+};

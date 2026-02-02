@@ -40,7 +40,6 @@ import { StudentCertificatesList } from "./pages/user/StudentCertificatesList";
 import { AdminLayout } from "./layouts/AdminLayout";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ManageCourses } from "./pages/admin/ManageCourses";
-import { CoursesCategories } from "./pages/admin/CoursesCategories";
 import { Reports } from "./pages/admin/Reports";
 import { ManageUsers } from "./pages/admin/ManageUsers";
 
@@ -193,7 +192,6 @@ if (loading) {
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<ManageUsers />} />
           <Route path="courses" element={<ManageCourses />} />
-          <Route path="categories" element={<CoursesCategories />} />
           <Route path="reports" element={<Reports />} />
         </Route>
 

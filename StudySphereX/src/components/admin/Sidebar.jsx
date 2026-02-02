@@ -9,7 +9,6 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { name: "Dashboard", icon: MdDashboard, path: "/admin" },
     { name: "Manage Users", icon: MdPeople, path: "/admin/users" },
     { name: "Manage Courses", icon: FaPhotoVideo, path: "/admin/courses" },
-    { name: "Courses categories", icon: MdCategory, path: "/admin/categories" },
     { name: "Reports", icon: Mail, path: "/admin/reports" },
 
 
