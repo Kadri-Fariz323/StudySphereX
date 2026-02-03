@@ -8,36 +8,48 @@ exports.getDashboardStats = async (req, res) => {
       totalCourses,
       totalStudents,
       totalInstructors,
-      totalContacts,
+      totalContacts, 
       pendingCourses,
+      recentCourses,
+      recentUsers,
+      recentContacts
     ] = await Promise.all([
       Course.countDocuments({}),
-      User.countDocuments({ role: "user" }),
-      User.countDocuments({ role: "instructor" }),
-      Contact.countDocuments({}),
-      Course.countDocuments({ approvalStatus: "pending" }),
+      User.countDocuments({ role: 'user' }),
+      User.countDocuments({ role: 'instructor' }),
+      Contact.countDocuments({}), // Counting from Contact model
+      Course.countDocuments({ approvalStatus: 'pending' }),
+
+      // Log queries
+      Course.find().select('title instructorName date image approvalStatus').sort({ date: -1 }).limit(5),
+      User.find({ role: { $ne: 'admin' } }).select('name email role createdAt image').sort({ createdAt: -1 }).limit(5),
+      Contact.find().select('name email message createdAt status').sort({ createdAt: -1 }).limit(5)
     ]);
 
     return res.status(200).json({
       success: true,
       data: {
-        totalCourses,
-        totalStudents,
-        totalInstructors,
-        totalContacts,
-        pendingCourses,
-        totalUsers: totalStudents + totalInstructors,
-      },
+        counts: {
+          totalCourses,
+          totalStudents,
+          totalInstructors,
+          totalContacts,
+          pendingCourses,
+          totalUsers: totalStudents + totalInstructors 
+        },
+        logs: {
+          recentCourses,
+          recentUsers,
+          recentContacts
+        }
+      }
     });
+
   } catch (error) {
     console.error("Error fetching admin stats:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server Error: Unable to fetch dashboard statistics.",
-    });
+    return res.status(500).json({ success: false, message: "Server Error" });
   }
 };
-
 exports.getAllUsers = async (req, res) => {
   try {
     const { page = 1, limit = 10, search = "" } = req.query;

@@ -1,45 +1,60 @@
 import { DashboardCard } from "@/components/UI/DashboardCard";
-import { User, BookOpen, FileText, AlertCircle } from "lucide-react"; 
+import { User, BookOpen, FileText, AlertCircle, Users, Shield } from "lucide-react"; 
 
 export const AnalyticsCards = ({ stats }) => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+  
+  const {
+    totalUsers = 0,
+    totalStudents = 0,
+    totalInstructors = 0,
+    totalCourses = 0,
+    pendingCourses = 0,
+    totalContacts = 0
+  } = stats || {};
 
+  return (
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+
+       {/* 1. Total Users (Combined) */}
        <DashboardCard 
         title="Total Users" 
-        value={stats.totalUsers} 
-        icon={<User />} 
+        value={totalUsers} 
+        icon={<Users className="text-indigo-500" />} 
       />
-      
 
-      <DashboardCard 
-        title="Total Courses" 
-        value={stats.totalCourses} 
-        icon={<BookOpen />} 
-      />
-      
+      {/* 2. Students */}
       <DashboardCard 
         title="Total Students" 
-        value={stats.totalStudents} 
-        icon={<User />} 
+        value={totalStudents} 
+        icon={<User className="text-green-500" />} 
       />
 
-      
+      {/* 3. Instructors */}
       <DashboardCard 
-        title="Instructors" 
-        value={stats.totalInstructors} 
-        icon={<User className="text-blue-500"/>} 
+        title="Total Instructors" 
+        value={totalInstructors} 
+        icon={<Shield className="text-purple-500"/>} 
+      />
+
+      {/* 4. Courses */}
+      <DashboardCard 
+        title="Total Courses" 
+        value={totalCourses} 
+        icon={<BookOpen className="text-blue-500" />} 
       />
       
+      {/* 5. Pending Approvals */}
       <DashboardCard 
         title="Pending Approvals" 
-        value={stats.pendingCourses} 
+        value={pendingCourses} 
         icon={<AlertCircle className="text-orange-500"/>} 
       />
       
+      {/* 6. Mails / Contacts */}
       <DashboardCard 
-        title="Mails" 
-        value={stats.totalContacts} 
+        title="Support Mails" 
+        value={totalContacts} 
         icon={<FileText className="text-red-500"/>} 
       />
     </div>
