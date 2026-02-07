@@ -8,22 +8,31 @@ exports.getDashboardStats = async (req, res) => {
       totalCourses,
       totalStudents,
       totalInstructors,
-      totalContacts, 
+      totalContacts,
       pendingCourses,
       recentCourses,
       recentUsers,
-      recentContacts
+      recentContacts,
     ] = await Promise.all([
       Course.countDocuments({}),
-      User.countDocuments({ role: 'user' }),
-      User.countDocuments({ role: 'instructor' }),
+      User.countDocuments({ role: "user" }),
+      User.countDocuments({ role: "instructor" }),
       Contact.countDocuments({}), // Counting from Contact model
-      Course.countDocuments({ approvalStatus: 'pending' }),
+      Course.countDocuments({ approvalStatus: "pending" }),
 
       // Log queries
-      Course.find().select('title instructorName date image approvalStatus').sort({ date: -1 }).limit(5),
-      User.find({ role: { $ne: 'admin' } }).select('name email role createdAt image').sort({ createdAt: -1 }).limit(5),
-      Contact.find().select('name email message createdAt status').sort({ createdAt: -1 }).limit(5)
+      Course.find()
+        .select("title instructorName date image approvalStatus")
+        .sort({ date: -1 })
+        .limit(5),
+      User.find({ role: { $ne: "admin" } })
+        .select("name email role createdAt image")
+        .sort({ createdAt: -1 })
+        .limit(5),
+      Contact.find()
+        .select("name email message createdAt status")
+        .sort({ createdAt: -1 })
+        .limit(5),
     ]);
 
     return res.status(200).json({
@@ -35,16 +44,15 @@ exports.getDashboardStats = async (req, res) => {
           totalInstructors,
           totalContacts,
           pendingCourses,
-          totalUsers: totalStudents + totalInstructors 
+          totalUsers: totalStudents + totalInstructors,
         },
         logs: {
           recentCourses,
           recentUsers,
-          recentContacts
-        }
-      }
+          recentContacts,
+        },
+      },
     });
-
   } catch (error) {
     console.error("Error fetching admin stats:", error);
     return res.status(500).json({ success: false, message: "Server Error" });
@@ -211,7 +219,7 @@ exports.getAllCourses = async (req, res) => {
 exports.updateCourseApproval = async (req, res) => {
   try {
     const { id } = req.params;
-    const { action } = req.body;
+    const { action, rejectionReason } = req.body;
 
     const adminId = req.user ? req.user.id : null;
 
@@ -228,6 +236,8 @@ exports.updateCourseApproval = async (req, res) => {
         approvalStatus: "rejected",
         isPublished: false,
         approvedBy: adminId,
+        rejectionReason:
+          rejectionReason || "Course does not meet quality guidelines",
       };
     } else {
       return res
@@ -252,6 +262,24 @@ exports.updateCourseApproval = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating course status:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+exports.getCourseDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const course = await Course.findById(id)
+      .select('title subtitle description image pricing objectives level category curriculum instructorName date language approvalStatus');
+
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    res.status(200).json({ success: true, data: course });
+  } catch (error) {
+    console.error("Error fetching course details:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };

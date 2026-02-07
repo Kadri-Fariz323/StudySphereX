@@ -58,6 +58,11 @@ const CourseSchema = new mongoose.Schema({
     ref: "User",
   },
 
+  rejectionReason: {
+    type: String,
+    default: null,
+  },
+
   finalQuiz: {
     type: QuizSchema,
     default: null,

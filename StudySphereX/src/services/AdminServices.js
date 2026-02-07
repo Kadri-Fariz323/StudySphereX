@@ -31,8 +31,26 @@ export const fetchCoursesService = async (page = 1, limit = 10, search = '') => 
   return data;
 };
 
-export const updateCourseApprovalService = async (courseId, action) => {
-  // action should be 'approve' or 'reject'
-  const { data } = await axiosInstance.put(`/admin/courses/${courseId}/approval`, { action });
+export const updateCourseApprovalService = async (
+  courseId,
+  action,
+  rejectionReason = null
+) => {
+  const payload = { action };
+
+  if (action === "reject" && rejectionReason) {
+    payload.rejectionReason = rejectionReason;
+  }
+
+  const { data } = await axiosInstance.put(
+    `/admin/courses/${courseId}/approval`,
+    payload
+  );
+
+  return data;
+};
+
+export const fetchCourseDetailsService = async (id) => {
+  const { data } = await axiosInstance.get(`/admin/courses/${id}`);
   return data;
 };
