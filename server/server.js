@@ -5,14 +5,14 @@ const { default: mongoose } = require('mongoose');
 
 const authRoute = require('./routes/authRoute');
 const mediaRoute = require('./routes/mediaRoute');
-const CourseRoute = require('./routes/CourseRoute')
-const ContactRoute= require('./routes/ContactRoute')
-const StudentRoute= require('./routes/StudentRoute')
-const StudentOrderRoute = require('./routes/OrderRoute')
+const CourseRoute = require('./routes/CourseRoute');
+const ContactRoute= require('./routes/ContactRoute');
+const StudentRoute= require('./routes/StudentRoute');
+const StudentOrderRoute = require('./routes/OrderRoute');
 const studentCoursesRoutes = require("./routes/studentCoursesRoutes");
 const studentCourseProgressRoutes = require("./routes/courseProgressRoute");
 const adminRoutes = require('./routes/adminRoutes');
-
+const newsRoutes = require('./routes/newsRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI
@@ -42,6 +42,8 @@ app.use("/student/order", StudentOrderRoute)
 app.use("/student/courses-bought", studentCoursesRoutes);
 app.use("/student/course-progress", studentCourseProgressRoutes);
 app.use('/admin', adminRoutes);
+app.use("/api/news", newsRoutes);
+
 
 app.use((err, req, res, next) => {
     console.log(err.stack);

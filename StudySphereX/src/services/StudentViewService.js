@@ -121,3 +121,10 @@ export const fetchStudentStatsService = async (studentId) => {
   return data;
 };
 
+export const fetchTechNewsService = async (category) => {
+  const { data } = await axiosInstance.get(
+    `/api/news/tech-news`,
+    { params: { category } }
+  );
+  return data;
+};

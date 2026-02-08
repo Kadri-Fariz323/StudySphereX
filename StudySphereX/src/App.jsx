@@ -43,6 +43,7 @@ import { ManageCourses } from "./pages/admin/ManageCourses";
 import { Reports } from "./pages/admin/Reports";
 import { ManageUsers } from "./pages/admin/ManageUsers";
 import { ViewReports } from "./pages/instructor/ViewReports";
+import { Discover } from "./pages/user/Discover";
 
 export const App = () => {
   const { auth, loading } = useContext(AuthContext);
@@ -91,6 +92,8 @@ if (loading) {
           <Route index element={<StudentDashboard />} />
           <Route path="student-courses" element={<PurchasedCourses />} />
           <Route path="certificates" element={<StudentCertificatesList />} />
+          <Route path="Discover" element={<Discover />} />
+
         </Route>
 
         {/* 2. User Courses (WITHOUT Sidebar/Layout) */}
