@@ -133,6 +133,7 @@ export const StudentCourseProgress = () => {
       navigate(`/user/course/${id}/quiz-view/`);
     }
   };
+console.log(studentCurrentCourseProgress);
 
   return (
     <div className="flex flex-col h-screen bg-white font-inter text-slate-800">
