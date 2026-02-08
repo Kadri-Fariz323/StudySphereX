@@ -220,66 +220,83 @@ const getInstructorStats = async (req, res) => {
     const { instructorId } = req.params;
 
     if (!instructorId) {
-      return res.status(400).json({
-        success: false,
-        message: "Instructor ID is required",
-      });
+      return res.status(400).json({ success: false, message: "Instructor ID is required" });
     }
 
-    // Fetch all courses by instructorId
     const courses = await Course.find({ instructorId });
 
+    // 1. Initialize Stats
     let totalEnrolledStudents = 0;
     let totalRevenue = 0;
-    let totalMyCourses = courses.length;
     let totalPendingCourses = 0;
     let totalRejectedCourses = 0;
     let totalApprovedCourses = 0;
 
-    courses.forEach((course) => {
-      // Count enrolled students
-      totalEnrolledStudents += course.students ? course.students.length : 0;
+    // 2. Activity Log Arrays
+    let allEnrollments = [];
+    let recentCourseUpdates = [];
 
-      // Sum revenue from paidAmount
-      if (course.students) {
-        course.students.forEach((student) => {
-          if (student.paidAmount) {
-            totalRevenue += parseFloat(student.paidAmount) || 0;
-          }
+    courses.forEach((course) => {
+      // Logic for Status Counts
+      if (course.approvalStatus === "pending") totalPendingCourses++;
+      else if (course.approvalStatus === "rejected") totalRejectedCourses++;
+      else if (course.approvalStatus === "approved") totalApprovedCourses++;
+
+      // Track recent status changes (Pending/Rejected)
+      if (course.approvalStatus !== "approved") {
+        recentCourseUpdates.push({
+          courseId: course._id,
+          title: course.title,
+          status: course.approvalStatus,
+          updatedAt: course.date, // or use an actual updatedAt field if available
+          rejectionReason: course.rejectionReason
         });
       }
 
-      // Count by approval status
-      if (course.approvalStatus === "pending") {
-        totalPendingCourses++;
-      } else if (course.approvalStatus === "rejected") {
-        totalRejectedCourses++;
-      } else if (course.approvalStatus === "approved") {
-        totalApprovedCourses++;
+      // Aggregate Enrollments & Revenue
+      if (course.students && course.students.length > 0) {
+        totalEnrolledStudents += course.students.length;
+        course.students.forEach((student) => {
+          totalRevenue += parseFloat(student.paidAmount) || 0;
+          
+          // Push to activity log
+          allEnrollments.push({
+            studentName: student.studentName,
+            courseTitle: course.title,
+            paidAmount: student.paidAmount,
+            studentEmail: student.studentEmail,
+            date: student._id.getTimestamp() // Mongoose IDs contain a timestamp
+          });
+        });
       }
     });
+
+    // 3. Sort logs by date (newest first) and limit to top 5
+    const recentEnrollments = allEnrollments
+      .sort((a, b) => b.date - a.date)
+      .slice(0, 5);
+      
+    const recentUpdates = recentCourseUpdates
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(0, 5);
 
     res.status(200).json({
       success: true,
       data: {
         totalEnrolledStudents,
-        totalMyCourses,
+        totalMyCourses: courses.length,
         totalPendingCourses,
         totalRejectedCourses,
         totalRevenue,
         totalApprovedCourses,
+        recentEnrollments, // New Activity Log
+        recentUpdates     // New Activity Log
       },
     });
   } catch (error) {
-    console.error("Get Instructor Stats Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-      error: error.message,
-    });
+    res.status(500).json({ success: false, message: "Server Error", error: error.message });
   }
 };
-
 const getEnrolledStudents = async (req, res) => {
   try {
     const { instructorId } = req.params;

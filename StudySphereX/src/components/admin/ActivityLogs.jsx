@@ -1,7 +1,7 @@
 import React from "react";
 import { User, BookOpen, Mail, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
-
 export const ActivityLogs = ({ logs }) => {
+ 
   if (!logs) return null;
 
   const { recentCourses = [], recentUsers = [], recentContacts = [] } = logs;

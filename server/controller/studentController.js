@@ -1,6 +1,7 @@
 const Course = require("../model/Course");
 const StudentCourses = require("../model/StudentCourses");
-const courseProgress = require("../model/CourseProgress");
+const CourseProgress = require("../model/CourseProgress");
+const mongoose = require("mongoose");
 
 exports.getAllCourses = async (req, res) => {
   try {
@@ -156,6 +157,7 @@ exports.checkCoursePurchaseInfo = async (req, res) => {
   }
 };
 
+
 exports.getStudentStats = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -167,48 +169,89 @@ exports.getStudentStats = async (req, res) => {
       });
     }
 
-    // Fetch student's purchased courses
-    const studentCoursesDoc = await StudentCourses.findOne({
-      userId: studentId,
-    });
-    const purchasedCourses = studentCoursesDoc ? studentCoursesDoc.courses : [];
-    const totalPurchased = purchasedCourses.length;
+    // 1. Purchased courses
+    const studentCoursesDoc = await StudentCourses.findOne({ userId: studentId });
+    const purchasedCourses = studentCoursesDoc?.courses || [];
 
-    // Get course IDs for progress check
-    const purchasedCourseIds = purchasedCourses.map(
-      (course) => course.courseId,
-    );
+    const purchasedCourseIds = purchasedCourses.map(c => c.courseId);
 
-    // Fetch progress for purchased courses
-    const progressDocs = await courseProgress.find({
+    // 2. Progress docs
+    const progressDocs = await CourseProgress.find({
       userId: studentId,
       courseId: { $in: purchasedCourseIds },
     });
 
-    // Calculate completed courses
-    const completedCourseIds = progressDocs
-      .filter((progress) => progress.completed)
-      .map((progress) => progress.courseId);
-    const totalCompleted = completedCourseIds.length;
+    // 3. Fetch real course data (for lecture counts)
+    const courses = await Course.find({
+      _id: { $in: purchasedCourseIds },
+    });
 
-    // Calculate in-progress courses (purchased but not completed)
-    const totalInProgress = purchasedCourseIds.filter(
-      (courseId) => !completedCourseIds.includes(courseId),
-    ).length;
+    const courseMap = {};
+    courses.forEach(c => {
+      courseMap[c._id.toString()] = c;
+    });
 
-    // Calculate total certificates earned
+    // 4. Stats
+    const totalPurchased = purchasedCourses.length;
+    const totalCompleted = progressDocs.filter(p => p.completed).length;
+    const totalInProgress = totalPurchased - totalCompleted;
+
     const totalCertificates = progressDocs.filter(
-      (progress) =>
-        progress.certificateProgress && progress.certificateProgress.isIssued,
+      p => p.certificateProgress?.isIssued
     ).length;
+
+    // 5. Continue Learning
+    const continueLearning = progressDocs
+      .filter(p => !p.completed)
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(0, 3)
+      .map(p => {
+        const course = courseMap[p.courseId.toString()];
+        const totalLectures = course?.lectures?.length || 0;
+        const viewedLectures = p.lecturesProgress.filter(l => l.viewed).length;
+
+        const progressValue = totalLectures
+          ? Math.round((viewedLectures / totalLectures) * 100)
+          : 0;
+
+        return {
+          courseId: p.courseId,
+          title: course?.title || "Unknown Course",
+          image: course?.courseImage || "",
+          instructor: course?.instructorName || "",
+          progressValue,
+        };
+      });
+
+    // 6. Recent Certificates
+    const recentCertificates = progressDocs
+      .filter(p => p.certificateProgress?.isIssued)
+      .sort((a, b) => 
+        new Date(b.certificateProgress.issueDate) -
+        new Date(a.certificateProgress.issueDate)
+      )
+      .slice(0, 3)
+      .map(p => {
+        const course = courseMap[p.courseId.toString()];
+        return {
+          courseId: p.courseId,
+          title: course?.title || "Course Certificate",
+          issuedDate: p.certificateProgress.issueDate,
+          certificateId: p.certificateProgress.certificateId,
+        };
+      });
 
     res.status(200).json({
       success: true,
       data: {
-        totalPurchased,
-        totalInProgress,
-        totalCompleted,
-        totalCertificates,
+        stats: {
+          totalPurchased,
+          totalInProgress,
+          totalCompleted,
+          totalCertificates,
+        },
+        continueLearning,
+        recentCertificates,
       },
     });
   } catch (e) {
