@@ -15,6 +15,8 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { name: "Add Course", icon: FaPhotoVideo, path: "/instructor/add-course" },
     { name: "My Courses", icon: FaPhotoVideo, path: "/instructor/my-courses" },
     { name: "Enrolled Students", icon: MdPeople, path: "/instructor/manage-users" },
+    { name: "Course Reports", icon: MdPeople, path: "/instructor/view-reports"},
+
 
   ];
 

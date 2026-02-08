@@ -42,6 +42,7 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ManageCourses } from "./pages/admin/ManageCourses";
 import { Reports } from "./pages/admin/Reports";
 import { ManageUsers } from "./pages/admin/ManageUsers";
+import { ViewReports } from "./pages/instructor/ViewReports";
 
 export const App = () => {
   const { auth, loading } = useContext(AuthContext);
@@ -176,6 +177,8 @@ if (loading) {
           <Route path="edit-course/:courseId" element={<CreateCourse />} />
           <Route path="my-courses" element={<MyCourses />} />
           <Route path="manage-users" element={<ViewUsers />} />
+          <Route path="view-reports" element={<ViewReports />} />
+
         </Route>
 
         {/* ================= ADMIN ROUTES ================= */}

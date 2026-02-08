@@ -355,6 +355,38 @@ const getEnrolledStudents = async (req, res) => {
     });
   }
 };
+
+const getRejectedCourses = async (req, res) => {
+  try {
+    const { instructorId } = req.params;
+
+    if (!instructorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Instructor ID is required",
+      });
+    }
+
+    // Find courses that are rejected for this specific instructor
+    const rejectedCourses = await Course.find({
+      instructorId: instructorId,
+      approvalStatus: "rejected",
+    }).select("title category image rejectionReason date approvalStatus");
+
+    res.status(200).json({
+      success: true,
+      data: rejectedCourses,
+    });
+  } catch (error) {
+    console.error("Get Rejected Courses Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+
 module.exports = {
   addNewCourse,
   getAllCourses,
@@ -365,4 +397,5 @@ module.exports = {
   getInstructorCourses,
   getInstructorStats,
   getEnrolledStudents,
+  getRejectedCourses
 };

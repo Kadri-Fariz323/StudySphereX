@@ -83,3 +83,9 @@ export const FetchEnrolledStudents = async (instructorId, page = 1, limit = 10, 
   );
   return data;
 };
+
+export const fetchInstructorRejectedCourse = async (instructorId) => {
+  const { data } = await axiosInstance.get(`/instructor/course/get/course-rejected-reports/${instructorId}`);
+
+  return data;
+};

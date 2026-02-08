@@ -11,6 +11,7 @@ const {
   getInstructorCourses,
   getInstructorStats,
   getEnrolledStudents,
+  getRejectedCourses
 } = require("../controller/CourseController");
 
 router.post("/add", addNewCourse);
@@ -26,5 +27,6 @@ router.get("/get", getAllCourses);
 router.get("/get/details/:id", getCourseDetailsByID);
 router.get("/get/instructor-stats/:instructorId", getInstructorStats);
 router.get("/get/enrolled-students/:instructorId", getEnrolledStudents);
+router.get("/get/course-rejected-reports/:instructorId", getRejectedCourses);
 
 module.exports = router;
