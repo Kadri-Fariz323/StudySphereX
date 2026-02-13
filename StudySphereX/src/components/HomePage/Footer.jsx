@@ -61,7 +61,83 @@ export const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter Section - Takes 2 columns on Large screens to balance the layout */}
+            <div>
+            <h2 className="mb-4 text-xs font-bold text-gray-900 uppercase tracking-widest">
+              Courses            </h2>
+            <ul className="space-y-2 text-sm text-gray-600">
+               <li><Link className="hover:text-blue-600 transition-colors" to="/">
+               Web development
+              </Link></li>
+              <li>
+                <Link
+                  className="hover:text-blue-600 transition-colors"
+                  to="/courses"
+                >
+                  AI/ML
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-600 transition-colors"
+                  to="/courses"
+                >
+                  Health
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-600 transition-colors"
+                  to="/courses"
+                >
+                  Business
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+            <div>
+            <h2 className="mb-4 text-xs font-bold text-gray-900 uppercase tracking-widest">
+              Programs
+            </h2>
+            <ul className="space-y-2 text-sm text-gray-600">
+               <li><Link className="hover:text-blue-600 transition-colors" to="/">
+               
+              </Link></li>
+              <li>
+                <Link
+                  className="hover:text-blue-600 transition-colors"
+                  to="/courses"
+                >
+                   Artificial Intelligence
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-600 transition-colors"
+                  to="/courses"
+                >
+                  Machine Learning
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="hover:text-blue-600 transition-colors"
+                  to="/courses"
+                >
+                  Cybersecurity
+                </Link>
+              </li>
+               <li>
+                <Link
+                  className="hover:text-blue-600 transition-colors"
+                  to="/courses"
+                >
+                  Cloud Computing (AWS/Azure)
+                </Link>
+                
+              </li>
+            </ul>
+          </div>
 
           
          

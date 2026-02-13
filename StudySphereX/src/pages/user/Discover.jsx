@@ -5,14 +5,16 @@ import { useEffect, useState } from "react";
 export const Discover = () => {
   const [newsList, setNewsList] = useState([]);
 
-  async function getNews() {
-    try {
-      const res = await fetchTechNewsService();
-      setNewsList(res.data || []);
-    } catch (error) {
-      console.error("Failed to fetch news:", error);
-    }
+async function getNews() {
+  try {
+    const res = await fetchTechNewsService();
+    const latestFirst = (res.data || []).slice().reverse();
+    setNewsList(latestFirst);
+  } catch (error) {
+    console.error("Failed to fetch news:", error);
   }
+}
+
 
   useEffect(() => {
     getNews();

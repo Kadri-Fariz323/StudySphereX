@@ -56,7 +56,7 @@ export const AuthPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen 
-      bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10">
+      bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10">
       
       <Tabs
         value={activeTab}

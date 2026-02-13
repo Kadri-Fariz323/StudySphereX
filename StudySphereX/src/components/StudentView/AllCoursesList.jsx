@@ -172,12 +172,12 @@ const [skeleton, setSkeleton] = useState(true);
                   setSearchQuery("");
                 }
               }}
-              className="block w-full p-3 ps-9 bg-white border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm"
+              className="block w-full p-3 ps-9 bg-white border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"
               placeholder="Search courses..."
             />
             <Button
               type="submit"
-              className="absolute end-1.5 bottom-1.5 text-white bg-indigo-600 hover:bg-indigo-700 font-medium rounded text-xs px-3 py-1.5"
+              className="absolute end-1.5 bottom-1.5 text-white bg-blue-600 hover:bg-blue-700 font-medium rounded text-xs px-3 py-1.5"
             >
               Search
             </Button>
@@ -188,7 +188,7 @@ const [skeleton, setSkeleton] = useState(true);
           {/* Mobile Filter Toggle */}
           <Button
             variant="outline"
-            className="md:hidden flex-1 border-indigo-200 text-indigo-700"
+            className="md:hidden flex-1 border-blue-200 text-blue-700"
             onClick={() => setShowMobileFilters(!showMobileFilters)}
           >
             <FilterIcon className="h-4 w-4 mr-2" />
@@ -201,9 +201,9 @@ const [skeleton, setSkeleton] = useState(true);
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-2 p-5 border-gray-300 hover:border-indigo-500 hover:bg-indigo-50 transition-colors"
+                className="flex items-center gap-2 p-5 border-gray-300 hover:border-blue-500 hover:bg-blue-50 transition-colors"
               >
-                <ArrowUpDownIcon className="h-4 w-4 text-indigo-600" />
+                <ArrowUpDownIcon className="h-4 w-4 text-blue-600" />
                 <span className="text-[16px] font-medium text-gray-700">
                   Sort By
                 </span>
@@ -211,7 +211,7 @@ const [skeleton, setSkeleton] = useState(true);
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-[180px] bg-white border-indigo-100"
+              className="w-[180px] bg-white border-blue-100"
             >
               <DropdownMenuRadioGroup
                 value={sort}
@@ -221,7 +221,7 @@ const [skeleton, setSkeleton] = useState(true);
                   <DropdownMenuRadioItem
                     value={sortItem.id}
                     key={sortItem.id}
-                    className="cursor-pointer hover:bg-indigo-50 focus:bg-indigo-50 focus:text-indigo-700"
+                    className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50 focus:text-blue-700"
                   >
                     {sortItem.label}
                   </DropdownMenuRadioItem>
@@ -230,7 +230,7 @@ const [skeleton, setSkeleton] = useState(true);
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <span className="font-bold text-indigo-900 text-sm tracking-wide whitespace-nowrap">
+          <span className="font-bold text-blue-900 text-sm tracking-wide whitespace-nowrap">
             {studentViewCoursesList?.length || 0} Results
           </span>
 
@@ -271,14 +271,14 @@ const [skeleton, setSkeleton] = useState(true);
                 key={keyItem}
                 className="pb-4 border-b border-gray-100 last:border-0"
               >
-                <h3 className="font-bold mb-3 text-indigo-900 text-sm tracking-wide">
+                <h3 className="font-bold mb-3 text-blue-900 text-sm tracking-wide">
                   {keyItem.toUpperCase()}
                 </h3>
                 <div className="grid gap-3 mt-2">
                   {filterOptions[keyItem].map((option) => (
                     <Label
                       key={option.id}
-                      className="flex font-medium items-center gap-3 text-gray-600 hover:text-indigo-600 cursor-pointer transition-colors"
+                      className="flex font-medium items-center gap-3 text-gray-600 hover:text-blue-600 cursor-pointer transition-colors"
                     >
                       <Checkbox
                         checked={!!filters?.[keyItem]?.includes(option.id)}
@@ -308,7 +308,7 @@ const [skeleton, setSkeleton] = useState(true);
       {studentViewCoursesList.map((course) => (
         <div
           key={course._id}
-          className="group flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-indigo-200 transition-all duration-300 overflow-hidden cursor-pointer"
+          className="group flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden cursor-pointer"
           onClick={() => handleCourseNavigate(course?._id)}
         >
                   {/* Image */}
@@ -318,18 +318,18 @@ const [skeleton, setSkeleton] = useState(true);
                       alt={course.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-indigo-600 uppercase">
+                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-blue-600 uppercase">
                       {course.level}
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-5 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 mb-2 text-xs font-medium text-indigo-500 uppercase tracking-wider">
+                    <div className="flex items-center gap-2 mb-2 text-xs font-medium text-blue-500 uppercase tracking-wider">
                       {course.category}
                     </div>
 
-                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-indigo-700 transition-colors">
+                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">
                       {course.title}
                     </h3>
 
@@ -345,7 +345,7 @@ const [skeleton, setSkeleton] = useState(true);
                       </span>
                       <Button
                         variant="ghost"
-                        className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 p-0 h-auto font-semibold"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-0 h-auto font-semibold"
                       >
                         View Details
                       </Button>

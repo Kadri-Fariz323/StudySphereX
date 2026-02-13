@@ -6,7 +6,7 @@ export const CallToAction = () => {
     <section className="bg-white py-24 px-4 sm:px-6 lg:px-8 border-t border-gray-100">
       <div className="max-w-4xl mx-auto text-center">
         {/* Main Heading */}
-        <h2 className="text-4xl sm:text-5xl font-extrabold text-indigo-900 tracking-tight mb-6">
+        <h2 className="text-4xl sm:text-5xl font-extrabold text-blue-900 tracking-tight mb-6">
           Start Your Learning Journey Today
         </h2>
 
@@ -18,7 +18,7 @@ export const CallToAction = () => {
         {/* CTA Button */}
         <div className="flex justify-center">
           <Link to="/auth">
-            <button className="group inline-flex items-center justify-center px-10 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-full hover:bg-indigo-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transform hover:-translate-y-1">
+            <button className="group inline-flex items-center justify-center px-10 py-4 text-lg font-bold text-white transition-all duration-200 bg-blue-600 rounded-full hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transform hover:-translate-y-1">
               Join Now
               <FaArrowRight className="ml-3 transition-transform duration-200 group-hover:translate-x-1" />
             </button>

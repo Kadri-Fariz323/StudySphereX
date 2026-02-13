@@ -1,25 +1,26 @@
 import { FaUserPlus } from "react-icons/fa6";
 import { FaSitemap } from "react-icons/fa6";
 import { IoMdTrendingUp } from "react-icons/io";
+
 export const Working = () => {
   const steps = [
     {
       id: 1,
       title: 'Create Your Account',
       description: 'Sign up and choose your learning goal.',
-      icon: <FaUserPlus   className="w-8 h-8 text-indigo-600" />,
+      icon: <FaUserPlus className="w-8 h-8 text-blue-600" />,
     },
     {
       id: 2,
       title: 'Follow Your Roadmap',
       description: 'Learn with structured lessons and daily tasks.',
-      icon: <FaSitemap className="w-8 h-8 text-indigo-600" />,
+      icon: <FaSitemap className="w-8 h-8 text-blue-600" />,
     },
     {
       id: 3,
       title: 'Build & Track Progress',
       description: 'Complete projects and track improvement.',
-      icon: <IoMdTrendingUp className="w-8 h-8 text-indigo-600" />,
+      icon: <IoMdTrendingUp className="w-8 h-8 text-blue-600" />,
     },
   ];
 
@@ -41,13 +42,13 @@ export const Working = () => {
         <div className="relative grid grid-cols-1 gap-12 lg:grid-cols-3">
           
           {/* Decorative connecting line for desktop */}
-          <div className="hidden lg:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-indigo-100 -z-10" />
+          <div className="hidden lg:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-blue-100 -z-10" />
 
           {steps.map((step) => (
             <div key={step.id} className="relative flex flex-col items-center text-center">
               {/* Icon Circle */}
-              <div className="flex items-center justify-center w-24 h-24 mb-8 bg-white border-2 border-indigo-100 rounded-full shadow-sm">
-                <div className="flex items-center justify-center w-20 h-20 bg-indigo-50 rounded-full">
+              <div className="flex items-center justify-center w-24 h-24 mb-8 bg-white border-2 border-blue-100 rounded-full shadow-sm">
+                <div className="flex items-center justify-center w-20 h-20 bg-blue-50 rounded-full">
                   {step.icon}
                 </div>
               </div>

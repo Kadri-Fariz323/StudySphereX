@@ -11,7 +11,7 @@ export const BenefitsSection = () => {
     {
       id: 2,
       text: "Stay consistent without burnout",
-      icon: <FaLeaf />, // Leaf represents health and natural growth
+      icon: <FaLeaf />,
       description: "Bite-sized lessons designed for steady progress."
     },
     {
@@ -33,7 +33,7 @@ export const BenefitsSection = () => {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">
+          <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">
             Why Join Us?
           </h2>
           <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -46,10 +46,10 @@ export const BenefitsSection = () => {
           {benefits.map((item) => (
             <div 
               key={item.id} 
-              className="flex flex-col items-center text-center p-6 rounded-xl hover:bg-indigo-50 transition-colors duration-300"
+              className="flex flex-col items-center text-center p-6 rounded-xl hover:bg-blue-50 transition-colors duration-300"
             >
               {/* Icon Container */}
-              <div className="flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 text-indigo-600 text-2xl mb-6 shadow-sm">
+              <div className="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 text-2xl mb-6 shadow-sm">
                 {item.icon}
               </div>
               
@@ -58,7 +58,6 @@ export const BenefitsSection = () => {
                 {item.text}
               </h3>
               
-              {/* Optional sub-description for layout balance */}
               <p className="text-sm text-gray-500">
                 {item.description}
               </p>

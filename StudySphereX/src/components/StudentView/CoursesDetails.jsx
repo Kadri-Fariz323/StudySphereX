@@ -178,7 +178,7 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* 1. HERO HEADER */}
-      <div className="bg-gradient-to-r from-blue-700 to-indigo-900 text-white py-12 md:py-20">
+      <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-12 md:py-20">
         <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
           <div className="lg:col-span-2 space-y-5">
             <div className="flex items-center gap-3 text-blue-200 text-xs font-bold uppercase tracking-widest">
@@ -258,7 +258,7 @@ useEffect(() => {
               {curriculum?.map((lecture, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 bg-white hover:bg-indigo-50/50 transition-colors group cursor-pointer"
+                  className="flex items-center justify-between p-4 bg-white hover:bg-blue-50/50 transition-colors group cursor-pointer"
                   onClick={() => {
                     if (lecture.freePreview && lecture.videoUrl) {
                       setDisplayVideoUrl(lecture.videoUrl);
@@ -285,7 +285,7 @@ useEffect(() => {
                       )}
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-medium text-gray-800 group-hover:text-indigo-700 transition-colors">
+                      <span className="font-medium text-gray-800 group-hover:text-blue-700 transition-colors">
                         {lecture.title}
                       </span>
                     </div>
@@ -299,34 +299,34 @@ useEffect(() => {
               ))}
 
               {finalQuiz && (
-                <div className="flex items-center justify-between p-4 bg-indigo-50 hover:bg-indigo-100 transition-colors cursor-pointer border-t border-indigo-100">
+                <div className="flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer border-t border-blue-100">
                   <div className="flex items-center gap-4">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm bg-indigo-600 text-white">
+                    <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm bg-blue-600 text-white">
                       <HelpCircle className="h-4 w-4" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-bold text-indigo-900">
+                      <span className="font-bold text-blue-900">
                         Final Quiz: {finalQuiz.title || "Course Assessment"}
                       </span>
-                      <span className="text-xs text-indigo-600">
+                      <span className="text-xs text-blue-600">
                         {finalQuiz.questions?.length || 0} Questions • Passing:{" "}
                         {finalQuiz.passingMarks || 70}%
                       </span>
                     </div>
                   </div>
-                  <span className="px-2 py-1 bg-indigo-200 text-indigo-800 text-xs font-bold rounded uppercase">
+                  <span className="px-2 py-1 bg-blue-200 text-blue-800 text-xs font-bold rounded uppercase">
                     Required
                   </span>
                 </div>
               )}
 
-              <div className="flex items-center justify-between p-4 bg-white hover:bg-indigo-50/50 transition-colors group cursor-pointer">
+              <div className="flex items-center justify-between p-4 bg-white hover:bg-blue-50/50 transition-colors group cursor-pointer">
                 <div className="flex items-center gap-4">
                   <div className="h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm bg-gray-100 text-gray-500">
                     <Lock className="h-4 w-4" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-medium text-gray-800 group-hover:text-indigo-700 transition-colors">
+                    <span className="font-medium text-gray-800 group-hover:text-blue-700 transition-colors">
                       Certificate of Completion
                     </span>
                     <span className="font-medium mt-2 text-red-500 bg-red-200 rounded-2xl px-2 text-sm">
@@ -383,7 +383,7 @@ useEffect(() => {
                   />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <div className="bg-white/90 rounded-full p-4 mb-3 shadow-lg group-hover:scale-110 transition-transform">
-                      <Play className="h-10 w-10 text-indigo-600 fill-indigo-100" />
+                      <Play className="h-10 w-10 text-blue-600 fill-blue-100" />
                     </div>
                     <span className="font-bold text-white text-sm uppercase tracking-wider drop-shadow-md">
                       Preview this course
@@ -406,7 +406,7 @@ useEffect(() => {
                 </div>
 
                 <Button
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-6 text-lg shadow-lg shadow-indigo-200 transition-all mb-3 rounded-lg cursor-pointer"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 text-lg shadow-lg shadow-blue-200 transition-all mb-3 rounded-lg cursor-pointer"
                   onClick={handleCreatePayment}
                 >
                   {localStorage.getItem("accessToken")
@@ -423,19 +423,19 @@ useEffect(() => {
                     This course includes:
                   </h4>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <Video className="h-4 w-4 text-indigo-500" />
+                    <Video className="h-4 w-4 text-blue-500" />
                     <span>{curriculum?.length || 0} Video Lectures</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <HelpCircle className="h-4 w-4 text-indigo-500" />
+                    <HelpCircle className="h-4 w-4 text-blue-500" />
                     <span>{finalQuiz ? "1 Final Quiz" : "No Quiz"}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <Award className="h-4 w-4 text-indigo-500" />
+                    <Award className="h-4 w-4 text-blue-500" />
                     <span>Completion Certificate</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <Globe className="h-4 w-4 text-indigo-500" />
+                    <Globe className="h-4 w-4 text-blue-500" />
                     <span>Full Lifetime Access</span>
                   </div>
                 </div>

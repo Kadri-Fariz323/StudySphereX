@@ -22,17 +22,17 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         fixed inset-y-0 left-0 bg-white shadow-xl z-50 transform 
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 transition-transform duration-300 ease-in-out
-        w-64 shrink-0 border-r border-indigo-50
+        w-64 shrink-0 border-r border-blue-50
       `}
     >
       {/* --- HEADER --- */}
-      <div className="flex items-center justify-between p-4 border-b border-indigo-50 h-16">
+      <div className="flex items-center justify-between p-4 border-b border-blue-50 h-16">
         <img src={logo} alt="Logo" className="w-30 md:w-40 lg:w-40 h-auto" />
 
         {/* --- CLOSE BUTTON FOR MOBILE --- */}
         <button
           onClick={() => setIsSidebarOpen(false)}
-          className="md:hidden text-gray-500 hover:text-indigo-600 transition-colors"
+          className="md:hidden text-gray-500 hover:text-blue-600 transition-colors"
           aria-label="Close sidebar"
         >
           <MdClose size={24} />
@@ -52,7 +52,7 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                   flex items-center p-3 rounded-lg transition-all duration-200 font-medium
                   ${
                     isActive
-                      ? "bg-indigo-50 text-indigo-600 shadow-sm"
+                      ? "bg-blue-50 text-blue-600 shadow-sm"
                       : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
                   }
                 `}
@@ -60,7 +60,7 @@ export const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 {({ isActive }) => (
                   <>
                     <link.icon
-                      className={`mr-3 ${isActive ? "text-indigo-600" : ""}`}
+                      className={`mr-3 ${isActive ? "text-blue-600" : ""}`}
                       size={20}
                     />
                     {link.name}
