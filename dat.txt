@@ -55,6 +55,34 @@ _?!K2{xO
 fa642005iz
 
 
+testing:- Module, Test Case Description, 	Expected Result, 	Actual Result, 	Status-passed
+
+landing page;- 
+Authentication 
+Routes Guard 
+Contact page (emailjs, Db store)
+
+common test:-
+View dashboard (dashboard count and activity log) for (admin,user,Instructor)
+
+User side tests:-
+purchase  course
+after purchase enrolled
+complete course 
+attempt quiz 
+earn certificate after final exam 
+Discover latest tech news (using rss)
+
+admin side:- 
+block unblock users 
+approve,reject course 
+view mails list reply to mails (from contact page) 
+
+Instructor side:- 
+
+create course (add lectures, materials, quiz)
+delete course, edit course 
+only view enrolled students 
 
 table:---------------------------------------------
 
