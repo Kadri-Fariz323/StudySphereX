@@ -1,14 +1,19 @@
 Project: skilsync-LMS 
 
-Libraries:- email.js cloudinary,axious, paypal payment , mongodb atlas
+Libraries:- email.js cloudinary,axios, paypal payment , mongodb atlas, rss (for news)
 
+Landing Page:-
+
+Home 
+Courses (view only, login to buy) 
+Contact Us (EmailJs + backend)
 
 User:- Features
 
-Login/Register ( Instructor or admin)
-View dashboard 
-monitor progress 
-view enorolled courses
+Login/Register ( User or Instructor)
+View dashboard (dashboard count and activity log)
+monitor progress (with progress bar)
+view enrolled courses
 View course 
 explore course 
 enroll in course
@@ -18,22 +23,26 @@ give quiz
 download certificate 
 download notes/content/materials 
 contact
-(optional extra feature: tech news-soon, reviewCourse-hard probably skip)
+Discover (Use of rss to get latest tech news and view original article)
+
 admin:- Features
 
 View dashboard
-monitor 
+monitor (dashboard count and activity log)
 Manage users: block unblock
-manage contact mails reply view
-manage courses approve reject - no view feature 
+manage contact mails reply,view
+manage courses approve reject (also view only feature)
 
-Instructor 
+Instructor:-
 
-create Course 
+View dashboard (dashboard count and activity log)
+create Course (lectures, materials)
 add lectures 
 add quiz 
+add materials
 only view enrolled user 
 
+suitable for single and multiple Instructors 
 
 in Login
 sb-qqiyj48811859@personal.example.com
