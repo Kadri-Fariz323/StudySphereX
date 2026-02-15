@@ -4,28 +4,41 @@ import { fetchStudentViewCourseDetailsService, submitQuizService } from "@/servi
 import { AuthContext } from "@/context/AuthContext";
 
 export const FinalExam = () => {
-  const { id } = useParams(); // Course ID
+  const { id } = useParams(); 
   const navigate = useNavigate();
-  const { auth } = useContext(AuthContext); // Get logged-in user details
-  
+  const { auth } = useContext(AuthContext); 
+
+  const EXAM_DURATION = 60 * 60; 
+const [timeLeft, setTimeLeft] = useState(EXAM_DURATION);
+
+  const formatTime = (seconds) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h.toString().padStart(2, "0")}:${m
+    .toString()
+    .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+};
+
+
   const [courseData, setCourseData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state for submission
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
-  // Quiz State
+  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState({}); // { 0: 1, 1: 3 }
+  const [selectedAnswers, setSelectedAnswers] = useState({}); 
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [isPassed, setIsPassed] = useState(false);
 
-  // --- 1. PREVENT ACCIDENTAL EXIT ---
+  
   useEffect(() => {
-    // This handles browser refresh and close tab actions
+    
     const handleBeforeUnload = (e) => {
-      if (!showResult) { // Only warn if the exam is active
+      if (!showResult) { 
         e.preventDefault();
-        e.returnValue = ''; // Chrome requires returnValue to be set
+        e.returnValue = ''; 
       }
     };
 
@@ -36,9 +49,73 @@ export const FinalExam = () => {
     };
   }, [showResult]);
 
+useEffect(() => {
+  const handleBackButton = (event) => {
+    if (!showResult) {
+      const confirmLeave = window.confirm(
+        "Your exam progress will be lost. Are you sure you want to leave?"
+      );
+
+      if (!confirmLeave) {
+        window.history.pushState(null, "", window.location.pathname);
+      }
+    }
+  };
+
+  window.history.pushState(null, "", window.location.pathname);
+  window.addEventListener("popstate", handleBackButton);
+
+  return () => {
+    window.removeEventListener("popstate", handleBackButton);
+  };
+}, [showResult]);
+
+
   useEffect(() => {
     loadCourseDetails();
   }, [id]);
+
+  
+  useEffect(() => {
+  if (showResult) return;
+
+  const timer = setInterval(() => {
+    setTimeLeft(prev => {
+      if (prev <= 1) {
+        clearInterval(timer);
+        handleSubmit(); 
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [showResult]);
+
+useEffect(() => {
+  const disable = (e) => e.preventDefault();
+  document.addEventListener("contextmenu", disable);
+  document.addEventListener("copy", disable);
+
+  return () => {
+    document.removeEventListener("contextmenu", disable);
+    document.removeEventListener("copy", disable);
+  };
+}, []);
+
+useEffect(() => {
+  const handleVisibility = () => {
+    if (document.hidden && !showResult) {
+      alert("Do not switch tabs during the exam!");
+    }
+  };
+
+  document.addEventListener("visibilitychange", handleVisibility);
+  return () =>
+    document.removeEventListener("visibilitychange", handleVisibility);
+}, [showResult]);
+
 
   const loadCourseDetails = async () => {
     try {
@@ -70,9 +147,9 @@ export const FinalExam = () => {
     }
   };
 
-  // --- 2. INTEGRATED SUBMIT LOGIC ---
+  
 
-  // --- INTEGRATED SUBMIT LOGIC ---
+  
   const handleSubmit = async () => {
     const unAnsweredCount = courseData?.finalQuiz?.questions.length - Object.keys(selectedAnswers).length;
     if (unAnsweredCount > 0) {
@@ -83,7 +160,7 @@ export const FinalExam = () => {
     setIsSubmitting(true);
 
     try {
-      // 1. Calculate Result locally (to pass to next page immediately)
+      
       let calculatedScore = 0;
       const questions = courseData?.finalQuiz?.questions;
       const totalQuestions = questions.length;
@@ -100,7 +177,7 @@ export const FinalExam = () => {
       const finalPercentage = (calculatedScore / totalQuestions) * 100;
       const hasPassed = finalPercentage >= courseData?.finalQuiz?.passingMarks;
 
-      // 2. Send to Backend
+      
       const response = await submitQuizService(
         auth?.user?._id,
         id,
@@ -109,14 +186,14 @@ export const FinalExam = () => {
       );
 
       if (response?.success) {
-        // --- CHANGE HERE: NAVIGATE TO RESULT PAGE ---
+        
         navigate(`/course/quiz-result/${id}`, {
           state: {
             score: finalPercentage,
             isPassed: hasPassed,
             passingMarks: courseData?.finalQuiz?.passingMarks
           },
-          replace: true // This prevents user from clicking "Back" to return to the quiz
+          replace: true 
         });
       } else {
         alert(response?.message || "Submission failed.");
@@ -130,7 +207,7 @@ export const FinalExam = () => {
     }
   };
 
-// ... remove the "if (showResult)" block entirely ...
+
 
   if (loading) return <div className="p-10 text-center font-medium text-gray-500">Loading Exam...</div>;
   if (!courseData?.finalQuiz) return <div className="p-10 text-center font-medium text-red-500">No Quiz Available.</div>;
@@ -138,7 +215,7 @@ export const FinalExam = () => {
   const { questions, passingMarks } = courseData.finalQuiz;
   const currentQuestion = questions[currentQuestionIndex];
 
-  // --- 3. RESULT SCREEN ---
+  
   if (showResult) {
     return (
       <div className="flex flex-col items-center justify-center p-10 space-y-6 animate-in fade-in zoom-in duration-300">
@@ -156,7 +233,7 @@ export const FinalExam = () => {
           
           <div className="mt-8 flex gap-4 justify-center">
              <button 
-              onClick={() => navigate(`/course-details/${id}`)} // Navigate back to course
+              onClick={() => navigate(`/course-details/${id}`)} 
               className="px-6 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition"
             >
               Back to Course
@@ -166,17 +243,25 @@ export const FinalExam = () => {
               className="px-6 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 transition shadow-lg"
             >
               Try Again
-            </button>
+            </button> 
           </div>
         </div>
       </div>
     );
   }
 
-  // --- 4. EXAM UI ---
+  
   return (
     <div className="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-2xl rounded-xl border border-gray-100">
-      
+      <div className="flex justify-between items-center mb-6 border-b pb-4">
+  <h1 className="text-2xl font-bold">Final Examination</h1>
+
+  <span className={`px-4 py-2 rounded-full font-bold
+    ${timeLeft < 300 ? "bg-red-100 text-red-700" : "bg-blue-50 text-blue-700"}`}>
+    ⏳ {formatTime(timeLeft)}
+  </span>
+</div>
+
       {/* Progress Bar */}
       <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
         <div 

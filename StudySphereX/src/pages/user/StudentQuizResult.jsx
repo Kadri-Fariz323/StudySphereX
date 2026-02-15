@@ -81,7 +81,7 @@ export const StudentQuizResult = () => {
 
           {/* Optional: Back to Dashboard for both cases */}
           <button 
-            onClick={() => navigate('/student-courses')} // Adjust route as needed
+            onClick={() => navigate('/user/student-courses')} // Adjust route as needed
             className="text-gray-500 hover:text-gray-800 text-sm font-medium mt-4 underline"
           >
             Back to My Courses

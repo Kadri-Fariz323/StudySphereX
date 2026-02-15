@@ -29,7 +29,7 @@ export const QuizLandingPage = () => {
             setExamInfo({
               totalQuestions: quiz.questions?.length || 0,
               passingMarks: quiz.passingMarks,
-              timeLimit: quiz.timeLimit || "30",
+              timeLimit: quiz.timeLimit || "1",
               maxMarks: (quiz.questions?.length || 0) * 1,
               title: quiz.title,
             });
@@ -91,7 +91,7 @@ export const QuizLandingPage = () => {
 
             <div className="bg-gray-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-500">Time Limit</p>
-              <p className="text-xl font-bold">{examInfo.timeLimit} Minutes</p>
+              <p className="text-xl font-bold">{examInfo.timeLimit} Hour</p>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4 text-center">
