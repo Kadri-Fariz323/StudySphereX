@@ -24,7 +24,6 @@ export const StudentCertificate = () => {
           courseId,
         );
 
-        console.log("2. API Response received:", response); // DEBUG
 
         if (response.success) {
           setCertificateData(response.data);

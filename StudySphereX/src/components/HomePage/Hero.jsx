@@ -48,7 +48,7 @@ drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] pb-2"
       <div className="content-right mt-14 flex justify-center items-center">
         <img
           src={landingBg}
-          className="w-87.5 shadow-xl md:w-150 lg:w-137.5"
+          className="w-87.5 md:w-150 lg:w-137.5 rounded-lg shadow-2xl"
           alt=" illustration"
         />
       </div>

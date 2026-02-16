@@ -72,7 +72,6 @@ const [skeleton, setSkeleton] = useState(true);
 
     // 1. GUEST USER: Directly navigate to course details
     if (!isLoggedIn) {
-      console.log("Guest User: Navigating to details for", courseId);
       navigate(`/course/details/${courseId}`);
       return;
     }

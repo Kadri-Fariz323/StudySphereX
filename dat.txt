@@ -84,33 +84,20 @@ create course (add lectures, materials, quiz)
 delete course, edit course 
 only view enrolled students 
 
-table:---------------------------------------------
 
- <div className="w-[380px] sm:w-full overflow-x-auto shadow-md sm:rounded-lg bg-white">
-          <table className="w-full min-w-[600px] text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
-              <tr>
-                <th className="px-4 py-3"></th>
-                <th className="px-4 py-3"></th>
-                <th className="px-4 py-3"></th>
-                <th className="px-4 py-3"></th>
-                <th className="px-4 py-3 text-center"></th>
-              </tr>
-            </thead>
-    
-            <tbody className="divide-y divide-gray-200">
-             <td>xxx</td>
-             <td>xxx</td>
-             <td>xxx</td>
-             <td>xxx</td>
-             <td>xxx</td>
-            </tbody>
-          </table>
-        </div>
+login details 
 
----------------------------------------------table:
+user 
+test1@gmail.com
+123
 
+admin 
+fariz1@gmail.com
+fa642005iz
 
+Instructor
+instructor@gmail.com
+123
 
 
 
